@@ -1,0 +1,534 @@
+<!doctype html>
+<html lang="sv">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ManaMarket | Checkout</title>
+  <meta name="description" content="ManaMarket checkout med varukorg, orderoversikt och tydliga checkout-falt.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Bebas+Neue&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #090d16;
+      --bg-soft: rgba(13, 20, 34, 0.8);
+      --panel: rgba(255, 255, 255, 0.04);
+      --line: rgba(153, 198, 255, 0.16);
+      --text: #f5f7ff;
+      --muted: #98a7ca;
+      --cyan: #5ce1ff;
+      --lime: #c8ff63;
+      --pink: #ff5db1;
+      --shadow: 0 20px 80px rgba(0, 0, 0, 0.45);
+      --radius-xl: 32px;
+      --radius-lg: 24px;
+      --radius-md: 18px;
+      --max-width: 1200px;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--text);
+      font-family: "Space Grotesk", sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(92, 225, 255, 0.18), transparent 28%),
+        radial-gradient(circle at 80% 20%, rgba(255, 93, 177, 0.16), transparent 24%),
+        linear-gradient(135deg, #05070c 0%, #090d16 45%, #121b2c 100%);
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background-image:
+        linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+      background-size: 80px 80px;
+      mask-image: radial-gradient(circle at center, black 55%, transparent 100%);
+    }
+
+    a { color: inherit; text-decoration: none; }
+
+    .shell {
+      width: min(calc(100% - 32px), var(--max-width));
+      margin: 0 auto;
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      backdrop-filter: blur(20px);
+      background: rgba(5, 9, 16, 0.72);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .topbar-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 18px 0;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .brand-mark {
+      width: 44px;
+      aspect-ratio: 1;
+      display: grid;
+      place-items: center;
+      border-radius: 14px;
+      background: linear-gradient(135deg, var(--cyan), var(--pink));
+      color: #08101d;
+      font-family: "Bebas Neue", sans-serif;
+      font-size: 1.5rem;
+      box-shadow: 0 12px 30px rgba(92, 225, 255, 0.3);
+    }
+
+    .nav {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .nav a,
+    .cta,
+    .ghost {
+      border-radius: 999px;
+      padding: 12px 18px;
+      font-weight: 700;
+      transition: transform 180ms ease;
+    }
+
+    .nav a { color: var(--muted); }
+    .nav a:hover,
+    .cta:hover,
+    .ghost:hover { transform: translateY(-2px); }
+
+    .cta {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid rgba(92, 225, 255, 0.4);
+      background: linear-gradient(135deg, var(--cyan), #7cf7d4);
+      color: #041019;
+      box-shadow: 0 12px 30px rgba(92, 225, 255, 0.2);
+    }
+
+    .ghost {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.04);
+      color: var(--text);
+    }
+
+    main { padding: 36px 0 80px; }
+
+    .hero,
+    .checkout-grid {
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 22px;
+    }
+
+    .hero-card,
+    .panel {
+      border-radius: var(--radius-xl);
+      border: 1px solid var(--line);
+      background: var(--bg-soft);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(16px);
+    }
+
+    .hero-card {
+      padding: 30px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-card::after {
+      content: "";
+      position: absolute;
+      width: 260px;
+      height: 260px;
+      right: -80px;
+      bottom: -120px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(255, 93, 177, 0.45), transparent 68%);
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      padding: 10px 14px;
+      border-radius: 999px;
+      color: var(--lime);
+      background: rgba(200, 255, 99, 0.08);
+      border: 1px solid rgba(200, 255, 99, 0.18);
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      font-size: 0.78rem;
+    }
+
+    h1, h2, h3 {
+      margin: 0;
+      font-family: "Bebas Neue", sans-serif;
+      letter-spacing: 0.02em;
+      font-weight: 400;
+    }
+
+    h1 {
+      margin-top: 18px;
+      font-size: clamp(3rem, 8vw, 6rem);
+      line-height: 0.9;
+    }
+
+    .hero-copy,
+    .muted,
+    .item-meta,
+    label {
+      color: var(--muted);
+    }
+
+    .hero-copy {
+      max-width: 50ch;
+      margin: 18px 0 0;
+      font-size: 1.02rem;
+    }
+
+    .hero-stats {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+      margin-top: 24px;
+    }
+
+    .stat,
+    .item,
+    .summary-line,
+    .payment-row {
+      border-radius: var(--radius-md);
+      border: 1px solid var(--line);
+      background: var(--panel);
+    }
+
+    .stat {
+      padding: 16px;
+    }
+
+    .stat strong {
+      display: block;
+      font-size: 1.7rem;
+    }
+
+    .panel {
+      padding: 24px;
+    }
+
+    .panel-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: end;
+      margin-bottom: 18px;
+    }
+
+    .item-list {
+      display: grid;
+      gap: 14px;
+    }
+
+    .item {
+      padding: 16px;
+      display: grid;
+      grid-template-columns: 72px 1fr auto;
+      gap: 14px;
+      align-items: center;
+    }
+
+    .thumb {
+      width: 72px;
+      height: 72px;
+      border-radius: 18px;
+      background: var(--swatch, linear-gradient(135deg, #162648, #55192d 58%, #bc4b6b));
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .thumb::after {
+      content: "LOOT";
+      position: absolute;
+      right: 8px;
+      bottom: 4px;
+      font-family: "Bebas Neue", sans-serif;
+      font-size: 1.6rem;
+      color: rgba(255, 255, 255, 0.14);
+    }
+
+    .item h3 { font-size: 1.8rem; }
+    .qty,
+    .price {
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .summary {
+      display: grid;
+      gap: 12px;
+    }
+
+    .summary-line,
+    .payment-row {
+      padding: 14px 16px;
+      display: flex;
+      justify-content: space-between;
+      gap: 14px;
+      align-items: center;
+    }
+
+    .summary-line.total {
+      border-color: rgba(92, 225, 255, 0.35);
+      background: rgba(92, 225, 255, 0.08);
+    }
+
+    form {
+      display: grid;
+      gap: 14px;
+    }
+
+    .field-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+
+    .field {
+      display: grid;
+      gap: 8px;
+    }
+
+    input {
+      width: 100%;
+      padding: 14px 16px;
+      border-radius: 16px;
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.04);
+      color: var(--text);
+      font: inherit;
+      outline: none;
+    }
+
+    input:focus {
+      border-color: rgba(92, 225, 255, 0.45);
+      box-shadow: 0 0 0 4px rgba(92, 225, 255, 0.08);
+    }
+
+    .payment-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .footnote {
+      margin-top: 16px;
+      font-size: 0.92rem;
+      color: var(--muted);
+    }
+
+    @media (max-width: 920px) {
+      .hero,
+      .checkout-grid,
+      .field-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 760px) {
+      .topbar-inner,
+      .panel-head,
+      .item,
+      .hero-stats {
+        grid-template-columns: 1fr;
+        flex-direction: column;
+        align-items: start;
+      }
+
+      .item {
+        display: grid;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="shell topbar-inner">
+      <a class="brand" href="index.html">
+        <span class="brand-mark">MM</span>
+        <span>ManaMarket</span>
+      </a>
+      <nav class="nav" aria-label="Huvudnavigation">
+        <a href="butik.html">Butik</a>
+        <a href="galleri.html">Galleri</a>
+        <a class="ghost" href="checkout.html">Varukorg</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="shell">
+    <section class="hero">
+      <article class="hero-card">
+        <div class="eyebrow">Checkout</div>
+        <h1>Din loot.<br>Din cart.<br>Din run.</h1>
+        <p class="hero-copy">
+          En checkout-sida som matchar butikens energi. Har finns varukorg, orderoversikt och checkout-falt i samma premiumstil.
+        </p>
+        <div class="hero-stats">
+          <div class="stat">
+            <strong>3</strong>
+            <span class="muted">items i carten</span>
+          </div>
+          <div class="stat">
+            <strong>74,70 EUR</strong>
+            <span class="muted">subtotal</span>
+          </div>
+          <div class="stat">
+            <strong>24h</strong>
+            <span class="muted">drop feeling</span>
+          </div>
+        </div>
+      </article>
+
+      <aside class="panel">
+        <div class="panel-head">
+          <div>
+            <div class="eyebrow">Order Summary</div>
+            <h2>Din varukorg</h2>
+          </div>
+        </div>
+        <div class="summary">
+          <div class="summary-line"><span>Subtotal</span><strong>74,70 EUR</strong></div>
+          <div class="summary-line"><span>Frakt</span><strong>4,90 EUR</strong></div>
+          <div class="summary-line"><span>Discount</span><strong>-5,00 EUR</strong></div>
+          <div class="summary-line total"><span>Totalt</span><strong>74,60 EUR</strong></div>
+        </div>
+        <p class="footnote">Mockad checkout-layout. Koppla riktig logik senare med cart state och betalprovider.</p>
+      </aside>
+    </section>
+
+    <section class="checkout-grid">
+      <article class="panel">
+        <div class="panel-head">
+          <div>
+            <div class="eyebrow">Cart Items</div>
+            <h2>Produkter</h2>
+          </div>
+          <span class="muted">3 valda items</span>
+        </div>
+        <div class="item-list">
+          <div class="item">
+            <div class="thumb" style="--swatch: linear-gradient(135deg, #162648, #55192d 58%, #bc4b6b);"></div>
+            <div>
+              <h3>Clover Curse</h3>
+              <div class="item-meta">Sour blackberry / blackcurrant</div>
+            </div>
+            <div>
+              <div class="qty">x1</div>
+              <div class="price">24,90 EUR</div>
+            </div>
+          </div>
+          <div class="item">
+            <div class="thumb" style="--swatch: linear-gradient(135deg, #10254e, #1f4f8d 58%, #5ce1ff);"></div>
+            <div>
+              <h3>Ultra Instinct</h3>
+              <div class="item-meta">Cold / clean focus energy</div>
+            </div>
+            <div>
+              <div class="qty">x1</div>
+              <div class="price">24,90 EUR</div>
+            </div>
+          </div>
+          <div class="item">
+            <div class="thumb" style="--swatch: linear-gradient(135deg, #3a1338, #8f204c 54%, #ff9f5a);"></div>
+            <div>
+              <h3>Sunburst Rush</h3>
+              <div class="item-meta">Candy heat / party stack</div>
+            </div>
+            <div>
+              <div class="qty">x1</div>
+              <div class="price">24,90 EUR</div>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <article class="panel">
+        <div class="panel-head">
+          <div>
+            <div class="eyebrow">Buyer Info</div>
+            <h2>Leverans & betalning</h2>
+          </div>
+        </div>
+        <form>
+          <div class="field-grid">
+            <label class="field">
+              <span>Fornamn</span>
+              <input type="text" placeholder="Alexa">
+            </label>
+            <label class="field">
+              <span>Efternamn</span>
+              <input type="text" placeholder="Panger">
+            </label>
+          </div>
+          <label class="field">
+            <span>E-post</span>
+            <input type="email" placeholder="namn@email.com">
+          </label>
+          <label class="field">
+            <span>Adress</span>
+            <input type="text" placeholder="Storgatan 12">
+          </label>
+          <div class="field-grid">
+            <label class="field">
+              <span>Postnummer</span>
+              <input type="text" placeholder="12345">
+            </label>
+            <label class="field">
+              <span>Stad</span>
+              <input type="text" placeholder="Stockholm">
+            </label>
+          </div>
+        </form>
+
+        <div class="panel-head" style="margin-top: 24px;">
+          <div>
+            <div class="eyebrow">Payment</div>
+            <h2>Betalsatt</h2>
+          </div>
+        </div>
+        <div class="payment-list">
+          <div class="payment-row"><span>Kort</span><strong>Visa / Mastercard</strong></div>
+          <div class="payment-row"><span>Express</span><strong>PayPal</strong></div>
+          <div class="payment-row"><span>Wallet</span><strong>Apple Pay</strong></div>
+        </div>
+
+        <div style="margin-top: 22px;">
+          <a class="cta" href="#">Slutfor kop</a>
+        </div>
+      </article>
+    </section>
+  </main>
+</body>
+</html>

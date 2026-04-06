@@ -161,6 +161,18 @@
       color: var(--text);
     }
 
+    .cart-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .cart-link svg {
+      width: 18px;
+      height: 18px;
+      flex: 0 0 auto;
+    }
+
     main {
       padding: 36px 0 80px;
     }
@@ -754,6 +766,14 @@
         <a href="#reviews">Reviews</a>
         <a href="#vibes">Varfor den slar</a>
         <a href="#faq">FAQ</a>
+        <a class="ghost cart-link" href="checkout.html" aria-label="Ga till varukorg">
+          <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="9" cy="20" r="1.8"></circle>
+            <circle cx="18" cy="20" r="1.8"></circle>
+            <path d="M3 4h2.2l2.1 9.2a1 1 0 0 0 1 .8h8.9a1 1 0 0 0 1-.8L20 7H6.2"></path>
+          </svg>
+          <span>Varukorg</span>
+        </a>
         <a class="cta" href="https://lootdrink.de/en/collections/cubes" target="_blank" rel="noreferrer">Shoppa LOOT Cubes</a>
       </nav>
     </div>
