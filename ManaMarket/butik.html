@@ -377,6 +377,150 @@
       gap: 18px;
     }
 
+    .flavor-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .flavor-card,
+    .review-card {
+      border-radius: 26px;
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.04);
+      padding: 22px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .flavor-card::before,
+    .review-card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.08), transparent 48%);
+      pointer-events: none;
+    }
+
+    .flavor-head,
+    .review-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: start;
+    }
+
+    .flavor-badge,
+    .stars {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      font-size: 0.76rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    .flavor-badge {
+      background: rgba(200, 255, 99, 0.12);
+      color: var(--lime);
+      border: 1px solid rgba(200, 255, 99, 0.18);
+    }
+
+    .stars {
+      background: rgba(92, 225, 255, 0.1);
+      color: var(--cyan);
+      border: 1px solid rgba(92, 225, 255, 0.16);
+    }
+
+    .flavor-orb {
+      height: 150px;
+      margin: 18px 0;
+      border-radius: 22px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      background:
+        radial-gradient(circle at 30% 25%, rgba(255, 255, 255, 0.4), transparent 20%),
+        radial-gradient(circle at 65% 60%, rgba(255, 255, 255, 0.12), transparent 24%),
+        var(--flavor-swatch, linear-gradient(135deg, #1b2346, #511937));
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12);
+      position: relative;
+    }
+
+    .flavor-orb::after {
+      content: "";
+      position: absolute;
+      inset: 18px;
+      border-radius: 999px;
+      background: radial-gradient(circle, rgba(255, 255, 255, 0.24), rgba(255, 255, 255, 0) 62%);
+      filter: blur(6px);
+    }
+
+    .flavor-card h3,
+    .review-card h3 {
+      font-size: 2rem;
+      line-height: 0.92;
+    }
+
+    .flavor-notes,
+    .review-card p {
+      color: var(--muted);
+      margin: 10px 0 0;
+    }
+
+    .flavor-notes strong {
+      color: var(--text);
+    }
+
+    .reviews-grid {
+      display: grid;
+      grid-template-columns: 1.15fr 1fr 1fr;
+      gap: 18px;
+    }
+
+    .review-card.featured {
+      background:
+        radial-gradient(circle at top right, rgba(255, 93, 177, 0.18), transparent 28%),
+        rgba(255, 255, 255, 0.04);
+    }
+
+    .review-quote {
+      margin-top: 18px;
+      font-size: 1.15rem;
+      line-height: 1.6;
+      color: var(--text);
+    }
+
+    .review-user {
+      margin-top: 18px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .avatar {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      font-weight: 700;
+      color: #08101d;
+      background: linear-gradient(135deg, var(--cyan), var(--lime));
+      box-shadow: 0 10px 24px rgba(92, 225, 255, 0.18);
+    }
+
+    .review-user strong,
+    .review-user span {
+      display: block;
+    }
+
+    .review-user span {
+      color: var(--muted);
+      font-size: 0.92rem;
+    }
+
     .product-card {
       position: relative;
       overflow: hidden;
@@ -549,7 +693,9 @@
     @media (max-width: 1080px) {
       .hero,
       .split,
-      .products {
+      .products,
+      .flavor-grid,
+      .reviews-grid {
         grid-template-columns: 1fr 1fr;
       }
 
@@ -573,6 +719,8 @@
       .hero,
       .split,
       .products,
+      .flavor-grid,
+      .reviews-grid,
       .hero-stats {
         grid-template-columns: 1fr;
       }
@@ -602,6 +750,8 @@
       </a>
       <nav class="nav" aria-label="Huvudnavigation">
         <a href="#produkter">Produkter</a>
+        <a href="#flavors">Smaker</a>
+        <a href="#reviews">Reviews</a>
         <a href="#vibes">Varfor den slar</a>
         <a href="#faq">FAQ</a>
         <a class="cta" href="https://lootdrink.de/en/collections/cubes" target="_blank" rel="noreferrer">Shoppa LOOT Cubes</a>
@@ -723,6 +873,127 @@
           <div class="product-meta">
             <div class="price">24,90 EUR</div>
             <a class="cta" href="https://lootdrink.de/en/collections/cubes" target="_blank" rel="noreferrer">Kop nu</a>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section id="flavors" class="section-card">
+      <div class="section-top">
+        <div>
+          <div class="eyebrow">Flavor Scan</div>
+          <h2>Smaker som far plats i designen</h2>
+          <p>
+            I stallet for att bara lista produkter visar den har sektionen vad varje smak faktiskt signalerar. Det gor sidan mer inspirerande och hjalper folk att valja snabbare.
+          </p>
+        </div>
+      </div>
+
+      <div class="flavor-grid">
+        <article class="flavor-card">
+          <div class="flavor-head">
+            <span class="flavor-badge">Sour / Dark</span>
+            <span class="muted">Blackberry</span>
+          </div>
+          <div class="flavor-orb" style="--flavor-swatch: linear-gradient(135deg, #161d47, #3d1847 52%, #b53b79);"></div>
+          <h3>Clover Curse</h3>
+          <p class="flavor-notes"><strong>Vibe:</strong> sour blackberry och blackcurrant med dark neon-kansla och samlar-drop energi.</p>
+        </article>
+
+        <article class="flavor-card">
+          <div class="flavor-head">
+            <span class="flavor-badge">Cold / Clean</span>
+            <span class="muted">Ice energy</span>
+          </div>
+          <div class="flavor-orb" style="--flavor-swatch: linear-gradient(135deg, #10254e, #1f4f8d 58%, #5ce1ff);"></div>
+          <h3>Ultra Instinct</h3>
+          <p class="flavor-notes"><strong>Vibe:</strong> iskall, klar och snabb. Den smakar som sidan ser ut nar man vill ha max focus.</p>
+        </article>
+
+        <article class="flavor-card">
+          <div class="flavor-head">
+            <span class="flavor-badge">Candy / Heat</span>
+            <span class="muted">Tropical pop</span>
+          </div>
+          <div class="flavor-orb" style="--flavor-swatch: linear-gradient(135deg, #3a1338, #8f204c 54%, #ff9f5a);"></div>
+          <h3>Sunburst Rush</h3>
+          <p class="flavor-notes"><strong>Vibe:</strong> varm, intensiv och mer playful. Bra for kunder som vill ha smak med party-energi.</p>
+        </article>
+
+        <article class="flavor-card">
+          <div class="flavor-head">
+            <span class="flavor-badge">Fresh / Bright</span>
+            <span class="muted">Green citrus</span>
+          </div>
+          <div class="flavor-orb" style="--flavor-swatch: linear-gradient(135deg, #0f2f26, #2f6b2d 52%, #c8ff63);"></div>
+          <h3>Starter Stack</h3>
+          <p class="flavor-notes"><strong>Vibe:</strong> ljus, frisk och enkel att komma in i. En naturlig inkorsport till hela cube-formatet.</p>
+        </article>
+      </div>
+    </section>
+
+    <section id="reviews" class="section-card">
+      <div class="section-top">
+        <div>
+          <div class="eyebrow">Community Noise</div>
+          <h2>Reviews som bygger hype</h2>
+          <p>
+            Den har sektionen ger sidan social proof. Jag har stylat den som community-feedback sa butiken kanns mer levande och mindre statisk.
+          </p>
+        </div>
+      </div>
+
+      <div class="reviews-grid">
+        <article class="review-card featured">
+          <div class="review-head">
+            <span class="stars">5.0 / 5</span>
+            <span class="muted">Featured review</span>
+          </div>
+          <p class="review-quote">
+            "Kanns mer som ett limited drop an en vanlig energidryck. Clover Curse gick direkt in i min top tier for sena ranked sessions."
+          </p>
+          <div class="review-user">
+            <div class="avatar">AK</div>
+            <div>
+              <strong>Alex K</strong>
+              <span>FPS grinder</span>
+            </div>
+          </div>
+        </article>
+
+        <article class="review-card">
+          <div class="review-head">
+            <span class="stars">4.9 / 5</span>
+            <span class="muted">Flavor</span>
+          </div>
+          <h3>Ultra clean taste</h3>
+          <p>
+            "Ultra Instinct ser inte bara snabb ut, den smakar clean och premium. Sidan matchar den vibeen sjukt bra."
+          </p>
+          <div class="review-user">
+            <div class="avatar">MN</div>
+            <div>
+              <strong>Mira N</strong>
+              <span>Variety hunter</span>
+            </div>
+          </div>
+        </article>
+
+        <article class="review-card">
+          <div class="review-head">
+            <span class="stars">4.8 / 5</span>
+            <span class="muted">Design</span>
+          </div>
+          <h3>Looks expensive</h3>
+          <p>
+            "Det basta ar att butiken faktiskt far cubes att se premium ut. Det kanns mer streetwear drop an vanlig webshop."
+          </p>
+          <div class="review-user">
+            <div class="avatar">JL</div>
+            <div>
+              <strong>Jules L</strong>
+              <span>Content creator</span>
+            </div>
           </div>
         </article>
       </div>
