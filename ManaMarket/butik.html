@@ -1,10 +1,776 @@
-<!DOCTYPE html>
-<html lang="en">
+<!doctype html>
+<html lang="sv">
 <head>
-  <meta charset="UTF-8">
-  <title>Title</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ManaMarket | Butik</title>
+  <meta name="description" content="ManaMarket butik med LOOT Cubes-inspirerad energi, stark visuell identitet och tydliga kopfloden.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Bebas+Neue&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #090d16;
+      --bg-soft: rgba(13, 20, 34, 0.78);
+      --panel: rgba(17, 27, 46, 0.78);
+      --panel-strong: rgba(24, 38, 65, 0.95);
+      --line: rgba(153, 198, 255, 0.16);
+      --text: #f5f7ff;
+      --muted: #98a7ca;
+      --cyan: #5ce1ff;
+      --lime: #c8ff63;
+      --pink: #ff5db1;
+      --orange: #ff9f5a;
+      --shadow: 0 20px 80px rgba(0, 0, 0, 0.45);
+      --radius-xl: 32px;
+      --radius-lg: 24px;
+      --radius-md: 18px;
+      --max-width: 1200px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--text);
+      font-family: "Space Grotesk", sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(92, 225, 255, 0.18), transparent 28%),
+        radial-gradient(circle at 80% 20%, rgba(255, 93, 177, 0.2), transparent 24%),
+        radial-gradient(circle at bottom right, rgba(200, 255, 99, 0.12), transparent 26%),
+        linear-gradient(135deg, #05070c 0%, #090d16 45%, #121b2c 100%);
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background-image:
+        linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+      background-size: 80px 80px;
+      mask-image: radial-gradient(circle at center, black 55%, transparent 100%);
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    img {
+      max-width: 100%;
+      display: block;
+    }
+
+    .shell {
+      width: min(calc(100% - 32px), var(--max-width));
+      margin: 0 auto;
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      backdrop-filter: blur(20px);
+      background: rgba(5, 9, 16, 0.72);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .topbar-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 18px 0;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .brand-mark {
+      width: 44px;
+      aspect-ratio: 1;
+      display: grid;
+      place-items: center;
+      border-radius: 14px;
+      background: linear-gradient(135deg, var(--cyan), var(--pink));
+      color: #08101d;
+      font-family: "Bebas Neue", sans-serif;
+      font-size: 1.5rem;
+      box-shadow: 0 12px 30px rgba(92, 225, 255, 0.3);
+    }
+
+    .nav {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .nav a,
+    .cta,
+    .ghost {
+      border-radius: 999px;
+      padding: 12px 18px;
+      font-weight: 700;
+      transition: transform 180ms ease, background 180ms ease, border-color 180ms ease;
+    }
+
+    .nav a {
+      color: var(--muted);
+    }
+
+    .nav a:hover,
+    .nav a:focus-visible,
+    .cta:hover,
+    .ghost:hover {
+      transform: translateY(-2px);
+    }
+
+    .cta {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      border: 1px solid rgba(92, 225, 255, 0.4);
+      background: linear-gradient(135deg, var(--cyan), #7cf7d4);
+      color: #041019;
+      box-shadow: 0 12px 30px rgba(92, 225, 255, 0.2);
+    }
+
+    .ghost {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.04);
+      color: var(--text);
+    }
+
+    main {
+      padding: 36px 0 80px;
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 28px;
+      align-items: stretch;
+    }
+
+    .hero-card,
+    .stack,
+    .section-card,
+    .product-card,
+    .mini-card {
+      border: 1px solid var(--line);
+      background: var(--bg-soft);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(16px);
+    }
+
+    .hero-card {
+      position: relative;
+      overflow: hidden;
+      border-radius: var(--radius-xl);
+      padding: 34px;
+    }
+
+    .hero-card::after {
+      content: "";
+      position: absolute;
+      inset: auto -80px -140px auto;
+      width: 260px;
+      height: 260px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(255, 93, 177, 0.45), transparent 68%);
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 14px;
+      border-radius: 999px;
+      color: var(--lime);
+      background: rgba(200, 255, 99, 0.08);
+      border: 1px solid rgba(200, 255, 99, 0.18);
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      font-size: 0.78rem;
+    }
+
+    h1,
+    h2,
+    h3,
+    .price {
+      margin: 0;
+      font-family: "Bebas Neue", sans-serif;
+      letter-spacing: 0.02em;
+      font-weight: 400;
+    }
+
+    h1 {
+      margin-top: 18px;
+      font-size: clamp(3.6rem, 9vw, 7.2rem);
+      line-height: 0.9;
+    }
+
+    .hero-copy {
+      max-width: 55ch;
+      margin: 18px 0 28px;
+      color: var(--muted);
+      font-size: 1.08rem;
+    }
+
+    .hero-actions,
+    .card-actions {
+      display: flex;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+
+    .hero-stats {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+      margin-top: 30px;
+    }
+
+    .mini-card {
+      border-radius: var(--radius-md);
+      padding: 18px;
+    }
+
+    .mini-card strong {
+      display: block;
+      font-size: 1.8rem;
+      margin-bottom: 6px;
+    }
+
+    .mini-card span {
+      color: var(--muted);
+      font-size: 0.92rem;
+    }
+
+    .stack {
+      border-radius: var(--radius-xl);
+      padding: 24px;
+      display: grid;
+      gap: 16px;
+      align-content: start;
+    }
+
+    .stack-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: baseline;
+    }
+
+    .stack-head small,
+    .muted {
+      color: var(--muted);
+    }
+
+    .cube {
+      position: relative;
+      min-height: 200px;
+      border-radius: 28px;
+      background:
+        linear-gradient(145deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0)),
+        linear-gradient(135deg, #0f1f3d, #1e1027 54%, #381319);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      overflow: hidden;
+      padding: 22px;
+    }
+
+    .cube::before,
+    .cube::after {
+      content: "";
+      position: absolute;
+      inset: auto;
+      border-radius: 26px;
+      transform: rotate(14deg);
+    }
+
+    .cube::before {
+      top: 24px;
+      right: 28px;
+      width: 120px;
+      height: 120px;
+      background: linear-gradient(135deg, rgba(92, 225, 255, 0.7), rgba(92, 225, 255, 0));
+      filter: blur(4px);
+    }
+
+    .cube::after {
+      bottom: -18px;
+      left: -12px;
+      width: 160px;
+      height: 160px;
+      background: linear-gradient(135deg, rgba(255, 159, 90, 0.6), rgba(255, 93, 177, 0.1));
+      filter: blur(10px);
+    }
+
+    .cube-label {
+      position: relative;
+      z-index: 1;
+      display: inline-flex;
+      padding: 10px 12px;
+      border-radius: 14px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      background: rgba(4, 10, 20, 0.55);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .cube h2 {
+      position: relative;
+      z-index: 1;
+      margin-top: 18px;
+      font-size: 3rem;
+      line-height: 0.88;
+    }
+
+    section {
+      margin-top: 28px;
+    }
+
+    .section-card {
+      border-radius: var(--radius-xl);
+      padding: 28px;
+    }
+
+    .section-top {
+      display: flex;
+      justify-content: space-between;
+      gap: 18px;
+      align-items: end;
+      margin-bottom: 22px;
+    }
+
+    .section-top p {
+      max-width: 56ch;
+      margin: 8px 0 0;
+      color: var(--muted);
+    }
+
+    .products {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .product-card {
+      position: relative;
+      overflow: hidden;
+      border-radius: 26px;
+      padding: 20px;
+    }
+
+    .product-card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.08), transparent 45%);
+      pointer-events: none;
+    }
+
+    .product-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: start;
+      gap: 12px;
+    }
+
+    .tag {
+      display: inline-flex;
+      border-radius: 999px;
+      padding: 8px 12px;
+      font-size: 0.76rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: #08101d;
+      background: var(--lime);
+    }
+
+    .tag.alt {
+      background: var(--cyan);
+    }
+
+    .art {
+      margin: 18px 0;
+      height: 200px;
+      border-radius: 22px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      background:
+        radial-gradient(circle at 30% 20%, rgba(255, 255, 255, 0.32), transparent 24%),
+        linear-gradient(145deg, rgba(255, 255, 255, 0.08), transparent 50%),
+        var(--swatch, linear-gradient(135deg, #122446, #37111d));
+      position: relative;
+      overflow: hidden;
+    }
+
+    .art::before {
+      content: "";
+      position: absolute;
+      inset: 18px;
+      border-radius: 18px;
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      background: linear-gradient(145deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0));
+    }
+
+    .art::after {
+      content: "LOOT";
+      position: absolute;
+      right: 18px;
+      bottom: 8px;
+      font-family: "Bebas Neue", sans-serif;
+      font-size: 3.8rem;
+      color: rgba(255, 255, 255, 0.12);
+      letter-spacing: 0.08em;
+    }
+
+    .product-card h3 {
+      font-size: 2rem;
+      line-height: 0.92;
+    }
+
+    .product-card p {
+      color: var(--muted);
+      margin: 10px 0 16px;
+      min-height: 66px;
+    }
+
+    .product-meta {
+      display: flex;
+      justify-content: space-between;
+      gap: 14px;
+      align-items: center;
+    }
+
+    .price {
+      font-size: 2rem;
+      color: var(--text);
+    }
+
+    .pill-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 16px;
+    }
+
+    .pill {
+      padding: 10px 14px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      color: var(--muted);
+      background: rgba(255, 255, 255, 0.04);
+      font-size: 0.88rem;
+    }
+
+    .split {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+    }
+
+    .feature-list {
+      display: grid;
+      gap: 14px;
+      margin-top: 18px;
+    }
+
+    .feature {
+      padding: 18px 20px;
+      border-radius: 22px;
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.03);
+    }
+
+    .feature strong {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 1.05rem;
+    }
+
+    .faq {
+      display: grid;
+      gap: 12px;
+    }
+
+    details {
+      border-radius: 20px;
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.03);
+      padding: 18px 20px;
+    }
+
+    summary {
+      cursor: pointer;
+      font-weight: 700;
+      list-style: none;
+    }
+
+    summary::-webkit-details-marker {
+      display: none;
+    }
+
+    details p {
+      margin: 12px 0 0;
+      color: var(--muted);
+    }
+
+    .footer-note {
+      margin-top: 24px;
+      color: var(--muted);
+      text-align: center;
+      font-size: 0.92rem;
+    }
+
+    @media (max-width: 1080px) {
+      .hero,
+      .split,
+      .products {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .hero {
+        align-items: start;
+      }
+
+      .products {
+        grid-column: auto;
+      }
+    }
+
+    @media (max-width: 760px) {
+      .topbar-inner,
+      .section-top,
+      .product-meta {
+        align-items: start;
+        flex-direction: column;
+      }
+
+      .hero,
+      .split,
+      .products,
+      .hero-stats {
+        grid-template-columns: 1fr;
+      }
+
+      .hero-card,
+      .stack,
+      .section-card {
+        padding: 22px;
+      }
+
+      h1 {
+        font-size: clamp(3rem, 20vw, 5rem);
+      }
+
+      .cube h2 {
+        font-size: 2.45rem;
+      }
+    }
+  </style>
 </head>
 <body>
+  <header class="topbar">
+    <div class="shell topbar-inner">
+      <a class="brand" href="index.html">
+        <span class="brand-mark">MM</span>
+        <span>ManaMarket</span>
+      </a>
+      <nav class="nav" aria-label="Huvudnavigation">
+        <a href="#produkter">Produkter</a>
+        <a href="#vibes">Varfor den slar</a>
+        <a href="#faq">FAQ</a>
+        <a class="cta" href="https://lootdrink.de/en/collections/cubes" target="_blank" rel="noreferrer">Shoppa LOOT Cubes</a>
+      </nav>
+    </div>
+  </header>
 
+  <main class="shell">
+    <section class="hero">
+      <article class="hero-card">
+        <div class="eyebrow">ManaMarket drop 2026</div>
+        <h1>Cube Energy.<br>Anime Hype.<br>Boss Loot.</h1>
+        <p class="hero-copy">
+          En butikssida byggd for att se ut som en release, inte en prislista. Fokus pa LOOT Cubes, tydlig smakprofil, brutal kontrast och call-to-actions som faktiskt driver klick.
+        </p>
+        <div class="hero-actions">
+          <a class="cta" href="#produkter">Se sortiment</a>
+          <a class="ghost" href="https://lootdrink.de/en/collections/cubes" target="_blank" rel="noreferrer">Ga till originalkollektionen</a>
+        </div>
+        <div class="hero-stats">
+          <div class="mini-card">
+            <strong>20</strong>
+            <span>stacks i cube-format</span>
+          </div>
+          <div class="mini-card">
+            <strong>200 mg</strong>
+            <span>koffein per servering enligt produktsidorna</span>
+          </div>
+          <div class="mini-card">
+            <strong>24,90 EUR</strong>
+            <span>visat pris pa flera cube-produkter</span>
+          </div>
+        </div>
+      </article>
+
+      <aside class="stack">
+        <div class="stack-head">
+          <h2>Featured Drop</h2>
+          <small>Spring 2026</small>
+        </div>
+        <div class="cube">
+          <span class="cube-label">LOOT Cube Series</span>
+          <h2>Clover<br>Curse</h2>
+        </div>
+        <p class="muted">
+          Sour blackberry + blackcurrant vibe, kompakt cube-format och en layout som far produkten att kanna limiterad och samlarbar.
+        </p>
+        <div class="pill-row">
+          <span class="pill">Fast delivery feel</span>
+          <span class="pill">High-focus branding</span>
+          <span class="pill">Streamer energy aesthetic</span>
+        </div>
+      </aside>
+    </section>
+
+    <section id="produkter" class="section-card">
+      <div class="section-top">
+        <div>
+          <div class="eyebrow">Product Grid</div>
+          <h2>ManaMarket Picks</h2>
+          <p>
+            Jag har byggt en tydlig butiksyta runt LOOT Cubes-kollektionen. Korten ar stylade for att kannas premium, snabba att skanna och enkla att bygga vidare pa nar ni vill koppla riktig checkout senare.
+          </p>
+        </div>
+        <a class="ghost" href="https://lootdrink.de/en/collections/cubes" target="_blank" rel="noreferrer">Alla cubes</a>
+      </div>
+
+      <div class="products">
+        <article class="product-card">
+          <div class="product-top">
+            <span class="tag">Top Pick</span>
+            <span class="muted">20 stacks</span>
+          </div>
+          <div class="art" style="--swatch: linear-gradient(135deg, #162648, #55192d 58%, #bc4b6b);"></div>
+          <h3>Clover Curse</h3>
+          <p>Sour blackberry och blackcurrant-profil med ett uttryck som kanns som rare loot drop.</p>
+          <div class="product-meta">
+            <div class="price">24,90 EUR</div>
+            <a class="cta" href="https://lootdrink.de/en/collections/cubes" target="_blank" rel="noreferrer">Kop nu</a>
+          </div>
+        </article>
+
+        <article class="product-card">
+          <div class="product-top">
+            <span class="tag alt">Focus</span>
+            <span class="muted">Cube format</span>
+          </div>
+          <div class="art" style="--swatch: linear-gradient(135deg, #11224e, #123a53 55%, #5ce1ff);"></div>
+          <h3>Ultra Instinct</h3>
+          <p>Kyld neon-energi i visual form. Perfekt som hero-produkt nar du vill ha ren high-performance vibe.</p>
+          <div class="product-meta">
+            <div class="price">24,90 EUR</div>
+            <a class="cta" href="https://lootdrink.de/en/collections/cubes" target="_blank" rel="noreferrer">Kop nu</a>
+          </div>
+        </article>
+
+        <article class="product-card">
+          <div class="product-top">
+            <span class="tag">Party Stack</span>
+            <span class="muted">Shareable</span>
+          </div>
+          <div class="art" style="--swatch: linear-gradient(135deg, #2f133f, #7f1a52 50%, #ff9f5a);"></div>
+          <h3>Sunburst Rush</h3>
+          <p>Varma toner och candy-energy look. Byggd for kunder som valjer smak med ogonen forst.</p>
+          <div class="product-meta">
+            <div class="price">24,90 EUR</div>
+            <a class="cta" href="https://lootdrink.de/en/collections/cubes" target="_blank" rel="noreferrer">Kop nu</a>
+          </div>
+        </article>
+
+        <article class="product-card">
+          <div class="product-top">
+            <span class="tag alt">Starter</span>
+            <span class="muted">Easy entry</span>
+          </div>
+          <div class="art" style="--swatch: linear-gradient(135deg, #0c2c25, #25531d 55%, #c8ff63);"></div>
+          <h3>Starter Stack</h3>
+          <p>En gateway-produkt for nya kunder som vill testa cube-formatet utan att sidan tappar edge.</p>
+          <div class="product-meta">
+            <div class="price">24,90 EUR</div>
+            <a class="cta" href="https://lootdrink.de/en/collections/cubes" target="_blank" rel="noreferrer">Kop nu</a>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="split">
+      <article id="vibes" class="section-card">
+        <div class="eyebrow">Why It Works</div>
+        <h2>Butiken kanns som ett drop</h2>
+        <div class="feature-list">
+          <div class="feature">
+            <strong>Hero med attitude</strong>
+            Sidan oppnar med release-kansla i stallet for klassisk webbshopmall.
+          </div>
+          <div class="feature">
+            <strong>Kort som saljer snabbt</strong>
+            Varje produktblock har tydlig hierarki: smak, energi, pris, CTA.
+          </div>
+          <div class="feature">
+            <strong>Latt att bygga vidare</strong>
+            Du kan senare byta ut korten mot riktiga produkter, bilder och kundvagn utan att kasta designen.
+          </div>
+        </div>
+      </article>
+
+      <article id="faq" class="section-card">
+        <div class="eyebrow">FAQ</div>
+        <h2>Snabba svar</h2>
+        <div class="faq">
+          <details open>
+            <summary>Ar detta en riktig checkout?</summary>
+            <p>Inte an. Just nu ar detta en stark butikssida med CTA-lankar ut till LOOT Cubes-kollektionen.</p>
+          </details>
+          <details>
+            <summary>Kan vi lagga in riktiga produktbilder senare?</summary>
+            <p>Ja. Korten ar byggda sa att du enkelt kan ersatta gradient-art med riktiga bilder eller CMS-data.</p>
+          </details>
+          <details>
+            <summary>Varfor den har stilen?</summary>
+            <p>LOOT Cubes har gamer-, anime- och performance-vibe. Den har designen matchar det battre an en neutral butiksmall.</p>
+          </details>
+        </div>
+      </article>
+    </section>
+
+    <p class="footer-note">
+      Produktnamn och prisniva ar inspirerade av LOOT Cubes-kollektionen pa lootdrink.de. Slutlig produktdata bor synkas mot verkligt sortiment om sidan ska live.
+    </p>
+  </main>
 </body>
 </html>
