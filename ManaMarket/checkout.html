@@ -382,12 +382,24 @@
       <nav class="nav" aria-label="Huvudnavigation">
         <a href="butik.html">Butik</a>
         <a href="galleri.html">Galleri</a>
+        <a href="auth.html">Logga in</a>
         <a class="ghost" href="checkout.html">Varukorg</a>
       </nav>
     </div>
   </header>
 
   <main class="shell">
+    <section class="panel" data-checkout-gate>
+      <div class="panel-head">
+        <div>
+          <div class="eyebrow">Auth Required</div>
+          <h2>Kontrollerar session</h2>
+        </div>
+      </div>
+      <p class="muted">Checkout kraver inloggning. Om du inte redan har en session skickas du vidare till auth-sidan.</p>
+    </section>
+
+    <div data-checkout-content hidden>
     <section class="hero">
       <article class="hero-card">
         <div class="eyebrow">Checkout</div>
@@ -397,16 +409,16 @@
         </p>
         <div class="hero-stats">
           <div class="stat">
-            <strong>3</strong>
-            <span class="muted">items i carten</span>
+            <strong data-checkout-email>...</strong>
+            <span class="muted">inloggad kund</span>
           </div>
           <div class="stat">
             <strong>74,70 EUR</strong>
             <span class="muted">subtotal</span>
           </div>
           <div class="stat">
-            <strong>24h</strong>
-            <span class="muted">drop feeling</span>
+            <strong>3</strong>
+            <span class="muted">items i carten</span>
           </div>
         </div>
       </article>
@@ -526,9 +538,14 @@
 
         <div style="margin-top: 22px;">
           <a class="cta" href="#">Slutfor kop</a>
+          <button class="ghost" type="button" data-checkout-logout style="margin-left:12px;">Logga ut</button>
         </div>
       </article>
     </section>
+    </div>
   </main>
+
+  <script src="js/supabase-config.js"></script>
+  <script type="module" src="js/require-auth.js"></script>
 </body>
 </html>

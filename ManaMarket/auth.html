@@ -1,0 +1,322 @@
+<!doctype html>
+<html lang="sv">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ManaMarket | Auth</title>
+  <meta name="description" content="Logga in, skapa konto och aterstall losenord for ManaMarket.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Bebas+Neue&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #090d16;
+      --bg-soft: rgba(13, 20, 34, 0.8);
+      --panel: rgba(255, 255, 255, 0.04);
+      --line: rgba(153, 198, 255, 0.16);
+      --text: #f5f7ff;
+      --muted: #98a7ca;
+      --cyan: #5ce1ff;
+      --lime: #c8ff63;
+      --pink: #ff5db1;
+      --shadow: 0 20px 80px rgba(0, 0, 0, 0.45);
+      --radius-xl: 32px;
+      --radius-lg: 24px;
+      --radius-md: 18px;
+      --max-width: 1120px;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--text);
+      font-family: "Space Grotesk", sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(92, 225, 255, 0.18), transparent 28%),
+        radial-gradient(circle at 80% 20%, rgba(255, 93, 177, 0.16), transparent 24%),
+        linear-gradient(135deg, #05070c 0%, #090d16 45%, #121b2c 100%);
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background-image:
+        linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+      background-size: 80px 80px;
+      mask-image: radial-gradient(circle at center, black 55%, transparent 100%);
+    }
+
+    a { color: inherit; text-decoration: none; }
+    .shell { width: min(calc(100% - 32px), var(--max-width)); margin: 0 auto; }
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      backdrop-filter: blur(20px);
+      background: rgba(5, 9, 16, 0.72);
+      border-bottom: 1px solid var(--line);
+    }
+    .topbar-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 18px 0;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+    .brand-mark {
+      width: 44px;
+      aspect-ratio: 1;
+      display: grid;
+      place-items: center;
+      border-radius: 14px;
+      background: linear-gradient(135deg, var(--cyan), var(--pink));
+      color: #08101d;
+      font-family: "Bebas Neue", sans-serif;
+      font-size: 1.5rem;
+      box-shadow: 0 12px 30px rgba(92, 225, 255, 0.3);
+    }
+    .ghost,
+    .cta,
+    .tab {
+      border-radius: 999px;
+      padding: 12px 18px;
+      font-weight: 700;
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.04);
+      color: var(--text);
+      cursor: pointer;
+    }
+    .cta {
+      background: linear-gradient(135deg, var(--cyan), #7cf7d4);
+      color: #041019;
+      border-color: rgba(92, 225, 255, 0.4);
+      box-shadow: 0 12px 30px rgba(92, 225, 255, 0.2);
+    }
+    main { padding: 36px 0 80px; }
+    .layout {
+      display: grid;
+      grid-template-columns: 0.95fr 1.05fr;
+      gap: 24px;
+    }
+    .hero,
+    .panel,
+    .session-card {
+      border-radius: var(--radius-xl);
+      border: 1px solid var(--line);
+      background: var(--bg-soft);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(16px);
+      padding: 28px;
+    }
+    .eyebrow {
+      display: inline-flex;
+      padding: 10px 14px;
+      border-radius: 999px;
+      color: var(--lime);
+      background: rgba(200, 255, 99, 0.08);
+      border: 1px solid rgba(200, 255, 99, 0.18);
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      font-size: 0.78rem;
+    }
+    h1, h2, h3 {
+      margin: 0;
+      font-family: "Bebas Neue", sans-serif;
+      letter-spacing: 0.02em;
+      font-weight: 400;
+    }
+    h1 {
+      margin-top: 18px;
+      font-size: clamp(3rem, 8vw, 6rem);
+      line-height: 0.9;
+    }
+    .muted, label, .helper, .status {
+      color: var(--muted);
+    }
+    .hero p {
+      max-width: 44ch;
+      line-height: 1.6;
+    }
+    .hero-list {
+      display: grid;
+      gap: 12px;
+      margin-top: 20px;
+    }
+    .hero-list div {
+      border-radius: var(--radius-md);
+      border: 1px solid var(--line);
+      background: var(--panel);
+      padding: 16px;
+    }
+    .tabs {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+    }
+    .tab[aria-selected="true"] {
+      background: rgba(92, 225, 255, 0.1);
+      border-color: rgba(92, 225, 255, 0.35);
+      color: var(--text);
+    }
+    form {
+      display: grid;
+      gap: 14px;
+    }
+    .field-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+    .field {
+      display: grid;
+      gap: 8px;
+    }
+    input {
+      width: 100%;
+      padding: 14px 16px;
+      border-radius: 16px;
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.04);
+      color: var(--text);
+      font: inherit;
+      outline: none;
+    }
+    input:focus {
+      border-color: rgba(92, 225, 255, 0.45);
+      box-shadow: 0 0 0 4px rgba(92, 225, 255, 0.08);
+    }
+    .status {
+      min-height: 24px;
+      margin-bottom: 12px;
+    }
+    .status[data-state="error"] { color: #ff92c8; }
+    .status[data-state="ok"] { color: var(--cyan); }
+    .session-card {
+      margin-top: 18px;
+      display: grid;
+      gap: 12px;
+    }
+    @media (max-width: 920px) {
+      .layout,
+      .field-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="shell topbar-inner">
+      <a class="brand" href="index.html">
+        <span class="brand-mark">MM</span>
+        <span>ManaMarket</span>
+      </a>
+      <a class="ghost" href="butik.html">Till butiken</a>
+    </div>
+  </header>
+
+  <main class="shell">
+    <section class="layout">
+      <article class="hero">
+        <div class="eyebrow">Supabase Auth</div>
+        <h1>Logga in.<br>Skapa konto.<br>Fortsatt till checkout.</h1>
+        <p class="muted">
+          Den har sidan anvander Supabase email/password auth. Flodet stoder signup, login, email verification och forgot password utan guest checkout.
+        </p>
+        <div class="hero-list">
+          <div>Skapa konto med email och losenord.</div>
+          <div>Verifiera email innan forsta riktiga inloggning.</div>
+          <div>Aterstall losenord via reset-lank.</div>
+        </div>
+      </article>
+
+      <section class="panel" data-auth-view>
+        <div class="tabs" data-auth-tabs>
+          <button class="tab" type="button" data-auth-tab="signin" aria-selected="true">Logga in</button>
+          <button class="tab" type="button" data-auth-tab="signup" aria-selected="false">Skapa konto</button>
+          <button class="tab" type="button" data-auth-tab="forgot" aria-selected="false">Glomt losenord</button>
+        </div>
+
+        <div class="status" data-auth-status></div>
+
+        <div data-auth-gate>
+          <section data-auth-panel="signin">
+            <h2>Logga in</h2>
+            <p class="helper">Endast registrerade kunder kommer vidare till checkout.</p>
+            <form data-signin-form>
+              <label class="field">
+                <span>Email</span>
+                <input type="email" name="email" placeholder="namn@email.com" required>
+              </label>
+              <label class="field">
+                <span>Losenord</span>
+                <input type="password" name="password" placeholder="Minst 8 tecken" required>
+              </label>
+              <button class="cta" type="submit">Logga in</button>
+            </form>
+          </section>
+
+          <section data-auth-panel="signup" hidden>
+            <h2>Skapa konto</h2>
+            <p class="helper">Detta skapar auth-konto och profilrad i Supabase.</p>
+            <form data-signup-form>
+              <div class="field-grid">
+                <label class="field">
+                  <span>Fullstandigt namn</span>
+                  <input type="text" name="full_name" placeholder="Alexa Panger" required>
+                </label>
+                <label class="field">
+                  <span>Email</span>
+                  <input type="email" name="email" placeholder="namn@email.com" required>
+                </label>
+              </div>
+              <label class="field">
+                <span>Losenord</span>
+                <input type="password" name="password" placeholder="Minst 8 tecken" required minlength="8">
+              </label>
+              <button class="cta" type="submit">Skapa konto</button>
+            </form>
+          </section>
+
+          <section data-auth-panel="forgot" hidden>
+            <h2>Aterstall losenord</h2>
+            <p class="helper">Av sakerhetsskal visar UI:t samma svar oavsett om email finns eller inte.</p>
+            <form data-forgot-form>
+              <label class="field">
+                <span>Email</span>
+                <input type="email" name="email" placeholder="namn@email.com" required>
+              </label>
+              <button class="cta" type="submit">Skicka reset-lank</button>
+            </form>
+            <p class="helper" data-forgot-message></p>
+          </section>
+        </div>
+
+        <section class="session-card" data-auth-ready hidden>
+          <div class="eyebrow">Session</div>
+          <h3>Du ar redan inloggad</h3>
+          <p class="muted">Aktiv email: <strong data-session-email></strong></p>
+          <div style="display:flex; gap:12px; flex-wrap:wrap;">
+            <a class="cta" href="butik.html" data-auth-continue>Fortsatt</a>
+            <button class="ghost" type="button" data-session-logout>Logga ut</button>
+          </div>
+        </section>
+      </section>
+    </section>
+  </main>
+
+  <script src="js/supabase-config.js"></script>
+  <script type="module" src="js/auth.js"></script>
+</body>
+</html>
