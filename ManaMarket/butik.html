@@ -21,7 +21,7 @@
       --lime: #c8ff63;
       --pink: #ff5db1;
       --orange: #ff9f5a;
-      --shadow: 0 20px 80px rgba(0, 0, 0, 0.45);
+      --shadow: 0 10px 28px rgba(0, 0, 0, 0.28);
       --radius-xl: 32px;
       --radius-lg: 24px;
       --radius-md: 18px;
@@ -42,22 +42,13 @@
       color: var(--text);
       font-family: "Space Grotesk", sans-serif;
       background:
-        radial-gradient(circle at top left, rgba(92, 225, 255, 0.18), transparent 28%),
-        radial-gradient(circle at 80% 20%, rgba(255, 93, 177, 0.2), transparent 24%),
-        radial-gradient(circle at bottom right, rgba(200, 255, 99, 0.12), transparent 26%),
+        radial-gradient(circle at top left, rgba(92, 225, 255, 0.12), transparent 24%),
+        radial-gradient(circle at 82% 18%, rgba(255, 93, 177, 0.12), transparent 20%),
         linear-gradient(135deg, #05070c 0%, #090d16 45%, #121b2c 100%);
     }
 
     body::before {
-      content: "";
-      position: fixed;
-      inset: 0;
-      pointer-events: none;
-      background-image:
-        linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
-      background-size: 80px 80px;
-      mask-image: radial-gradient(circle at center, black 55%, transparent 100%);
+      content: none;
     }
 
     a {
@@ -79,8 +70,8 @@
       position: sticky;
       top: 0;
       z-index: 20;
-      backdrop-filter: blur(20px);
-      background: rgba(5, 9, 16, 0.72);
+      backdrop-filter: blur(8px);
+      background: rgba(5, 9, 16, 0.88);
       border-bottom: 1px solid var(--line);
     }
 
@@ -111,7 +102,7 @@
       color: #08101d;
       font-family: "Bebas Neue", sans-serif;
       font-size: 1.5rem;
-      box-shadow: 0 12px 30px rgba(92, 225, 255, 0.3);
+      box-shadow: 0 8px 20px rgba(92, 225, 255, 0.18);
     }
 
     .nav {
@@ -149,7 +140,7 @@
       border: 1px solid rgba(92, 225, 255, 0.4);
       background: linear-gradient(135deg, var(--cyan), #7cf7d4);
       color: #041019;
-      box-shadow: 0 12px 30px rgba(92, 225, 255, 0.2);
+      box-shadow: 0 8px 18px rgba(92, 225, 255, 0.14);
       cursor: pointer;
     }
 
@@ -160,7 +151,7 @@
 
     .cta.is-added {
       background: linear-gradient(135deg, #9fffbf, #5ce1ff);
-      box-shadow: 0 0 0 6px rgba(92, 225, 255, 0.14), 0 12px 30px rgba(92, 225, 255, 0.2);
+      box-shadow: 0 0 0 4px rgba(92, 225, 255, 0.1), 0 8px 18px rgba(92, 225, 255, 0.14);
     }
 
     .cta.is-pressed {
@@ -226,9 +217,8 @@
     .product-card,
     .mini-card {
       border: 1px solid var(--line);
-      background: var(--bg-soft);
+      background: rgba(13, 20, 34, 0.88);
       box-shadow: var(--shadow);
-      backdrop-filter: blur(16px);
     }
 
     .hero-card {
@@ -242,10 +232,10 @@
       content: "";
       position: absolute;
       inset: auto -80px -140px auto;
-      width: 260px;
-      height: 260px;
+      width: 180px;
+      height: 180px;
       border-radius: 50%;
-      background: radial-gradient(circle, rgba(255, 93, 177, 0.45), transparent 68%);
+      background: radial-gradient(circle, rgba(255, 93, 177, 0.22), transparent 68%);
     }
 
     .eyebrow {
@@ -362,7 +352,6 @@
       width: 120px;
       height: 120px;
       background: linear-gradient(135deg, rgba(92, 225, 255, 0.7), rgba(92, 225, 255, 0));
-      filter: blur(4px);
     }
 
     .cube::after {
@@ -371,7 +360,6 @@
       width: 160px;
       height: 160px;
       background: linear-gradient(135deg, rgba(255, 159, 90, 0.6), rgba(255, 93, 177, 0.1));
-      filter: blur(10px);
     }
 
     .cube-label {
@@ -429,7 +417,7 @@
     .review-card {
       border-radius: 26px;
       border: 1px solid var(--line);
-      background: rgba(255, 255, 255, 0.04);
+      background: rgba(255, 255, 255, 0.03);
       padding: 22px;
       position: relative;
       overflow: hidden;
@@ -542,9 +530,7 @@
     .flavor-visual {
       border-radius: 24px;
       border: 1px solid var(--line);
-      background:
-        radial-gradient(circle at top right, rgba(255, 255, 255, 0.16), transparent 22%),
-        rgba(7, 12, 23, 0.88);
+      background: rgba(7, 12, 23, 0.92);
       padding: 18px;
       display: grid;
       grid-template-rows: auto 1fr auto;
@@ -578,11 +564,9 @@
       border-radius: 22px;
       border: 1px solid rgba(255, 255, 255, 0.08);
       background:
-        linear-gradient(180deg, rgba(255, 255, 255, 0.22), rgba(255, 255, 255, 0) 18%),
-        radial-gradient(circle at 28% 18%, rgba(255, 255, 255, 0.42), transparent 18%),
-        radial-gradient(circle at 70% 62%, rgba(255, 255, 255, 0.12), transparent 24%),
+        linear-gradient(180deg, rgba(255, 255, 255, 0.18), rgba(255, 255, 255, 0) 18%),
         var(--flavor-swatch, linear-gradient(135deg, #1b2346, #511937));
-      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12), 0 18px 42px rgba(0, 0, 0, 0.34);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1), 0 10px 24px rgba(0, 0, 0, 0.24);
       position: relative;
       overflow: hidden;
       transform: rotate(-7deg);
@@ -595,8 +579,7 @@
       height: 40%;
       border-radius: 18px;
       border: 1px solid rgba(255, 255, 255, 0.12);
-      background: rgba(6, 11, 22, 0.18);
-      backdrop-filter: blur(8px);
+      background: rgba(6, 11, 22, 0.12);
     }
 
     .flavor-pack::after {
@@ -686,7 +669,7 @@
 
     .flavor-pip.is-active {
       background: var(--cyan);
-      box-shadow: 0 0 0 5px rgba(92, 225, 255, 0.12);
+      box-shadow: 0 0 0 3px rgba(92, 225, 255, 0.1);
     }
 
     .reviews-grid {
@@ -696,9 +679,7 @@
     }
 
     .review-card.featured {
-      background:
-        radial-gradient(circle at top right, rgba(255, 93, 177, 0.18), transparent 28%),
-        rgba(255, 255, 255, 0.04);
+      background: rgba(255, 255, 255, 0.05);
     }
 
     .review-quote {
@@ -724,7 +705,7 @@
       font-weight: 700;
       color: #08101d;
       background: linear-gradient(135deg, var(--cyan), var(--lime));
-      box-shadow: 0 10px 24px rgba(92, 225, 255, 0.18);
+      box-shadow: 0 6px 16px rgba(92, 225, 255, 0.12);
     }
 
     .review-user strong,
@@ -781,7 +762,6 @@
       border-radius: 22px;
       border: 1px solid rgba(255, 255, 255, 0.08);
       background:
-        radial-gradient(circle at 30% 20%, rgba(255, 255, 255, 0.32), transparent 24%),
         linear-gradient(145deg, rgba(255, 255, 255, 0.08), transparent 50%),
         var(--swatch, linear-gradient(135deg, #122446, #37111d));
       position: relative;
@@ -928,7 +908,7 @@
       background:
         radial-gradient(circle at 35% 35%, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.18) 32%, transparent 34%),
         linear-gradient(135deg, rgba(92, 225, 255, 0.92), rgba(255, 93, 177, 0.88));
-      box-shadow: 0 0 18px rgba(92, 225, 255, 0.3);
+      box-shadow: 0 0 10px rgba(92, 225, 255, 0.18);
       opacity: 0.9;
     }
 
