@@ -172,7 +172,9 @@ async function prefillCheckoutFields() {
         .limit(1)
     ]);
 
-    const resolvedName = profile?.full_name || user.user_metadata?.full_name || "";
+    const metadataFullName = user.user_metadata?.full_name
+      || [user.user_metadata?.first_name, user.user_metadata?.last_name].filter(Boolean).join(" ");
+    const resolvedName = profile?.full_name || metadataFullName || "";
     const nameParts = splitName(resolvedName);
     const address = Array.isArray(addresses) && addresses.length ? addresses[0] : null;
 

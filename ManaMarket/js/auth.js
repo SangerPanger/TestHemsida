@@ -17,7 +17,8 @@ let flow = "mode";
 let sessionMode = false;
 let pending = {
   mode: "",
-  fullName: "",
+  firstName: "",
+  lastName: "",
   email: "",
   password: "",
   inviteCode: "",
@@ -90,7 +91,8 @@ function showModePrompt() {
   flow = "mode";
   pending = {
     mode: "",
-    fullName: "",
+    firstName: "",
+    lastName: "",
     email: "",
     password: "",
     inviteCode: "",
@@ -180,12 +182,21 @@ function splitFullName(fullName) {
   };
 }
 
+function composeFullName(firstName, lastName) {
+  return [String(firstName || "").trim(), String(lastName || "").trim()]
+    .filter(Boolean)
+    .join(" ")
+    .trim();
+}
+
 async function syncAddressFromMetadata(user) {
   const metadata = user?.user_metadata || {};
   const street1 = String(metadata.street_1 || "").trim();
   const postalCode = normalizePostalCode(String(metadata.postal_code || ""));
   const city = String(metadata.city || "").trim();
-  const fullName = String(metadata.full_name || "").trim();
+  const firstNameMeta = String(metadata.first_name || "").trim();
+  const lastNameMeta = String(metadata.last_name || "").trim();
+  const fullName = String(metadata.full_name || composeFullName(firstNameMeta, lastNameMeta)).trim();
 
   if (!user?.id || !street1 || !postalCode || !city || !fullName) {
     return;
@@ -266,13 +277,16 @@ async function submitSignin() {
 async function submitSignup() {
   hideInput();
   typeLine("Skapar konto...", async () => {
+    const fullName = composeFullName(pending.firstName, pending.lastName);
     const { data, error } = await supabase.auth.signUp({
       email: pending.email,
       password: pending.password,
       options: {
         emailRedirectTo: `${window.location.origin}${window.location.pathname}`,
         data: {
-          full_name: pending.fullName,
+          first_name: pending.firstName,
+          last_name: pending.lastName,
+          full_name: fullName,
           invite_code: pending.inviteCode,
           street_1: pending.street1,
           postal_code: pending.postalCode,
@@ -425,10 +439,22 @@ async function handleCommand(rawCommand) {
         return;
       }
 
-      pending.fullName = rawCommand.trim();
+      pending.firstName = rawCommand.trim();
 
-      if (!pending.fullName) {
-        typeLine("Skriv ditt namn for att fortsatta.", () => showInput("text"));
+      if (!pending.firstName) {
+        typeLine("Skriv ditt fornamn for att fortsatta.", () => showInput("text"));
+        return;
+      }
+
+      flow = "signup-last-name";
+      typeLine("Ange ditt efternamn.", () => showInput("text"));
+      return;
+
+    case "signup-last-name":
+      pending.lastName = rawCommand.trim();
+
+      if (!pending.lastName) {
+        typeLine("Skriv ditt efternamn for att fortsatta.", () => showInput("text"));
         return;
       }
 
