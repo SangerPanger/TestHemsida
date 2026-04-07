@@ -286,6 +286,34 @@
       color: var(--text);
     }
 
+    .item-controls {
+      margin-top: 12px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .qty-button,
+    .remove-button {
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.04);
+      color: var(--text);
+      font: inherit;
+      cursor: pointer;
+    }
+
+    .qty-button {
+      width: 34px;
+      height: 34px;
+      font-size: 1.1rem;
+    }
+
+    .remove-button {
+      padding: 8px 14px;
+    }
+
     .summary {
       display: grid;
       gap: 12px;
@@ -348,6 +376,18 @@
       color: var(--muted);
     }
 
+    .empty-cart {
+      padding: 18px;
+      border-radius: var(--radius-md);
+      border: 1px dashed var(--line);
+      color: var(--muted);
+    }
+
+    .is-disabled {
+      opacity: 0.45;
+      pointer-events: none;
+    }
+
     @media (max-width: 920px) {
       .hero,
       .checkout-grid,
@@ -383,7 +423,7 @@
         <a href="butik.html">Butik</a>
         <a href="galleri.html">Galleri</a>
         <a href="auth.html" data-auth-nav>Logga in</a>
-        <a class="ghost" href="checkout.html">Varukorg</a>
+        <a class="ghost" href="checkout.html">Varukorg <span data-cart-count>0</span></a>
       </nav>
     </div>
   </header>
@@ -413,11 +453,11 @@
             <span class="muted">inloggad kund</span>
           </div>
           <div class="stat">
-            <strong>74,70 EUR</strong>
+            <strong data-cart-subtotal>0 SEK</strong>
             <span class="muted">subtotal</span>
           </div>
           <div class="stat">
-            <strong>3</strong>
+            <strong data-cart-count>0</strong>
             <span class="muted">items i carten</span>
           </div>
         </div>
@@ -431,12 +471,12 @@
           </div>
         </div>
         <div class="summary">
-          <div class="summary-line"><span>Subtotal</span><strong>74,70 EUR</strong></div>
-          <div class="summary-line"><span>Frakt</span><strong>4,90 EUR</strong></div>
-          <div class="summary-line"><span>Discount</span><strong>-5,00 EUR</strong></div>
-          <div class="summary-line total"><span>Totalt</span><strong>74,60 EUR</strong></div>
+          <div class="summary-line"><span>Subtotal</span><strong data-cart-subtotal>0 SEK</strong></div>
+          <div class="summary-line"><span>Frakt</span><strong data-cart-shipping>0 SEK</strong></div>
+          <div class="summary-line"><span>Discount</span><strong data-cart-discount>0 SEK</strong></div>
+          <div class="summary-line total"><span>Totalt</span><strong data-cart-total>0 SEK</strong></div>
         </div>
-        <p class="footnote">Mockad checkout-layout. Koppla riktig logik senare med cart state och betalprovider.</p>
+        <p class="footnote">Varukorgen ar nu lokal och sparas i din webblasare. Stripe kan kopplas pa ovanpa detta senare.</p>
       </aside>
     </section>
 
@@ -447,42 +487,11 @@
             <div class="eyebrow">Cart Items</div>
             <h2>Produkter</h2>
           </div>
-          <span class="muted">3 valda items</span>
+          <span class="muted"><span data-cart-count>0</span> valda items</span>
         </div>
-        <div class="item-list">
-          <div class="item">
-            <div class="thumb" style="--swatch: linear-gradient(135deg, #162648, #55192d 58%, #bc4b6b);"></div>
-            <div>
-              <h3>Clover Curse</h3>
-              <div class="item-meta">Sour blackberry / blackcurrant</div>
-            </div>
-            <div>
-              <div class="qty">x1</div>
-              <div class="price">24,90 EUR</div>
-            </div>
-          </div>
-          <div class="item">
-            <div class="thumb" style="--swatch: linear-gradient(135deg, #10254e, #1f4f8d 58%, #5ce1ff);"></div>
-            <div>
-              <h3>Ultra Instinct</h3>
-              <div class="item-meta">Cold / clean focus energy</div>
-            </div>
-            <div>
-              <div class="qty">x1</div>
-              <div class="price">24,90 EUR</div>
-            </div>
-          </div>
-          <div class="item">
-            <div class="thumb" style="--swatch: linear-gradient(135deg, #3a1338, #8f204c 54%, #ff9f5a);"></div>
-            <div>
-              <h3>Sunburst Rush</h3>
-              <div class="item-meta">Candy heat / party stack</div>
-            </div>
-            <div>
-              <div class="qty">x1</div>
-              <div class="price">24,90 EUR</div>
-            </div>
-          </div>
+        <div class="item-list" data-cart-items></div>
+        <div class="empty-cart" data-cart-empty hidden>
+          Varukorgen ar tom just nu. Ga tillbaka till <a href="butik.html">butiken</a> och lagg till en smak for att fortsatta.
         </div>
       </article>
 
@@ -537,7 +546,8 @@
         </div>
 
         <div style="margin-top: 22px;">
-          <a class="cta" href="#">Slutfor kop</a>
+          <a class="cta" href="#" data-complete-order>Slutfor kop</a>
+          <button class="ghost" type="button" data-clear-cart style="margin-left:12px;">Tom varukorg</button>
           <button class="ghost" type="button" data-checkout-logout style="margin-left:12px;">Logga ut</button>
         </div>
       </article>
@@ -548,5 +558,6 @@
   <script src="js/supabase-config.js"></script>
   <script type="module" src="js/auth-nav.js"></script>
   <script type="module" src="js/require-auth.js"></script>
+  <script type="module" src="js/checkout-cart.js"></script>
 </body>
 </html>

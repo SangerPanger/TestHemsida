@@ -127,7 +127,7 @@
       border-radius: 999px;
       padding: 12px 18px;
       font-weight: 700;
-      transition: transform 180ms ease, background 180ms ease, border-color 180ms ease;
+      transition: transform 180ms ease, background 180ms ease, border-color 180ms ease, box-shadow 180ms ease, filter 180ms ease;
     }
 
     .nav a {
@@ -150,6 +150,22 @@
       background: linear-gradient(135deg, var(--cyan), #7cf7d4);
       color: #041019;
       box-shadow: 0 12px 30px rgba(92, 225, 255, 0.2);
+      cursor: pointer;
+    }
+
+    .cta:active {
+      transform: translateY(1px) scale(0.98);
+      filter: brightness(0.88);
+    }
+
+    .cta.is-added {
+      background: linear-gradient(135deg, #9fffbf, #5ce1ff);
+      box-shadow: 0 0 0 6px rgba(92, 225, 255, 0.14), 0 12px 30px rgba(92, 225, 255, 0.2);
+    }
+
+    .cta.is-pressed {
+      transform: translateY(1px) scale(0.97);
+      filter: brightness(0.84);
     }
 
     .ghost {
@@ -171,6 +187,26 @@
       width: 18px;
       height: 18px;
       flex: 0 0 auto;
+    }
+
+    .cart-count {
+      min-width: 1.5rem;
+      height: 1.5rem;
+      padding: 0 6px;
+      border-radius: 999px;
+      display: inline-grid;
+      place-items: center;
+      background: rgba(92, 225, 255, 0.18);
+      color: var(--text);
+      font-size: 0.78rem;
+      font-weight: 700;
+      transition: transform 220ms ease, box-shadow 220ms ease, background 220ms ease;
+    }
+
+    .cart-count.is-bump {
+      transform: scale(1.18);
+      box-shadow: 0 0 0 6px rgba(92, 225, 255, 0.16);
+      background: rgba(92, 225, 255, 0.28);
     }
 
     main {
@@ -870,6 +906,44 @@
       font-size: 0.92rem;
     }
 
+    .cart-feedback {
+      margin-top: 18px;
+      padding: 14px 16px;
+      border-radius: 18px;
+      border: 1px solid rgba(92, 225, 255, 0.18);
+      background: rgba(92, 225, 255, 0.08);
+      color: var(--text);
+      animation: cart-feedback-in 260ms ease;
+    }
+
+    .cart-flyer {
+      position: fixed;
+      left: 0;
+      top: 0;
+      width: 18px;
+      height: 18px;
+      border-radius: 999px;
+      pointer-events: none;
+      z-index: 100;
+      background:
+        radial-gradient(circle at 35% 35%, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.18) 32%, transparent 34%),
+        linear-gradient(135deg, rgba(92, 225, 255, 0.92), rgba(255, 93, 177, 0.88));
+      box-shadow: 0 0 18px rgba(92, 225, 255, 0.3);
+      opacity: 0.9;
+    }
+
+    @keyframes cart-feedback-in {
+      from {
+        opacity: 0;
+        transform: translateY(8px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
     @media (max-width: 1080px) {
       .hero,
       .split,
@@ -945,6 +1019,7 @@
             <path d="M3 4h2.2l2.1 9.2a1 1 0 0 0 1 .8h8.9a1 1 0 0 0 1-.8L20 7H6.2"></path>
           </svg>
           <span>Varukorg</span>
+          <span class="cart-count" data-cart-count>0</span>
         </a>
         <a class="cta" href="auth.html" data-auth-nav>Logga in</a>
       </nav>
@@ -1010,6 +1085,7 @@
         </div>
         <a class="ghost" href="https://lootdrink.de/en/collections/cubes" target="_blank" rel="noreferrer">Alla cubes</a>
       </div>
+      <div class="cart-feedback" data-cart-feedback hidden></div>
 
       <div class="products">
         <article class="product-card">
@@ -1022,7 +1098,7 @@
           <p>Sour blackberry och blackcurrant-profil med ett uttryck som kanns som rare loot drop.</p>
           <div class="product-meta">
             <div class="price">289 SEK</div>
-            <a class="cta" href="https://lootdrink.de/en/collections/cubes" target="_blank" rel="noreferrer">Kop nu</a>
+            <button class="cta" type="button" data-add-to-cart data-product-id="clover-curse" data-product-name="Clover Curse" data-product-price-sek="289">Lagg till i varukorg</button>
           </div>
         </article>
 
@@ -1036,7 +1112,7 @@
           <p>Kyld neon-energi i visual form. Perfekt som hero-produkt nar du vill ha ren high-performance vibe.</p>
           <div class="product-meta">
             <div class="price">289 SEK</div>
-            <a class="cta" href="https://lootdrink.de/en/collections/cubes" target="_blank" rel="noreferrer">Kop nu</a>
+            <button class="cta" type="button" data-add-to-cart data-product-id="ultra-instinct" data-product-name="Ultra Instinct" data-product-price-sek="289">Lagg till i varukorg</button>
           </div>
         </article>
 
@@ -1050,7 +1126,7 @@
           <p>Varma toner och candy-energy look. Byggd for kunder som valjer smak med ogonen forst.</p>
           <div class="product-meta">
             <div class="price">289 SEK</div>
-            <a class="cta" href="https://lootdrink.de/en/collections/cubes" target="_blank" rel="noreferrer">Kop nu</a>
+            <button class="cta" type="button" data-add-to-cart data-product-id="sunburst-rush" data-product-name="Sunburst Rush" data-product-price-sek="289">Lagg till i varukorg</button>
           </div>
         </article>
 
@@ -1064,7 +1140,7 @@
           <p>En gateway-produkt for nya kunder som vill testa cube-formatet utan att sidan tappar edge.</p>
           <div class="product-meta">
             <div class="price">289 SEK</div>
-            <a class="cta" href="https://lootdrink.de/en/collections/cubes" target="_blank" rel="noreferrer">Kop nu</a>
+            <button class="cta" type="button" data-add-to-cart data-product-id="starter-stack" data-product-name="Starter Stack" data-product-price-sek="289">Lagg till i varukorg</button>
           </div>
         </article>
       </div>
@@ -1250,5 +1326,6 @@
   <script src="js/supabase-config.js"></script>
   <script type="module" src="js/auth-nav.js"></script>
   <script type="module" src="js/flavor-carousel.js"></script>
+  <script type="module" src="js/shop.js"></script>
 </body>
 </html>
