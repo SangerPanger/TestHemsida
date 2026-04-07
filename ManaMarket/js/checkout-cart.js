@@ -127,6 +127,19 @@ function resolveCheckoutOrigin() {
   return origin;
 }
 
+function resolveCheckoutBaseUrl() {
+  try {
+    const currentUrl = new URL(window.location.href);
+    const basePath = currentUrl.pathname.endsWith("/")
+      ? currentUrl.pathname
+      : currentUrl.pathname.slice(0, currentUrl.pathname.lastIndexOf("/") + 1);
+
+    return `${currentUrl.origin}${basePath}`;
+  } catch {
+    return "";
+  }
+}
+
 function splitName(fullName = "") {
   const trimmed = fullName.trim();
   if (!trimmed) {
@@ -205,6 +218,12 @@ async function startStripeCheckout(event) {
     return;
   }
 
+  const siteUrl = resolveCheckoutBaseUrl();
+  if (!siteUrl) {
+    showStatus("Kunde inte avgora korrekt base-url for checkout.", true);
+    return;
+  }
+
   completeButton?.setAttribute("aria-disabled", "true");
   completeButton?.classList.add("is-disabled");
   showStatus("Skapar Stripe-checkout...");
@@ -225,7 +244,8 @@ async function startStripeCheckout(event) {
           id: item.id,
           quantity: item.quantity
         })),
-        origin
+        origin,
+        siteUrl
       })
     });
 

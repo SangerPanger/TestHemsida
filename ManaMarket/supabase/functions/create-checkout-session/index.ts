@@ -60,6 +60,15 @@ function isValidOrigin(value: string) {
   }
 }
 
+function isValidSiteUrl(value: string) {
+  try {
+    const url = new URL(value);
+    return (url.protocol === "http:" || url.protocol === "https:") && value.endsWith("/");
+  } catch {
+    return false;
+  }
+}
+
 Deno.serve(async (request) => {
   if (request.method === "OPTIONS") {
     return new Response("ok", { headers: corsHeaders });
@@ -96,12 +105,14 @@ Deno.serve(async (request) => {
     const body = await request.json();
     const items = Array.isArray(body?.items) ? body.items : [];
     const requestedOrigin = typeof body?.origin === "string" ? body.origin : "";
+    const requestedSiteUrl = typeof body?.siteUrl === "string" ? body.siteUrl : "";
     const headerOrigin = request.headers.get("origin") || "";
     const origin = isValidOrigin(requestedOrigin)
       ? requestedOrigin
       : isValidOrigin(headerOrigin)
         ? headerOrigin
         : "";
+    const siteUrl = isValidSiteUrl(requestedSiteUrl) ? requestedSiteUrl : "";
 
     if (items.length === 0) {
       return json({ error: "Varukorgen ar tom." }, 400);
@@ -109,6 +120,10 @@ Deno.serve(async (request) => {
 
     if (!origin) {
       return json({ error: "Ogiltig origin for checkout. Kor sidan via http:// eller https://." }, 400);
+    }
+
+    if (!siteUrl) {
+      return json({ error: "Ogiltig site-url for checkout return pages." }, 400);
     }
 
     const lineItems = [];
@@ -168,8 +183,8 @@ Deno.serve(async (request) => {
       customer_email: user.email,
       line_items: lineItems,
       discounts,
-      success_url: `${origin}/checkout-success.html?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${origin}/checkout-cancel.html`,
+      success_url: `${siteUrl}checkout-success.html?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${siteUrl}checkout-cancel.html`,
       metadata: {
         user_id: user.id,
         item_count: String(items.length)
