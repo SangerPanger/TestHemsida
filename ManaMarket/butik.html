@@ -389,13 +389,7 @@
       gap: 18px;
     }
 
-    .flavor-grid {
-      display: grid;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-      gap: 18px;
-    }
-
-    .flavor-card,
+    .flavor-showcase,
     .review-card {
       border-radius: 26px;
       border: 1px solid var(--line);
@@ -405,7 +399,7 @@
       overflow: hidden;
     }
 
-    .flavor-card::before,
+    .flavor-showcase::before,
     .review-card::before {
       content: "";
       position: absolute;
@@ -414,7 +408,7 @@
       pointer-events: none;
     }
 
-    .flavor-head,
+    .flavor-copy-top,
     .review-head {
       display: flex;
       justify-content: space-between;
@@ -447,42 +441,216 @@
       border: 1px solid rgba(92, 225, 255, 0.16);
     }
 
-    .flavor-orb {
-      height: 150px;
-      margin: 18px 0;
-      border-radius: 22px;
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      background:
-        radial-gradient(circle at 30% 25%, rgba(255, 255, 255, 0.4), transparent 20%),
-        radial-gradient(circle at 65% 60%, rgba(255, 255, 255, 0.12), transparent 24%),
-        var(--flavor-swatch, linear-gradient(135deg, #1b2346, #511937));
-      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12);
+    .flavor-showcase {
+      display: grid;
+      grid-template-columns: 0.92fr 1.08fr;
+      gap: 20px;
+      align-items: stretch;
+    }
+
+    .flavor-copy,
+    .flavor-visual {
       position: relative;
+      z-index: 1;
+      min-width: 0;
     }
 
-    .flavor-orb::after {
-      content: "";
-      position: absolute;
-      inset: 18px;
-      border-radius: 999px;
-      background: radial-gradient(circle, rgba(255, 255, 255, 0.24), rgba(255, 255, 255, 0) 62%);
-      filter: blur(6px);
+    .flavor-copy {
+      display: grid;
+      gap: 18px;
+      align-content: space-between;
     }
 
-    .flavor-card h3,
+    .flavor-copy h3,
     .review-card h3 {
-      font-size: 2rem;
-      line-height: 0.92;
+      font-size: clamp(2.4rem, 4vw, 4rem);
+      line-height: 0.9;
     }
 
     .flavor-notes,
     .review-card p {
       color: var(--muted);
-      margin: 10px 0 0;
+      margin: 0;
+      line-height: 1.65;
     }
 
     .flavor-notes strong {
       color: var(--text);
+    }
+
+    .flavor-meta {
+      display: grid;
+      gap: 12px;
+    }
+
+    .flavor-stat {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      border-radius: 18px;
+      border: 1px solid var(--line);
+      padding: 14px 16px;
+      background: rgba(255, 255, 255, 0.03);
+    }
+
+    .flavor-stat strong {
+      color: var(--text);
+    }
+
+    .flavor-actions {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .flavor-visual {
+      border-radius: 24px;
+      border: 1px solid var(--line);
+      background:
+        radial-gradient(circle at top right, rgba(255, 255, 255, 0.16), transparent 22%),
+        rgba(7, 12, 23, 0.88);
+      padding: 18px;
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+      gap: 16px;
+      overflow: hidden;
+    }
+
+    .flavor-visual-top {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .flavor-counter {
+      color: var(--muted);
+      font-size: 0.84rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+    }
+
+    .flavor-stage {
+      display: grid;
+      place-items: center;
+      min-height: 360px;
+    }
+
+    .flavor-pack {
+      width: min(100%, 320px);
+      aspect-ratio: 3 / 4;
+      border-radius: 22px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.22), rgba(255, 255, 255, 0) 18%),
+        radial-gradient(circle at 28% 18%, rgba(255, 255, 255, 0.42), transparent 18%),
+        radial-gradient(circle at 70% 62%, rgba(255, 255, 255, 0.12), transparent 24%),
+        var(--flavor-swatch, linear-gradient(135deg, #1b2346, #511937));
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12), 0 18px 42px rgba(0, 0, 0, 0.34);
+      position: relative;
+      overflow: hidden;
+      transform: rotate(-7deg);
+    }
+
+    .flavor-pack::before {
+      content: "";
+      position: absolute;
+      inset: 18px 18px auto;
+      height: 40%;
+      border-radius: 18px;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      background: rgba(6, 11, 22, 0.18);
+      backdrop-filter: blur(8px);
+    }
+
+    .flavor-pack::after {
+      content: "";
+      position: absolute;
+      inset: auto 18px 18px;
+      height: 16%;
+      border-radius: 14px;
+      background: rgba(4, 10, 19, 0.3);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .flavor-pack-copy {
+      position: absolute;
+      inset: 36px 34px auto;
+      display: grid;
+      gap: 10px;
+      z-index: 1;
+    }
+
+    .flavor-pack-kicker {
+      font-size: 0.82rem;
+      letter-spacing: 0.24em;
+      text-transform: uppercase;
+      color: rgba(255, 255, 255, 0.72);
+    }
+
+    .flavor-pack-name {
+      font-family: "Bebas Neue", sans-serif;
+      font-size: clamp(3.6rem, 7vw, 5.2rem);
+      line-height: 0.82;
+      letter-spacing: 0.02em;
+      text-transform: uppercase;
+    }
+
+    .flavor-pack-sub {
+      color: rgba(255, 255, 255, 0.76);
+      max-width: 18ch;
+      line-height: 1.35;
+    }
+
+    .flavor-pack-mark {
+      position: absolute;
+      right: 22px;
+      bottom: 24px;
+      font-family: "Bebas Neue", sans-serif;
+      font-size: 4.2rem;
+      letter-spacing: 0.08em;
+      color: rgba(255, 255, 255, 0.16);
+    }
+
+    .flavor-nav {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .flavor-arrow {
+      width: 52px;
+      height: 52px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.04);
+      color: var(--text);
+      font: inherit;
+      font-size: 1.5rem;
+      cursor: pointer;
+    }
+
+    .flavor-pips {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .flavor-pip {
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      border: 0;
+      background: rgba(255, 255, 255, 0.2);
+      cursor: pointer;
+      padding: 0;
+    }
+
+    .flavor-pip.is-active {
+      background: var(--cyan);
+      box-shadow: 0 0 0 5px rgba(92, 225, 255, 0.12);
     }
 
     .reviews-grid {
@@ -706,7 +874,7 @@
       .hero,
       .split,
       .products,
-      .flavor-grid,
+      .flavor-showcase,
       .reviews-grid {
         grid-template-columns: 1fr 1fr;
       }
@@ -731,7 +899,7 @@
       .hero,
       .split,
       .products,
-      .flavor-grid,
+      .flavor-showcase,
       .reviews-grid,
       .hero-stats {
         grid-template-columns: 1fr;
@@ -749,6 +917,10 @@
 
       .cube h2 {
         font-size: 2.45rem;
+      }
+
+      .flavor-stage {
+        min-height: 280px;
       }
     }
   </style>
@@ -801,7 +973,7 @@
             <span>koffein per servering enligt produktsidorna</span>
           </div>
           <div class="mini-card">
-            <strong>24,90 EUR</strong>
+            <strong>289 SEK</strong>
             <span>visat pris pa flera cube-produkter</span>
           </div>
         </div>
@@ -849,7 +1021,7 @@
           <h3>Clover Curse</h3>
           <p>Sour blackberry och blackcurrant-profil med ett uttryck som kanns som rare loot drop.</p>
           <div class="product-meta">
-            <div class="price">24,90 EUR</div>
+            <div class="price">289 SEK</div>
             <a class="cta" href="https://lootdrink.de/en/collections/cubes" target="_blank" rel="noreferrer">Kop nu</a>
           </div>
         </article>
@@ -863,7 +1035,7 @@
           <h3>Ultra Instinct</h3>
           <p>Kyld neon-energi i visual form. Perfekt som hero-produkt nar du vill ha ren high-performance vibe.</p>
           <div class="product-meta">
-            <div class="price">24,90 EUR</div>
+            <div class="price">289 SEK</div>
             <a class="cta" href="https://lootdrink.de/en/collections/cubes" target="_blank" rel="noreferrer">Kop nu</a>
           </div>
         </article>
@@ -877,7 +1049,7 @@
           <h3>Sunburst Rush</h3>
           <p>Varma toner och candy-energy look. Byggd for kunder som valjer smak med ogonen forst.</p>
           <div class="product-meta">
-            <div class="price">24,90 EUR</div>
+            <div class="price">289 SEK</div>
             <a class="cta" href="https://lootdrink.de/en/collections/cubes" target="_blank" rel="noreferrer">Kop nu</a>
           </div>
         </article>
@@ -891,7 +1063,7 @@
           <h3>Starter Stack</h3>
           <p>En gateway-produkt for nya kunder som vill testa cube-formatet utan att sidan tappar edge.</p>
           <div class="product-meta">
-            <div class="price">24,90 EUR</div>
+            <div class="price">289 SEK</div>
             <a class="cta" href="https://lootdrink.de/en/collections/cubes" target="_blank" rel="noreferrer">Kop nu</a>
           </div>
         </article>
@@ -909,45 +1081,56 @@
         </div>
       </div>
 
-      <div class="flavor-grid">
-        <article class="flavor-card">
-          <div class="flavor-head">
-            <span class="flavor-badge">Sour / Dark</span>
-            <span class="muted">Blackberry</span>
+      <div class="flavor-showcase" data-flavor-showcase>
+        <article class="flavor-copy">
+          <div>
+            <div class="flavor-copy-top">
+              <span class="flavor-badge" data-flavor-badge>Sour / Dark</span>
+              <span class="muted" data-flavor-tag>Blackberry</span>
+            </div>
+            <h3 data-flavor-title>Clover Curse</h3>
           </div>
-          <div class="flavor-orb" style="--flavor-swatch: linear-gradient(135deg, #161d47, #3d1847 52%, #b53b79);"></div>
-          <h3>Clover Curse</h3>
-          <p class="flavor-notes"><strong>Vibe:</strong> sour blackberry och blackcurrant med dark neon-kansla och samlar-drop energi.</p>
+          <p class="flavor-notes" data-flavor-notes><strong>Vibe:</strong> sour blackberry och blackcurrant med dark neon-kansla och samlar-drop energi.</p>
+          <div class="flavor-meta">
+            <div class="flavor-stat">
+              <span>Pris</span>
+              <strong data-flavor-price>289 SEK</strong>
+            </div>
+            <div class="flavor-stat">
+              <span>Profil</span>
+              <strong data-flavor-profile>Rare loot drop</strong>
+            </div>
+            <div class="flavor-stat">
+              <span>Best for</span>
+              <strong data-flavor-bestfor>Sena ranked sessions</strong>
+            </div>
+          </div>
+          <div class="flavor-actions">
+            <a class="cta" href="https://lootdrink.de/en/collections/cubes" target="_blank" rel="noreferrer">Kop smaken</a>
+            <a class="ghost" href="#produkter">Se alla picks</a>
+          </div>
         </article>
 
-        <article class="flavor-card">
-          <div class="flavor-head">
-            <span class="flavor-badge">Cold / Clean</span>
-            <span class="muted">Ice energy</span>
+        <article class="flavor-visual">
+          <div class="flavor-visual-top">
+            <span class="eyebrow">Flavor Preview</span>
+            <span class="flavor-counter" data-flavor-counter>01 / 04</span>
           </div>
-          <div class="flavor-orb" style="--flavor-swatch: linear-gradient(135deg, #10254e, #1f4f8d 58%, #5ce1ff);"></div>
-          <h3>Ultra Instinct</h3>
-          <p class="flavor-notes"><strong>Vibe:</strong> iskall, klar och snabb. Den smakar som sidan ser ut nar man vill ha max focus.</p>
-        </article>
-
-        <article class="flavor-card">
-          <div class="flavor-head">
-            <span class="flavor-badge">Candy / Heat</span>
-            <span class="muted">Tropical pop</span>
+          <div class="flavor-stage">
+            <div class="flavor-pack" data-flavor-pack style="--flavor-swatch: linear-gradient(135deg, #161d47, #3d1847 52%, #b53b79);">
+              <div class="flavor-pack-copy">
+                <span class="flavor-pack-kicker">ManaMarket drop</span>
+                <span class="flavor-pack-name" data-flavor-pack-name>Clover Curse</span>
+                <span class="flavor-pack-sub" data-flavor-pack-sub>Sour blackberry. Blackcurrant. Dark neon.</span>
+              </div>
+              <span class="flavor-pack-mark">MM</span>
+            </div>
           </div>
-          <div class="flavor-orb" style="--flavor-swatch: linear-gradient(135deg, #3a1338, #8f204c 54%, #ff9f5a);"></div>
-          <h3>Sunburst Rush</h3>
-          <p class="flavor-notes"><strong>Vibe:</strong> varm, intensiv och mer playful. Bra for kunder som vill ha smak med party-energi.</p>
-        </article>
-
-        <article class="flavor-card">
-          <div class="flavor-head">
-            <span class="flavor-badge">Fresh / Bright</span>
-            <span class="muted">Green citrus</span>
+          <div class="flavor-nav">
+            <button class="flavor-arrow" type="button" data-flavor-prev aria-label="Forra smak">&#8592;</button>
+            <div class="flavor-pips" data-flavor-pips></div>
+            <button class="flavor-arrow" type="button" data-flavor-next aria-label="Nasta smak">&#8594;</button>
           </div>
-          <div class="flavor-orb" style="--flavor-swatch: linear-gradient(135deg, #0f2f26, #2f6b2d 52%, #c8ff63);"></div>
-          <h3>Starter Stack</h3>
-          <p class="flavor-notes"><strong>Vibe:</strong> ljus, frisk och enkel att komma in i. En naturlig inkorsport till hela cube-formatet.</p>
         </article>
       </div>
     </section>
@@ -1066,5 +1249,6 @@
 
   <script src="js/supabase-config.js"></script>
   <script type="module" src="js/auth-nav.js"></script>
+  <script type="module" src="js/flavor-carousel.js"></script>
 </body>
 </html>
