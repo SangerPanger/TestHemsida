@@ -413,6 +413,12 @@
       gap: 18px;
     }
 
+    .products-actions {
+      display: flex;
+      justify-content: flex-end;
+      margin-bottom: 18px;
+    }
+
     .flavor-showcase,
     .review-card {
       border-radius: 26px;
@@ -600,6 +606,19 @@
       z-index: 1;
     }
 
+    .flavor-pack-image {
+      position: absolute;
+      inset: 24% 6% 8% 6%;
+      width: 88%;
+      height: 68%;
+      object-fit: contain;
+      object-position: center;
+      z-index: 1;
+      filter: drop-shadow(0 18px 28px rgba(0, 0, 0, 0.32));
+      transform: rotate(6deg);
+      pointer-events: none;
+    }
+
     .flavor-pack-kicker {
       font-size: 0.82rem;
       letter-spacing: 0.24em;
@@ -766,6 +785,18 @@
         var(--swatch, linear-gradient(135deg, #122446, #37111d));
       position: relative;
       overflow: hidden;
+    }
+
+    .art-pack {
+      position: absolute;
+      inset: 10px 10px 18px;
+      width: calc(100% - 20px);
+      height: calc(100% - 28px);
+      object-fit: contain;
+      object-position: center;
+      z-index: 1;
+      filter: drop-shadow(0 12px 20px rgba(0, 0, 0, 0.28));
+      transform: translateY(6px) scale(1.02);
     }
 
     .art::before {
@@ -1063,67 +1094,13 @@
             Jag har byggt en tydlig butiksyta runt LOOT Cubes-kollektionen. Korten ar stylade for att kannas premium, snabba att skanna och enkla att bygga vidare pa nar ni vill koppla riktig checkout senare.
           </p>
         </div>
-        <a class="ghost" href="https://lootdrink.de/en/collections/cubes" target="_blank" rel="noreferrer">Alla cubes</a>
+      </div>
+      <div class="products-actions">
+        <button class="ghost" type="button" data-toggle-products>Alla cubes</button>
       </div>
       <div class="cart-feedback" data-cart-feedback hidden></div>
 
-      <div class="products">
-        <article class="product-card">
-          <div class="product-top">
-            <span class="tag">Top Pick</span>
-            <span class="muted">20 stacks</span>
-          </div>
-          <div class="art" style="--swatch: linear-gradient(135deg, #162648, #55192d 58%, #bc4b6b);"></div>
-          <h3>Clover Curse</h3>
-          <p>Sour blackberry och blackcurrant-profil med ett uttryck som kanns som rare loot drop.</p>
-          <div class="product-meta">
-            <div class="price">289 SEK</div>
-            <button class="cta" type="button" data-add-to-cart data-product-id="clover-curse" data-product-name="Clover Curse" data-product-price-sek="289">Lagg till i varukorg</button>
-          </div>
-        </article>
-
-        <article class="product-card">
-          <div class="product-top">
-            <span class="tag alt">Focus</span>
-            <span class="muted">Cube format</span>
-          </div>
-          <div class="art" style="--swatch: linear-gradient(135deg, #11224e, #123a53 55%, #5ce1ff);"></div>
-          <h3>Ultra Instinct</h3>
-          <p>Kyld neon-energi i visual form. Perfekt som hero-produkt nar du vill ha ren high-performance vibe.</p>
-          <div class="product-meta">
-            <div class="price">289 SEK</div>
-            <button class="cta" type="button" data-add-to-cart data-product-id="ultra-instinct" data-product-name="Ultra Instinct" data-product-price-sek="289">Lagg till i varukorg</button>
-          </div>
-        </article>
-
-        <article class="product-card">
-          <div class="product-top">
-            <span class="tag">Party Stack</span>
-            <span class="muted">Shareable</span>
-          </div>
-          <div class="art" style="--swatch: linear-gradient(135deg, #2f133f, #7f1a52 50%, #ff9f5a);"></div>
-          <h3>Sunburst Rush</h3>
-          <p>Varma toner och candy-energy look. Byggd for kunder som valjer smak med ogonen forst.</p>
-          <div class="product-meta">
-            <div class="price">289 SEK</div>
-            <button class="cta" type="button" data-add-to-cart data-product-id="sunburst-rush" data-product-name="Sunburst Rush" data-product-price-sek="289">Lagg till i varukorg</button>
-          </div>
-        </article>
-
-        <article class="product-card">
-          <div class="product-top">
-            <span class="tag alt">Starter</span>
-            <span class="muted">Easy entry</span>
-          </div>
-          <div class="art" style="--swatch: linear-gradient(135deg, #0c2c25, #25531d 55%, #c8ff63);"></div>
-          <h3>Starter Stack</h3>
-          <p>En gateway-produkt for nya kunder som vill testa cube-formatet utan att sidan tappar edge.</p>
-          <div class="product-meta">
-            <div class="price">289 SEK</div>
-            <button class="cta" type="button" data-add-to-cart data-product-id="starter-stack" data-product-name="Starter Stack" data-product-price-sek="289">Lagg till i varukorg</button>
-          </div>
-        </article>
-      </div>
+      <div class="products" data-products-grid></div>
     </section>
 
     <section id="flavors" class="section-card">
@@ -1179,6 +1156,7 @@
                 <span class="flavor-pack-name" data-flavor-pack-name>Clover Curse</span>
                 <span class="flavor-pack-sub" data-flavor-pack-sub>Sour blackberry. Blackcurrant. Dark neon.</span>
               </div>
+              <img class="flavor-pack-image" src="bilder/limited-black-loot-edition/T/02-black-loot-clover-curse-gamer-energy-frontal_jpg-removebg-preview.png" alt="" data-flavor-pack-image>
               <span class="flavor-pack-mark">MM</span>
             </div>
           </div>

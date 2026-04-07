@@ -1,10 +1,12 @@
 import { addToCart, getCartTotals } from "./cart.js";
-import { formatSek } from "./products.js";
+import { formatSek, products } from "./products.js";
 
 const feedbackNode = document.querySelector("[data-cart-feedback]");
 const cartCountNodes = document.querySelectorAll("[data-cart-count]");
-const addButtons = document.querySelectorAll("[data-add-to-cart]");
+const productsGrid = document.querySelector("[data-products-grid]");
+const toggleProductsButton = document.querySelector("[data-toggle-products]");
 let feedbackTimeoutId = 0;
+let showAllProducts = false;
 
 function renderCartCount() {
   const { itemCount } = getCartTotals();
@@ -97,24 +99,66 @@ function animateToCart(button) {
   window.requestAnimationFrame(frame);
 }
 
-addButtons.forEach((button) => {
-  button.addEventListener("click", () => {
-    const productId = button.dataset.productId;
-    const productName = button.dataset.productName || "Produkten";
-    const priceSek = Number(button.dataset.productPriceSek);
+function attachAddToCartHandlers() {
+  const addButtons = document.querySelectorAll("[data-add-to-cart]");
 
-    if (!productId) {
-      return;
-    }
+  addButtons.forEach((button) => {
+    button.addEventListener("click", () => {
+      const productId = button.dataset.productId;
+      const productName = button.dataset.productName || "Produkten";
+      const priceSek = Number(button.dataset.productPriceSek);
 
-    addToCart(productId, 1);
-    renderCartCount();
-    flashButton(button);
-    animateToCart(button);
-    showFeedback(`${productName} lades i varukorgen${Number.isFinite(priceSek) ? ` for ${formatSek(priceSek)}` : ""}.`);
+      if (!productId) {
+        return;
+      }
+
+      addToCart(productId, 1);
+      renderCartCount();
+      flashButton(button);
+      animateToCart(button);
+      showFeedback(`${productName} lades i varukorgen${Number.isFinite(priceSek) ? ` for ${formatSek(priceSek)}` : ""}.`);
+    });
   });
+}
+
+function renderProducts() {
+  if (!productsGrid) {
+    return;
+  }
+
+  const visibleProducts = showAllProducts ? products : products.slice(0, 4);
+
+  productsGrid.innerHTML = visibleProducts.map((product) => `
+    <article class="product-card">
+      <div class="product-top">
+        <span class="tag${product.tagTone === "alt" ? " alt" : ""}">${product.badge}</span>
+        <span class="muted">Cube format</span>
+      </div>
+      <div class="art" style="--swatch: ${product.swatch};">
+        <img class="art-pack" src="${product.image}" alt="${product.name}">
+      </div>
+      <h3>${product.name}</h3>
+      <p>${product.description}</p>
+      <div class="product-meta">
+        <div class="price">${formatSek(product.priceSek)}</div>
+        <button class="cta" type="button" data-add-to-cart data-product-id="${product.id}" data-product-name="${product.name}" data-product-price-sek="${product.priceSek}">Lagg till i varukorg</button>
+      </div>
+    </article>
+  `).join("");
+
+  attachAddToCartHandlers();
+
+  if (toggleProductsButton) {
+    toggleProductsButton.textContent = showAllProducts ? "Visa fa cubes" : "Alla cubes";
+  }
+}
+
+toggleProductsButton?.addEventListener("click", () => {
+  showAllProducts = !showAllProducts;
+  renderProducts();
 });
 
 window.addEventListener("mana-cart-updated", renderCartCount);
 
+renderProducts();
 renderCartCount();

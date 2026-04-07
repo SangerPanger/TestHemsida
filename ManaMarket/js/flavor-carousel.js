@@ -1,57 +1,19 @@
-const flavors = [
-  {
-    badge: "Sour / Dark",
-    tag: "Blackberry",
-    title: "Clover Curse",
-    notes: "<strong>Vibe:</strong> sour blackberry och blackcurrant med dark neon-kansla och samlar-drop energi.",
-    price: "289 SEK",
-    profile: "Rare loot drop",
-    bestFor: "Sena ranked sessions",
-    counter: "01 / 04",
-    packName: "Clover Curse",
-    packSub: "Sour blackberry. Blackcurrant. Dark neon.",
-    swatch: "linear-gradient(135deg, #161d47, #3d1847 52%, #b53b79)"
-  },
-  {
-    badge: "Clean / Focus",
-    tag: "Citrus Ice",
-    title: "Ultra Instinct",
-    notes: "<strong>Vibe:</strong> kall citrus, ren energi och high-performance estetik som kanns snabb direkt i forsta sippen.",
-    price: "289 SEK",
-    profile: "Locked-in mode",
-    bestFor: "Scrims och fokusblock",
-    counter: "02 / 04",
-    packName: "Ultra Instinct",
-    packSub: "Citrus ice. Clean hit. Focus mode.",
-    swatch: "linear-gradient(135deg, #10214f, #12476a 56%, #5ce1ff)"
-  },
-  {
-    badge: "Candy / Burst",
-    tag: "Peach Mix",
-    title: "Sunburst Rush",
-    notes: "<strong>Vibe:</strong> varm peach-candy energi med festivalfarg, hog puls och tydlig snack appeal i designen.",
-    price: "289 SEK",
-    profile: "Party stack",
-    bestFor: "Lan, content nights",
-    counter: "03 / 04",
-    packName: "Sunburst Rush",
-    packSub: "Peach candy. Warm glow. Loud energy.",
-    swatch: "linear-gradient(135deg, #341341, #8b2259 52%, #ff9f5a)"
-  },
-  {
-    badge: "Fresh / Easy",
-    tag: "Lime",
-    title: "Starter Stack",
-    notes: "<strong>Vibe:</strong> frisk limeprofil med latt entry-point kansla for den som vill in i cube-formatet utan overload.",
-    price: "289 SEK",
-    profile: "Easy entry",
-    bestFor: "Forsta bestallningen",
-    counter: "04 / 04",
-    packName: "Starter Stack",
-    packSub: "Fresh lime. Bright feel. Smooth start.",
-    swatch: "linear-gradient(135deg, #0f3027, #2f611c 54%, #c8ff63)"
-  }
-];
+import { products } from "./products.js";
+
+const flavors = products.map((product, index) => ({
+  badge: product.flavorBadge,
+  tag: product.flavorTag,
+  title: product.name,
+  notes: product.flavorNotes,
+  price: `${product.priceSek} SEK`,
+  profile: product.profile,
+  bestFor: product.bestFor,
+  counter: `${String(index + 1).padStart(2, "0")} / ${String(products.length).padStart(2, "0")}`,
+  packName: product.name,
+  packSub: product.packSub,
+  swatch: product.swatch,
+  image: product.image
+}));
 
 const showcase = document.querySelector("[data-flavor-showcase]");
 
@@ -67,6 +29,7 @@ if (showcase) {
   const pack = showcase.querySelector("[data-flavor-pack]");
   const packName = showcase.querySelector("[data-flavor-pack-name]");
   const packSub = showcase.querySelector("[data-flavor-pack-sub]");
+  const packImage = showcase.querySelector("[data-flavor-pack-image]");
   const prevButton = showcase.querySelector("[data-flavor-prev]");
   const nextButton = showcase.querySelector("[data-flavor-next]");
   const pips = showcase.querySelector("[data-flavor-pips]");
@@ -87,6 +50,11 @@ if (showcase) {
     packName.textContent = flavor.packName;
     packSub.textContent = flavor.packSub;
     pack.style.setProperty("--flavor-swatch", flavor.swatch);
+
+    if (packImage) {
+      packImage.src = flavor.image;
+      packImage.alt = flavor.title;
+    }
 
     Array.from(pips.children).forEach((pip, pipIndex) => {
       pip.classList.toggle("is-active", pipIndex === index);
