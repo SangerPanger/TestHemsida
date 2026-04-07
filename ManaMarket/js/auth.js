@@ -5,7 +5,12 @@ const inputLine = document.getElementById("input-line");
 const commandInput = document.getElementById("commandInput");
 
 const speed = 18;
-const nextPath = new URLSearchParams(window.location.search).get("next") === "checkout" ? "checkout.html" : "butik.html";
+const nextParam = new URLSearchParams(window.location.search).get("next");
+const nextPath = nextParam === "checkout"
+  ? "checkout.html"
+  : nextParam === "profile"
+    ? "minprofil.html"
+    : "butik.html";
 
 let isTyping = false;
 let flow = "mode";

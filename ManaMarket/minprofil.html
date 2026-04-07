@@ -1,10 +1,411 @@
-<!DOCTYPE html>
-<html lang="en">
+<!doctype html>
+<html lang="sv">
 <head>
-  <meta charset="UTF-8">
-  <title>Title</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ManaMarket | Min profil</title>
+  <meta name="description" content="Din profilsida med konto, adress och bestallningar i ManaMarket.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Bebas+Neue&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #090d16;
+      --bg-soft: rgba(13, 20, 34, 0.8);
+      --panel: rgba(255, 255, 255, 0.04);
+      --line: rgba(153, 198, 255, 0.16);
+      --text: #f5f7ff;
+      --muted: #98a7ca;
+      --cyan: #5ce1ff;
+      --lime: #c8ff63;
+      --pink: #ff5db1;
+      --shadow: 0 20px 80px rgba(0, 0, 0, 0.45);
+      --radius-xl: 32px;
+      --radius-lg: 24px;
+      --radius-md: 18px;
+      --max-width: 1200px;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--text);
+      font-family: "Space Grotesk", sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(92, 225, 255, 0.18), transparent 28%),
+        radial-gradient(circle at 80% 20%, rgba(255, 93, 177, 0.16), transparent 24%),
+        linear-gradient(135deg, #05070c 0%, #090d16 45%, #121b2c 100%);
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background-image:
+        linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+      background-size: 80px 80px;
+      mask-image: radial-gradient(circle at center, black 55%, transparent 100%);
+    }
+
+    a { color: inherit; text-decoration: none; }
+    .shell { width: min(calc(100% - 32px), var(--max-width)); margin: 0 auto; }
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      backdrop-filter: blur(20px);
+      background: rgba(5, 9, 16, 0.72);
+      border-bottom: 1px solid var(--line);
+    }
+    .topbar-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 18px 0;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+    .brand-mark {
+      width: 44px;
+      aspect-ratio: 1;
+      display: grid;
+      place-items: center;
+      border-radius: 14px;
+      background: linear-gradient(135deg, var(--cyan), var(--pink));
+      color: #08101d;
+      font-family: "Bebas Neue", sans-serif;
+      font-size: 1.5rem;
+      box-shadow: 0 12px 30px rgba(92, 225, 255, 0.3);
+    }
+    .nav {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .nav a,
+    .cta,
+    .ghost {
+      border-radius: 999px;
+      padding: 12px 18px;
+      font-weight: 700;
+      transition: transform 180ms ease;
+    }
+    .nav a { color: var(--muted); }
+    .nav a:hover,
+    .cta:hover,
+    .ghost:hover { transform: translateY(-2px); }
+    .cta {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid rgba(92, 225, 255, 0.4);
+      background: linear-gradient(135deg, var(--cyan), #7cf7d4);
+      color: #041019;
+      box-shadow: 0 12px 30px rgba(92, 225, 255, 0.2);
+      cursor: pointer;
+    }
+    .ghost {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.04);
+      color: var(--text);
+      cursor: pointer;
+    }
+    main { padding: 36px 0 80px; }
+    .hero,
+    .profile-grid {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 22px;
+    }
+    .hero-card,
+    .panel {
+      border-radius: var(--radius-xl);
+      border: 1px solid var(--line);
+      background: var(--bg-soft);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(16px);
+    }
+    .hero-card {
+      padding: 30px;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero-card::after {
+      content: "";
+      position: absolute;
+      width: 260px;
+      height: 260px;
+      right: -80px;
+      bottom: -120px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(255, 93, 177, 0.45), transparent 68%);
+    }
+    .panel { padding: 24px; }
+    .eyebrow {
+      display: inline-flex;
+      padding: 10px 14px;
+      border-radius: 999px;
+      color: var(--lime);
+      background: rgba(200, 255, 99, 0.08);
+      border: 1px solid rgba(200, 255, 99, 0.18);
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      font-size: 0.78rem;
+    }
+    h1, h2, h3 {
+      margin: 0;
+      font-family: "Bebas Neue", sans-serif;
+      letter-spacing: 0.02em;
+      font-weight: 400;
+    }
+    h1 {
+      margin-top: 18px;
+      font-size: clamp(3rem, 8vw, 6rem);
+      line-height: 0.9;
+    }
+    h2 { font-size: 2.3rem; }
+    h3 { font-size: 1.7rem; }
+    .hero-copy,
+    .muted,
+    .data-row span:first-child,
+    .order-meta,
+    .empty-state,
+    .status {
+      color: var(--muted);
+    }
+    .hero-copy {
+      max-width: 48ch;
+      margin: 18px 0 0;
+      font-size: 1.02rem;
+    }
+    .hero-stats,
+    .data-list,
+    .order-list,
+    .order-items {
+      display: grid;
+      gap: 14px;
+    }
+    .hero-stats {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      margin-top: 24px;
+    }
+    .stat,
+    .data-row,
+    .order-card,
+    .status {
+      border-radius: var(--radius-md);
+      border: 1px solid var(--line);
+      background: var(--panel);
+    }
+    .stat,
+    .data-row,
+    .order-card,
+    .status {
+      padding: 16px;
+    }
+    .stat strong {
+      display: block;
+      font-size: 1.7rem;
+    }
+    .panel-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: end;
+      margin-bottom: 18px;
+    }
+    .data-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      align-items: center;
+    }
+    .data-row strong {
+      text-align: right;
+    }
+    .order-card {
+      display: grid;
+      gap: 14px;
+    }
+    .order-top {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      align-items: start;
+    }
+    .order-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      border-radius: 999px;
+      padding: 8px 12px;
+      background: rgba(92, 225, 255, 0.08);
+      border: 1px solid rgba(92, 225, 255, 0.24);
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      font-size: 0.74rem;
+      color: var(--cyan);
+    }
+    .order-items {
+      padding-top: 4px;
+      border-top: 1px solid var(--line);
+    }
+    .order-item {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .hidden,
+    [hidden] { display: none !important; }
+    @media (max-width: 920px) {
+      .hero,
+      .profile-grid,
+      .hero-stats {
+        grid-template-columns: 1fr;
+      }
+    }
+    @media (max-width: 760px) {
+      .topbar-inner,
+      .panel-head,
+      .order-top,
+      .data-row {
+        flex-direction: column;
+        align-items: start;
+      }
+      .data-row strong {
+        text-align: left;
+      }
+    }
+  </style>
 </head>
 <body>
+  <header class="topbar">
+    <div class="shell topbar-inner">
+      <a class="brand" href="index.html">
+        <span class="brand-mark">MM</span>
+        <span>ManaMarket</span>
+      </a>
+      <nav class="nav" aria-label="Huvudnavigation">
+        <a href="butik.html">Butik</a>
+        <a href="galleri.html">Galleri</a>
+        <a href="minprofil.html" data-auth-nav>Min profil</a>
+        <a class="ghost" href="checkout.html">Varukorg</a>
+      </nav>
+    </div>
+  </header>
 
+  <main class="shell">
+    <section class="panel" data-profile-gate>
+      <div class="panel-head">
+        <div>
+          <div class="eyebrow">Auth Required</div>
+          <h2>Kontrollerar session</h2>
+        </div>
+      </div>
+      <p class="muted">Profilsidan kraver inloggning. Om du inte redan har en session skickas du vidare till auth-sidan.</p>
+    </section>
+
+    <div data-profile-content hidden>
+      <section class="hero">
+        <article class="hero-card">
+          <div class="eyebrow">Min profil</div>
+          <h1><span data-profile-name>Din profil</span><br>Din adress.<br>Dina orders.</h1>
+          <p class="hero-copy">
+            Har ser du dina sparade kontouppgifter, leveransuppgifter och tidigare bestallningar i samma stil som resten av ManaMarket.
+          </p>
+          <div class="hero-stats">
+            <div class="stat">
+              <strong data-profile-email>...</strong>
+              <span class="muted">konto-email</span>
+            </div>
+            <div class="stat">
+              <strong data-profile-order-count>0</strong>
+              <span class="muted">bestallningar</span>
+            </div>
+            <div class="stat">
+              <strong data-profile-city>Ingen ort</strong>
+              <span class="muted">primar leveransort</span>
+            </div>
+          </div>
+        </article>
+
+        <aside class="panel">
+          <div class="panel-head">
+            <div>
+              <div class="eyebrow">Session</div>
+              <h2>Konto</h2>
+            </div>
+          </div>
+          <div class="status" data-profile-status>Laddar kontodata...</div>
+          <div style="display:flex; gap:12px; flex-wrap:wrap; margin-top:18px;">
+            <a class="cta" href="checkout.html">Till checkout</a>
+            <button class="ghost" type="button" data-profile-logout>Logga ut</button>
+          </div>
+        </aside>
+      </section>
+
+      <section class="profile-grid" style="margin-top:22px;">
+        <article class="panel">
+          <div class="panel-head">
+            <div>
+              <div class="eyebrow">Profiluppgifter</div>
+              <h2>Dina uppgifter</h2>
+            </div>
+          </div>
+          <div class="data-list">
+            <div class="data-row"><span>Namn</span><strong data-profile-full-name>-</strong></div>
+            <div class="data-row"><span>Email</span><strong data-profile-email-row>-</strong></div>
+            <div class="data-row"><span>Adress</span><strong data-profile-street>-</strong></div>
+            <div class="data-row"><span>Postnummer</span><strong data-profile-postal>-</strong></div>
+            <div class="data-row"><span>Ort</span><strong data-profile-city-row>-</strong></div>
+            <div class="data-row"><span>Land</span><strong data-profile-country>-</strong></div>
+          </div>
+        </article>
+
+        <article class="panel">
+          <div class="panel-head">
+            <div>
+              <div class="eyebrow">Adressbok</div>
+              <h2>Primar leveransadress</h2>
+            </div>
+          </div>
+          <div class="data-list">
+            <div class="data-row"><span>Adressrad</span><strong data-address-street>-</strong></div>
+            <div class="data-row"><span>Ort</span><strong data-address-city>-</strong></div>
+            <div class="data-row"><span>Postnummer</span><strong data-address-postal>-</strong></div>
+            <div class="data-row"><span>Status</span><strong data-address-default>-</strong></div>
+          </div>
+        </article>
+      </section>
+
+      <section class="panel" style="margin-top:22px;">
+        <div class="panel-head">
+          <div>
+            <div class="eyebrow">Orders</div>
+            <h2>Dina bestallningar</h2>
+          </div>
+        </div>
+        <div class="order-list" data-order-list></div>
+        <div class="empty-state hidden" data-order-empty>Inga bestallningar an. Nar riktiga orders finns i Supabase visas de har.</div>
+      </section>
+    </div>
+  </main>
+
+  <script src="js/supabase-config.js"></script>
+  <script type="module" src="js/profile.js"></script>
 </body>
 </html>
