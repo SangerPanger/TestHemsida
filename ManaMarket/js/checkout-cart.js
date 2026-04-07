@@ -118,6 +118,15 @@ function showStatus(message, isError = false) {
   checkoutStatus.classList.toggle("is-error", isError);
 }
 
+function resolveCheckoutOrigin() {
+  const origin = window.location.origin;
+  if (!origin || origin === "null" || origin.startsWith("file:")) {
+    return "";
+  }
+
+  return origin;
+}
+
 function splitName(fullName = "") {
   const trimmed = fullName.trim();
   if (!trimmed) {
@@ -190,6 +199,12 @@ async function startStripeCheckout(event) {
     return;
   }
 
+  const origin = resolveCheckoutOrigin();
+  if (!origin) {
+    showStatus("Checkout maste koras via en lokal server eller deployad doman, inte direkt som fil i webblasaren.", true);
+    return;
+  }
+
   completeButton?.setAttribute("aria-disabled", "true");
   completeButton?.classList.add("is-disabled");
   showStatus("Skapar Stripe-checkout...");
@@ -210,7 +225,7 @@ async function startStripeCheckout(event) {
           id: item.id,
           quantity: item.quantity
         })),
-        origin: window.location.origin
+        origin
       })
     });
 

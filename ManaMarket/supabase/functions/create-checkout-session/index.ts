@@ -51,6 +51,15 @@ function json(data: unknown, status = 200) {
   });
 }
 
+function isValidOrigin(value: string) {
+  try {
+    const url = new URL(value);
+    return url.protocol === "http:" || url.protocol === "https:";
+  } catch {
+    return false;
+  }
+}
+
 Deno.serve(async (request) => {
   if (request.method === "OPTIONS") {
     return new Response("ok", { headers: corsHeaders });
@@ -86,12 +95,20 @@ Deno.serve(async (request) => {
 
     const body = await request.json();
     const items = Array.isArray(body?.items) ? body.items : [];
-    const origin = typeof body?.origin === "string" && body.origin.length > 0
-      ? body.origin
-      : request.headers.get("origin") || "http://localhost:8080";
+    const requestedOrigin = typeof body?.origin === "string" ? body.origin : "";
+    const headerOrigin = request.headers.get("origin") || "";
+    const origin = isValidOrigin(requestedOrigin)
+      ? requestedOrigin
+      : isValidOrigin(headerOrigin)
+        ? headerOrigin
+        : "";
 
     if (items.length === 0) {
       return json({ error: "Varukorgen ar tom." }, 400);
+    }
+
+    if (!origin) {
+      return json({ error: "Ogiltig origin for checkout. Kor sidan via http:// eller https://." }, 400);
     }
 
     const lineItems = [];
