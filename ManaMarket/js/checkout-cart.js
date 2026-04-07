@@ -12,6 +12,12 @@ const totalNode = document.querySelector("[data-cart-total]");
 const clearButton = document.querySelector("[data-clear-cart]");
 const completeButton = document.querySelector("[data-complete-order]");
 const checkoutStatus = document.querySelector("[data-checkout-status]");
+const firstNameInput = document.querySelector("[data-checkout-first-name]");
+const lastNameInput = document.querySelector("[data-checkout-last-name]");
+const emailInput = document.querySelector("[data-checkout-email-input]");
+const streetInput = document.querySelector("[data-checkout-street]");
+const postalInput = document.querySelector("[data-checkout-postal]");
+const cityInput = document.querySelector("[data-checkout-city]");
 
 function createItemMarkup(item) {
   const article = document.createElement("div");
@@ -112,6 +118,70 @@ function showStatus(message, isError = false) {
   checkoutStatus.classList.toggle("is-error", isError);
 }
 
+function splitName(fullName = "") {
+  const trimmed = fullName.trim();
+  if (!trimmed) {
+    return { firstName: "", lastName: "" };
+  }
+
+  const parts = trimmed.split(/\s+/);
+  return {
+    firstName: parts[0] || "",
+    lastName: parts.slice(1).join(" ")
+  };
+}
+
+async function prefillCheckoutFields() {
+  try {
+    const { data, error } = await supabase.auth.getSession();
+    if (error || !data.session) {
+      return;
+    }
+
+    const user = data.session.user;
+    const [{ data: profile }, { data: addresses }] = await Promise.all([
+      supabase.from("profiles").select("full_name, email").eq("id", user.id).maybeSingle(),
+      supabase
+        .from("addresses")
+        .select("street_1, postal_code, city, created_at, is_default")
+        .eq("user_id", user.id)
+        .order("is_default", { ascending: false })
+        .order("created_at", { ascending: false })
+        .limit(1)
+    ]);
+
+    const resolvedName = profile?.full_name || user.user_metadata?.full_name || "";
+    const nameParts = splitName(resolvedName);
+    const address = Array.isArray(addresses) && addresses.length ? addresses[0] : null;
+
+    if (firstNameInput) {
+      firstNameInput.value = nameParts.firstName;
+    }
+
+    if (lastNameInput) {
+      lastNameInput.value = nameParts.lastName;
+    }
+
+    if (emailInput) {
+      emailInput.value = profile?.email || user.email || "";
+    }
+
+    if (streetInput) {
+      streetInput.value = address?.street_1 || user.user_metadata?.street_1 || "";
+    }
+
+    if (postalInput) {
+      postalInput.value = address?.postal_code || user.user_metadata?.postal_code || "";
+    }
+
+    if (cityInput) {
+      cityInput.value = address?.city || user.user_metadata?.city || "";
+    }
+  } catch {
+    // Non-blocking: checkout should still work without autofill.
+  }
+}
+
 async function startStripeCheckout(event) {
   event.preventDefault();
 
@@ -145,8 +215,19 @@ async function startStripeCheckout(event) {
     });
 
     if (!response.ok) {
-      const errorData = await response.json().catch(() => null);
-      throw new Error(errorData?.error || "Kunde inte starta Stripe-checkout.");
+      const errorText = await response.text();
+      let errorMessage = "Kunde inte starta Stripe-checkout.";
+
+      try {
+        const errorData = JSON.parse(errorText);
+        errorMessage = errorData?.error || errorMessage;
+      } catch {
+        if (errorText) {
+          errorMessage = errorText;
+        }
+      }
+
+      throw new Error(errorMessage);
     }
 
     const payload = await response.json();
@@ -173,3 +254,4 @@ completeButton?.addEventListener("click", startStripeCheckout);
 window.addEventListener("mana-cart-updated", renderCheckout);
 
 renderCheckout();
+prefillCheckoutFields();

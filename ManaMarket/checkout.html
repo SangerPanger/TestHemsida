@@ -511,29 +511,29 @@
           <div class="field-grid">
             <label class="field">
               <span>Fornamn</span>
-              <input type="text" placeholder="Alexa">
+              <input type="text" placeholder="Alexa" data-checkout-first-name>
             </label>
             <label class="field">
               <span>Efternamn</span>
-              <input type="text" placeholder="Panger">
+              <input type="text" placeholder="Panger" data-checkout-last-name>
             </label>
           </div>
           <label class="field">
             <span>E-post</span>
-            <input type="email" placeholder="namn@email.com">
+            <input type="email" placeholder="namn@email.com" data-checkout-email-input>
           </label>
           <label class="field">
             <span>Adress</span>
-            <input type="text" placeholder="Storgatan 12">
+            <input type="text" placeholder="Storgatan 12" data-checkout-street>
           </label>
           <div class="field-grid">
             <label class="field">
               <span>Postnummer</span>
-              <input type="text" placeholder="12345">
+              <input type="text" placeholder="12345" data-checkout-postal>
             </label>
             <label class="field">
               <span>Stad</span>
-              <input type="text" placeholder="Stockholm">
+              <input type="text" placeholder="Stockholm" data-checkout-city>
             </label>
           </div>
         </form>
@@ -549,6 +549,7 @@
           <div class="payment-row"><span>Express</span><strong>PayPal</strong></div>
           <div class="payment-row"><span>Wallet</span><strong>Apple Pay</strong></div>
         </div>
+        <p class="footnote">Betalsatt valjs inne i Stripe Checkout efter att du klickat pa Slutfor kop.</p>
         <div class="checkout-status" data-checkout-status hidden></div>
 
         <div style="margin-top: 22px;">
