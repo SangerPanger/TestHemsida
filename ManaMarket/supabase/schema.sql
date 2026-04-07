@@ -58,6 +58,9 @@ create table if not exists public.invite_codes (
   updated_at timestamptz not null default timezone('utc', now())
 );
 
+create unique index if not exists invite_codes_code_upper_idx
+  on public.invite_codes ((upper(trim(code))));
+
 create table if not exists public.products (
   id uuid primary key default gen_random_uuid(),
   slug text not null unique,
@@ -118,7 +121,7 @@ begin
   select exists (
     select 1
     from public.invite_codes
-    where code = normalized_code
+    where upper(trim(code)) = normalized_code
       and active = true
   )
   into invite_is_valid;
