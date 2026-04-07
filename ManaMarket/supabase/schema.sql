@@ -49,6 +49,15 @@ create table if not exists public.addresses (
   updated_at timestamptz not null default timezone('utc', now())
 );
 
+create table if not exists public.invite_codes (
+  id uuid primary key default gen_random_uuid(),
+  code text not null unique,
+  label text default '',
+  active boolean not null default true,
+  created_at timestamptz not null default timezone('utc', now()),
+  updated_at timestamptz not null default timezone('utc', now())
+);
+
 create table if not exists public.products (
   id uuid primary key default gen_random_uuid(),
   slug text not null unique,
@@ -96,6 +105,28 @@ begin
 end;
 $$;
 
+create or replace function public.check_invite_code(p_code text)
+returns boolean
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  normalized_code text := upper(trim(coalesce(p_code, '')));
+  invite_is_valid boolean;
+begin
+  select exists (
+    select 1
+    from public.invite_codes
+    where code = normalized_code
+      and active = true
+  )
+  into invite_is_valid;
+
+  return invite_is_valid;
+end;
+$$;
+
 drop trigger if exists on_auth_user_created on auth.users;
 create trigger on_auth_user_created
   after insert on auth.users
@@ -111,6 +142,11 @@ create trigger set_addresses_updated_at
   before update on public.addresses
   for each row execute procedure public.set_updated_at();
 
+drop trigger if exists set_invite_codes_updated_at on public.invite_codes;
+create trigger set_invite_codes_updated_at
+  before update on public.invite_codes
+  for each row execute procedure public.set_updated_at();
+
 drop trigger if exists set_orders_updated_at on public.orders;
 create trigger set_orders_updated_at
   before update on public.orders
@@ -118,6 +154,7 @@ create trigger set_orders_updated_at
 
 alter table public.profiles enable row level security;
 alter table public.addresses enable row level security;
+alter table public.invite_codes enable row level security;
 alter table public.products enable row level security;
 alter table public.orders enable row level security;
 alter table public.order_items enable row level security;

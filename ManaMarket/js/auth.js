@@ -15,7 +15,11 @@ let pending = {
   fullName: "",
   email: "",
   password: "",
-  inviteCode: ""
+  inviteCode: "",
+  inviteValidated: false,
+  street1: "",
+  postalCode: "",
+  city: ""
 };
 
 function focusInput() {
@@ -84,7 +88,11 @@ function showModePrompt() {
     fullName: "",
     email: "",
     password: "",
-    inviteCode: ""
+    inviteCode: "",
+    inviteValidated: false,
+    street1: "",
+    postalCode: "",
+    city: ""
   };
 
   typeLines([
@@ -137,10 +145,94 @@ function looksLikeEmail(value) {
   return value.includes("@") && value.includes(".");
 }
 
+function normalizeInviteCode(value) {
+  return value.trim().toUpperCase();
+}
+
+function normalizePostalCode(value) {
+  return value.replace(/\s+/g, "").trim();
+}
+
+function isValidPostalCode(value) {
+  const normalized = normalizePostalCode(value);
+  return normalized.length >= 5;
+}
+
+function splitFullName(fullName) {
+  const parts = fullName.trim().split(/\s+/).filter(Boolean);
+
+  if (parts.length === 0) {
+    return { firstName: "", lastName: "" };
+  }
+
+  if (parts.length === 1) {
+    return { firstName: parts[0], lastName: parts[0] };
+  }
+
+  return {
+    firstName: parts[0],
+    lastName: parts.slice(1).join(" ")
+  };
+}
+
+async function syncAddressFromMetadata(user) {
+  const metadata = user?.user_metadata || {};
+  const street1 = String(metadata.street_1 || "").trim();
+  const postalCode = normalizePostalCode(String(metadata.postal_code || ""));
+  const city = String(metadata.city || "").trim();
+  const fullName = String(metadata.full_name || "").trim();
+
+  if (!user?.id || !street1 || !postalCode || !city || !fullName) {
+    return;
+  }
+
+  const { data: existingAddress, error: existingError } = await supabase
+    .from("addresses")
+    .select("id")
+    .eq("user_id", user.id)
+    .limit(1)
+    .maybeSingle();
+
+  if (existingError || existingAddress) {
+    return;
+  }
+
+  const { firstName, lastName } = splitFullName(fullName);
+
+  await supabase.from("addresses").insert({
+    user_id: user.id,
+    first_name: firstName,
+    last_name: lastName,
+    street_1: street1,
+    postal_code: postalCode,
+    city,
+    country: "SE",
+    is_default: true
+  });
+}
+
+async function validateInviteCode(code) {
+  const normalizedCode = normalizeInviteCode(code);
+
+  if (!normalizedCode) {
+    return false;
+  }
+
+  const { data, error } = await supabase.rpc("check_invite_code", {
+    p_code: normalizedCode
+  });
+
+  if (error) {
+    return false;
+  }
+
+  return data === true;
+}
+
 async function submitSignin() {
   hideInput();
   typeLine("Loggar in...", async () => {
-    const { error } = await supabase.auth.signInWithPassword({
+    const { data, error } = await supabase.auth.signInWithPassword({
       email: pending.email,
       password: pending.password
     });
@@ -156,6 +248,8 @@ async function submitSignin() {
       return;
     }
 
+    await syncAddressFromMetadata(data.user);
+
     typeLine("Inloggad. Skickar dig vidare...", () => {
       setTimeout(() => {
         window.location.href = nextPath;
@@ -167,14 +261,17 @@ async function submitSignin() {
 async function submitSignup() {
   hideInput();
   typeLine("Skapar konto...", async () => {
-    const { error } = await supabase.auth.signUp({
+    const { data, error } = await supabase.auth.signUp({
       email: pending.email,
       password: pending.password,
       options: {
         emailRedirectTo: `${window.location.origin}${window.location.pathname}`,
         data: {
           full_name: pending.fullName,
-          invite_code: pending.inviteCode
+          invite_code: pending.inviteCode,
+          street_1: pending.street1,
+          postal_code: pending.postalCode,
+          city: pending.city
         }
       }
     });
@@ -189,6 +286,8 @@ async function submitSignup() {
       });
       return;
     }
+
+    await syncAddressFromMetadata(data.user);
 
     typeLines([
       "Konto skapat.",
@@ -286,22 +385,81 @@ async function handleCommand(rawCommand) {
       return;
 
     case "signup-invite":
-      pending.inviteCode = rawCommand.trim();
+      pending.inviteCode = normalizeInviteCode(rawCommand);
+      pending.inviteValidated = false;
 
       if (!pending.inviteCode) {
         typeLine("Inbjudningskod kravs for att ga vidare.", () => showInput("text"));
         return;
       }
 
-      flow = "signup-name";
-      typeLine("Vad heter du?", () => showInput("text"));
+      hideInput();
+      typeLine("Verifierar inbjudningskod...", async () => {
+        const inviteIsValid = await validateInviteCode(pending.inviteCode);
+
+        if (!inviteIsValid) {
+          typeLines([
+            "Ogiltig eller inaktiv inbjudningskod.",
+            "Forsok igen."
+          ], () => {
+            flow = "signup-invite";
+            showInput("text");
+          });
+          return;
+        }
+
+        pending.inviteValidated = true;
+        flow = "signup-name";
+        typeLine("Kod godkand. Vad heter du?", () => showInput("text"));
+      });
       return;
 
     case "signup-name":
+      if (!pending.inviteValidated) {
+        showSignupFlow();
+        return;
+      }
+
       pending.fullName = rawCommand.trim();
 
       if (!pending.fullName) {
         typeLine("Skriv ditt namn for att fortsatta.", () => showInput("text"));
+        return;
+      }
+
+      flow = "signup-street";
+      typeLine("Ange din adress.", () => showInput("text"));
+      return;
+
+    case "signup-street":
+      pending.street1 = rawCommand.trim();
+
+      if (!pending.street1) {
+        typeLine("Adress kravs for att fortsatta.", () => showInput("text"));
+        return;
+      }
+
+      flow = "signup-postal";
+      typeLine("Ange ditt postnummer.", () => showInput("text"));
+      return;
+
+    case "signup-postal":
+      pending.postalCode = normalizePostalCode(rawCommand);
+
+      if (!isValidPostalCode(pending.postalCode)) {
+        typeLine("Ogiltigt postnummer. Forsok igen.", () => showInput("text"));
+        return;
+      }
+
+      flow = "signup-city";
+      typeLine("Ange din ort.", () => showInput("text"));
+      return;
+
+    case "signup-city":
+      pending.city = rawCommand.trim();
+
+      if (!pending.city) {
+        typeLine("Ort kravs for att fortsatta.", () => showInput("text"));
         return;
       }
 
