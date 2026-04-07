@@ -367,6 +367,20 @@
       color: var(--muted);
     }
 
+    .checkout-status {
+      margin-top: 16px;
+      padding: 14px 16px;
+      border-radius: 18px;
+      border: 1px solid rgba(92, 225, 255, 0.18);
+      background: rgba(92, 225, 255, 0.08);
+      color: var(--text);
+    }
+
+    .checkout-status.is-error {
+      border-color: rgba(255, 93, 177, 0.24);
+      background: rgba(255, 93, 177, 0.08);
+    }
+
     .empty-cart {
       padding: 18px;
       border-radius: var(--radius-md);
@@ -535,6 +549,7 @@
           <div class="payment-row"><span>Express</span><strong>PayPal</strong></div>
           <div class="payment-row"><span>Wallet</span><strong>Apple Pay</strong></div>
         </div>
+        <div class="checkout-status" data-checkout-status hidden></div>
 
         <div style="margin-top: 22px;">
           <a class="cta" href="#" data-complete-order>Slutfor kop</a>

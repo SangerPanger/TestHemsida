@@ -1,5 +1,6 @@
 import { clearCart, getCartTotals, removeFromCart, updateCartItem } from "./cart.js";
 import { formatSek } from "./products.js";
+import { supabase } from "./supabase-client.js";
 
 const itemList = document.querySelector("[data-cart-items]");
 const emptyState = document.querySelector("[data-cart-empty]");
@@ -10,6 +11,7 @@ const discountNode = document.querySelector("[data-cart-discount]");
 const totalNode = document.querySelector("[data-cart-total]");
 const clearButton = document.querySelector("[data-clear-cart]");
 const completeButton = document.querySelector("[data-complete-order]");
+const checkoutStatus = document.querySelector("[data-checkout-status]");
 
 function createItemMarkup(item) {
   const article = document.createElement("div");
@@ -84,6 +86,9 @@ function renderCheckout() {
     clearButton.disabled = true;
     completeButton.setAttribute("aria-disabled", "true");
     completeButton.classList.add("is-disabled");
+    if (checkoutStatus) {
+      checkoutStatus.hidden = true;
+    }
     return;
   }
 
@@ -97,16 +102,73 @@ function renderCheckout() {
   });
 }
 
+function showStatus(message, isError = false) {
+  if (!checkoutStatus) {
+    return;
+  }
+
+  checkoutStatus.textContent = message;
+  checkoutStatus.hidden = false;
+  checkoutStatus.classList.toggle("is-error", isError);
+}
+
+async function startStripeCheckout(event) {
+  event.preventDefault();
+
+  const totals = getCartTotals();
+  if (totals.itemCount === 0) {
+    return;
+  }
+
+  completeButton?.setAttribute("aria-disabled", "true");
+  completeButton?.classList.add("is-disabled");
+  showStatus("Skapar Stripe-checkout...");
+
+  try {
+    const { data } = await supabase.auth.getSession();
+    const accessToken = data.session?.access_token;
+    const functionUrl = `${window.MANA_SUPABASE_CONFIG.url}/functions/v1/create-checkout-session`;
+    const response = await fetch(functionUrl, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        apikey: window.MANA_SUPABASE_CONFIG.anonKey,
+        ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : {})
+      },
+      body: JSON.stringify({
+        items: totals.items.map((item) => ({
+          id: item.id,
+          quantity: item.quantity
+        })),
+        origin: window.location.origin
+      })
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => null);
+      throw new Error(errorData?.error || "Kunde inte starta Stripe-checkout.");
+    }
+
+    const payload = await response.json();
+    if (!payload?.url) {
+      throw new Error("Stripe svarade utan checkout-url.");
+    }
+
+    showStatus("Skickar dig vidare till Stripe...");
+    window.location.href = payload.url;
+  } catch (error) {
+    showStatus(error instanceof Error ? error.message : "Nagot gick fel nar checkout skulle startas.", true);
+    completeButton?.removeAttribute("aria-disabled");
+    completeButton?.classList.remove("is-disabled");
+  }
+}
+
 clearButton?.addEventListener("click", () => {
   clearCart();
   renderCheckout();
 });
 
-completeButton?.addEventListener("click", (event) => {
-  if (getCartTotals().itemCount === 0) {
-    event.preventDefault();
-  }
-});
+completeButton?.addEventListener("click", startStripeCheckout);
 
 window.addEventListener("mana-cart-updated", renderCheckout);
 
