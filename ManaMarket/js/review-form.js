@@ -12,7 +12,7 @@ if (form) {
   const commentField = form.querySelector("[data-review-comment]");
   const charCount = form.querySelector("[data-review-char-count]");
   const feedback = form.querySelector("[data-review-feedback]");
-  const submitButton = form.querySelector('button[type="submit"]');
+  const submitButton = document.querySelector('.review-form-submit');
   const previewName = document.querySelector("[data-review-preview-name]");
   const previewNote = document.querySelector("[data-review-preview-note]");
   const previewArt = document.querySelector("[data-review-preview-art]");
