@@ -15,24 +15,37 @@ const flavors = products.map((product, index) => ({
   image: product.image
 }));
 
-const showcase = document.querySelector("[data-flavor-showcase]");
+const badge = document.querySelector("[data-flavor-badge]");
+const tag = document.querySelector("[data-flavor-tag]");
+const title = document.querySelector("[data-flavor-title]");
+const notes = document.querySelector("[data-flavor-notes]");
+const price = document.querySelector("[data-flavor-price]");
+const profile = document.querySelector("[data-flavor-profile]");
+const bestFor = document.querySelector("[data-flavor-bestfor]");
+const counter = document.querySelector("[data-flavor-counter]");
+const pack = document.querySelector("[data-flavor-pack]");
+const packName = document.querySelector("[data-flavor-pack-name]");
+const packSub = document.querySelector("[data-flavor-pack-sub]");
+const packImage = document.querySelector("[data-flavor-pack-image]");
+const prevButton = document.querySelector("[data-flavor-prev]");
+const nextButton = document.querySelector("[data-flavor-next]");
+const pips = document.querySelector("[data-flavor-pips]");
 
-if (showcase) {
-  const badge = showcase.querySelector("[data-flavor-badge]");
-  const tag = showcase.querySelector("[data-flavor-tag]");
-  const title = showcase.querySelector("[data-flavor-title]");
-  const notes = showcase.querySelector("[data-flavor-notes]");
-  const price = showcase.querySelector("[data-flavor-price]");
-  const profile = showcase.querySelector("[data-flavor-profile]");
-  const bestFor = showcase.querySelector("[data-flavor-bestfor]");
-  const counter = showcase.querySelector("[data-flavor-counter]");
-  const pack = showcase.querySelector("[data-flavor-pack]");
-  const packName = showcase.querySelector("[data-flavor-pack-name]");
-  const packSub = showcase.querySelector("[data-flavor-pack-sub]");
-  const packImage = showcase.querySelector("[data-flavor-pack-image]");
-  const prevButton = showcase.querySelector("[data-flavor-prev]");
-  const nextButton = showcase.querySelector("[data-flavor-next]");
-  const pips = showcase.querySelector("[data-flavor-pips]");
+if (
+  badge &&
+  tag &&
+  title &&
+  notes &&
+  price &&
+  profile &&
+  bestFor &&
+  counter &&
+  pack &&
+  packName &&
+  packSub &&
+  packImage &&
+  pips
+) {
 
   let currentIndex = 0;
 

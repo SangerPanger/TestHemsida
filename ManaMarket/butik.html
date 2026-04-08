@@ -268,11 +268,10 @@
       line-height: 0.9;
     }
 
-    .hero-pack-image {
+    .hero-card .flavor-visual {
       width: min(100%, 560px);
       margin-top: 18px;
-      object-fit: contain;
-      filter: drop-shadow(0 20px 28px rgba(0, 0, 0, 0.32));
+      margin-bottom: 20px;
     }
 
     .hero-copy {
@@ -1083,8 +1082,8 @@
         font-size: clamp(3rem, 20vw, 5rem);
       }
 
-      .hero-pack-image {
-        width: min(100%, 420px);
+      .hero-card .flavor-visual {
+        width: 100%;
       }
 
       .cube h2 {
@@ -1128,7 +1127,28 @@
     <section class="hero">
       <article class="hero-card">
         <div class="eyebrow">ManaMarket drop 2026</div>
-        <img class="hero-pack-image" src="bilder/Front/FrontStartPack.png" alt="ManaMarket start pack">
+        <article class="flavor-visual">
+          <div class="flavor-visual-top">
+            <span class="eyebrow">Flavor Preview</span>
+            <span class="flavor-counter" data-flavor-counter>01 / 04</span>
+          </div>
+          <div class="flavor-stage">
+            <div class="flavor-pack" data-flavor-pack style="--flavor-swatch: linear-gradient(135deg, #161d47, #3d1847 52%, #b53b79);">
+              <div class="flavor-pack-copy">
+                <span class="flavor-pack-kicker">ManaMarket drop</span>
+                <span class="flavor-pack-name" data-flavor-pack-name>Clover Curse</span>
+                <span class="flavor-pack-sub" data-flavor-pack-sub>Sour blackberry. Blackcurrant. Dark neon.</span>
+              </div>
+              <img class="flavor-pack-image" src="bilder/limited-black-loot-edition/T/02-black-loot-clover-curse-gamer-energy-frontal_jpg-removebg-preview.png" alt="" data-flavor-pack-image>
+              <span class="flavor-pack-mark">MM</span>
+            </div>
+          </div>
+          <div class="flavor-nav">
+            <button class="flavor-arrow" type="button" data-flavor-prev aria-label="Forra smak">&#8592;</button>
+            <div class="flavor-pips" data-flavor-pips></div>
+            <button class="flavor-arrow" type="button" data-flavor-next aria-label="Nasta smak">&#8594;</button>
+          </div>
+        </article>
         <p class="hero-copy">
           En butikssida byggd for att se ut som en release, inte en prislista. Fokus pa LOOT Cubes, tydlig smakprofil, brutal kontrast och call-to-actions som faktiskt driver klick.
         </p>
@@ -1214,72 +1234,6 @@
       <div class="cart-feedback" data-cart-feedback hidden></div>
 
       <div class="products" data-products-grid></div>
-    </section>
-
-    <section id="flavors" class="section-card">
-      <div class="section-top">
-        <div>
-          <div class="eyebrow">Flavor Scan</div>
-          <h2>Smaker som far plats i designen</h2>
-          <p>
-            I stallet for att bara lista produkter visar den har sektionen vad varje smak faktiskt signalerar. Det gor sidan mer inspirerande och hjalper folk att valja snabbare.
-          </p>
-        </div>
-      </div>
-
-      <div class="flavor-showcase" data-flavor-showcase>
-        <article class="flavor-copy">
-          <div>
-            <div class="flavor-copy-top">
-              <span class="flavor-badge" data-flavor-badge>Sour / Dark</span>
-              <span class="muted" data-flavor-tag>Blackberry</span>
-            </div>
-            <h3 data-flavor-title>Clover Curse</h3>
-          </div>
-          <p class="flavor-notes" data-flavor-notes><strong>Vibe:</strong> sour blackberry och blackcurrant med dark neon-kansla och samlar-drop energi.</p>
-          <div class="flavor-meta">
-            <div class="flavor-stat">
-              <span>Pris</span>
-              <strong data-flavor-price>289 SEK</strong>
-            </div>
-            <div class="flavor-stat">
-              <span>Profil</span>
-              <strong data-flavor-profile>Rare loot drop</strong>
-            </div>
-            <div class="flavor-stat">
-              <span>Best for</span>
-              <strong data-flavor-bestfor>Sena ranked sessions</strong>
-            </div>
-          </div>
-          <div class="flavor-actions">
-            <a class="cta" href="https://lootdrink.de/en/collections/cubes" target="_blank" rel="noreferrer">Kop smaken</a>
-            <a class="ghost" href="#produkter">Se alla picks</a>
-          </div>
-        </article>
-
-        <article class="flavor-visual">
-          <div class="flavor-visual-top">
-            <span class="eyebrow">Flavor Preview</span>
-            <span class="flavor-counter" data-flavor-counter>01 / 04</span>
-          </div>
-          <div class="flavor-stage">
-            <div class="flavor-pack" data-flavor-pack style="--flavor-swatch: linear-gradient(135deg, #161d47, #3d1847 52%, #b53b79);">
-              <div class="flavor-pack-copy">
-                <span class="flavor-pack-kicker">ManaMarket drop</span>
-                <span class="flavor-pack-name" data-flavor-pack-name>Clover Curse</span>
-                <span class="flavor-pack-sub" data-flavor-pack-sub>Sour blackberry. Blackcurrant. Dark neon.</span>
-              </div>
-              <img class="flavor-pack-image" src="bilder/limited-black-loot-edition/T/02-black-loot-clover-curse-gamer-energy-frontal_jpg-removebg-preview.png" alt="" data-flavor-pack-image>
-              <span class="flavor-pack-mark">MM</span>
-            </div>
-          </div>
-          <div class="flavor-nav">
-            <button class="flavor-arrow" type="button" data-flavor-prev aria-label="Forra smak">&#8592;</button>
-            <div class="flavor-pips" data-flavor-pips></div>
-            <button class="flavor-arrow" type="button" data-flavor-next aria-label="Nasta smak">&#8594;</button>
-          </div>
-        </article>
-      </div>
     </section>
 
     <section id="reviews" class="section-card">
