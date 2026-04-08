@@ -744,6 +744,23 @@
       gap: 18px;
     }
 
+    .reviews-live-grid {
+      grid-column: 1 / -1;
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .reviews-empty {
+      grid-column: 1 / -1;
+      border-radius: 24px;
+      border: 1px dashed var(--line);
+      padding: 20px;
+      color: var(--muted);
+      text-align: center;
+      background: rgba(255, 255, 255, 0.02);
+    }
+
     .review-card.featured {
       background: rgba(255, 255, 255, 0.05);
     }
@@ -782,6 +799,12 @@
     .review-user span {
       color: var(--muted);
       font-size: 0.92rem;
+    }
+
+    .review-card.is-pending .stars {
+      background: rgba(255, 93, 177, 0.1);
+      color: #ff8cc8;
+      border-color: rgba(255, 93, 177, 0.16);
     }
 
     .review-form-card {
@@ -1270,6 +1293,10 @@
         height: 280px;
       }
 
+      .reviews-live-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
       .review-rating-grid {
         gap: 8px;
       }
@@ -1315,6 +1342,10 @@
 
       .review-form-card {
         grid-column: auto;
+      }
+
+      .reviews-live-grid {
+        grid-template-columns: 1fr;
       }
 
       .cube h2 {
@@ -1531,6 +1562,10 @@
             </div>
           </div>
         </article>
+
+        <div class="reviews-live-grid" data-reviews-feed>
+          <div class="reviews-empty" data-reviews-empty>Inga sparade reviews visas an.</div>
+        </div>
 
         <article class="review-card review-form-card">
           <form id="review-form" class="review-form" data-review-form>

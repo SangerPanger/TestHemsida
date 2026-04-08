@@ -4,6 +4,8 @@ import { supabase } from "./supabase-client.js";
 const form = document.querySelector("[data-review-form]");
 
 if (form) {
+  const reviewsFeed = document.querySelector("[data-reviews-feed]");
+  const reviewsEmpty = document.querySelector("[data-reviews-empty]");
   const flavorSelect = form.querySelector("[data-review-flavor]");
   const ratingInput = form.querySelector("[data-review-rating]");
   const ratingGrid = form.querySelector("[data-review-rating-grid]");
@@ -17,6 +19,134 @@ if (form) {
   const previewNote = document.querySelector("[data-review-preview-note]");
   const previewArt = document.querySelector("[data-review-preview-art]");
   const previewImage = document.querySelector("[data-review-preview-image]");
+
+  function getDisplayName(user) {
+    const metadataName = user?.user_metadata?.full_name?.trim();
+
+    if (metadataName) {
+      return metadataName;
+    }
+
+    const email = user?.email?.trim();
+
+    if (email) {
+      return email.split("@")[0];
+    }
+
+    return "ManaMarket User";
+  }
+
+  function getInitials(name) {
+    const parts = String(name || "")
+      .trim()
+      .split(/\s+/)
+      .filter(Boolean)
+      .slice(0, 2);
+
+    if (!parts.length) {
+      return "MM";
+    }
+
+    return parts.map((part) => part[0].toUpperCase()).join("");
+  }
+
+  function createReviewCard(review) {
+    const card = document.createElement("article");
+    card.className = "review-card";
+
+    if (!review.approved) {
+      card.classList.add("is-pending");
+    }
+
+    const displayName = (review.display_name || "").trim() || "ManaMarket User";
+    const metaLabel = review.approved ? review.flavor_name : "Pending review";
+
+    const head = document.createElement("div");
+    head.className = "review-head";
+
+    const stars = document.createElement("span");
+    stars.className = "stars";
+    stars.textContent = `${Number(review.rating).toFixed(1)} / 5`;
+
+    const muted = document.createElement("span");
+    muted.className = "muted";
+    muted.textContent = metaLabel;
+
+    head.append(stars, muted);
+
+    const title = document.createElement("h3");
+    title.textContent = review.flavor_name;
+
+    const quote = document.createElement("p");
+    quote.textContent = `"${review.comment}"`;
+
+    const user = document.createElement("div");
+    user.className = "review-user";
+
+    const avatar = document.createElement("div");
+    avatar.className = "avatar";
+    avatar.textContent = getInitials(displayName);
+
+    const userMeta = document.createElement("div");
+    const strong = document.createElement("strong");
+    strong.textContent = displayName;
+    const sub = document.createElement("span");
+    sub.textContent = review.approved ? review.flavor_slug : "Vantar pa godkannande";
+
+    userMeta.append(strong, sub);
+    user.append(avatar, userMeta);
+
+    card.append(head, title, quote, user);
+    return card;
+  }
+
+  function renderReviews(reviews) {
+    if (!reviewsFeed || !reviewsEmpty) {
+      return;
+    }
+
+    reviewsFeed.querySelectorAll(".review-card[data-review-live]").forEach((node) => node.remove());
+
+    if (!reviews.length) {
+      reviewsEmpty.hidden = false;
+      return;
+    }
+
+    reviewsEmpty.hidden = true;
+
+    reviews.forEach((review) => {
+      const card = createReviewCard(review);
+      card.dataset.reviewLive = "true";
+      reviewsFeed.appendChild(card);
+    });
+  }
+
+  async function loadReviews() {
+    if (!reviewsFeed) {
+      return;
+    }
+
+    try {
+      const { data, error } = await supabase
+        .from("reviews")
+        .select("id, display_name, flavor_name, flavor_slug, rating, comment, approved, created_at")
+        .order("created_at", { ascending: false })
+        .limit(6);
+
+      if (error) {
+        throw error;
+      }
+
+      renderReviews(data ?? []);
+    } catch (error) {
+      console.error("Could not load reviews", error);
+
+      if (reviewsEmpty) {
+        reviewsEmpty.hidden = false;
+        reviewsEmpty.textContent = "Kunde inte hamta reviews just nu.";
+      }
+    }
+  }
 
   products.forEach((product) => {
     const option = document.createElement("option");
@@ -148,6 +278,7 @@ if (form) {
   updateCharCount();
   updateRating(0);
   renderPreview();
+  loadReviews();
 
   form.addEventListener("submit", async (event) => {
     event.preventDefault();
@@ -191,6 +322,7 @@ if (form) {
 
       const { error } = await supabase.from("reviews").insert({
         user_id: user.id,
+        display_name: getDisplayName(user),
         flavor_slug: selectedProduct.slug,
         flavor_name: selectedProduct.name,
         rating,
@@ -206,6 +338,7 @@ if (form) {
       updateRating(0);
       renderPreview();
       setFeedback("Review sparad. Den visas nar den ar godkand.", "is-success");
+      await loadReviews();
     } catch (error) {
       console.error("Could not save review", error);
       setFeedback("Kunde inte spara review just nu.", "is-error");

@@ -102,6 +102,7 @@ create table if not exists public.order_items (
 create table if not exists public.reviews (
   id uuid primary key default gen_random_uuid(),
   user_id uuid not null references auth.users(id) on delete cascade,
+  display_name text not null default '',
   flavor_slug text not null,
   flavor_name text not null,
   rating numeric(2,1) not null check (rating between 0 and 5 and mod(rating * 10, 5) = 0),
@@ -110,6 +111,9 @@ create table if not exists public.reviews (
   created_at timestamptz not null default timezone('utc', now()),
   updated_at timestamptz not null default timezone('utc', now())
 );
+
+alter table public.reviews
+  add column if not exists display_name text not null default '';
 
 create or replace function public.set_updated_at()
 returns trigger
