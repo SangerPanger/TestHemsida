@@ -99,6 +99,18 @@ create table if not exists public.order_items (
   created_at timestamptz not null default timezone('utc', now())
 );
 
+create table if not exists public.reviews (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid not null references auth.users(id) on delete cascade,
+  flavor_slug text not null,
+  flavor_name text not null,
+  rating smallint not null check (rating between 0 and 5),
+  comment text not null check (char_length(comment) between 1 and 150),
+  approved boolean not null default false,
+  created_at timestamptz not null default timezone('utc', now()),
+  updated_at timestamptz not null default timezone('utc', now())
+);
+
 create or replace function public.set_updated_at()
 returns trigger
 language plpgsql
@@ -156,12 +168,18 @@ create trigger set_orders_updated_at
   before update on public.orders
   for each row execute procedure public.set_updated_at();
 
+drop trigger if exists set_reviews_updated_at on public.reviews;
+create trigger set_reviews_updated_at
+  before update on public.reviews
+  for each row execute procedure public.set_updated_at();
+
 alter table public.profiles enable row level security;
 alter table public.addresses enable row level security;
 alter table public.invite_codes enable row level security;
 alter table public.products enable row level security;
 alter table public.orders enable row level security;
 alter table public.order_items enable row level security;
+alter table public.reviews enable row level security;
 
 drop policy if exists "Profiles are viewable by owner" on public.profiles;
 create policy "Profiles are viewable by owner"
@@ -270,3 +288,32 @@ create policy "Order items are insertable by order owner"
         and public.orders.user_id = auth.uid()
     )
   );
+
+drop policy if exists "Approved reviews are viewable by everyone" on public.reviews;
+create policy "Approved reviews are viewable by everyone"
+  on public.reviews
+  for select
+  to anon, authenticated
+  using (approved = true or auth.uid() = user_id);
+
+drop policy if exists "Reviews are insertable by owner" on public.reviews;
+create policy "Reviews are insertable by owner"
+  on public.reviews
+  for insert
+  to authenticated
+  with check (auth.uid() = user_id);
+
+drop policy if exists "Reviews are updatable by owner" on public.reviews;
+create policy "Reviews are updatable by owner"
+  on public.reviews
+  for update
+  to authenticated
+  using (auth.uid() = user_id)
+  with check (auth.uid() = user_id);
+
+drop policy if exists "Reviews are deletable by owner" on public.reviews;
+create policy "Reviews are deletable by owner"
+  on public.reviews
+  for delete
+  to authenticated
+  using (auth.uid() = user_id);

@@ -784,6 +784,135 @@
       font-size: 0.92rem;
     }
 
+    .review-form-card {
+      display: grid;
+      grid-template-columns: minmax(0, 1.1fr) minmax(260px, 0.9fr);
+      grid-template-areas:
+        "form preview"
+        "button button";
+      gap: 22px;
+      align-content: start;
+      grid-column: span 3;
+    }
+
+    .review-form {
+      grid-area: form;
+      display: grid;
+      gap: 14px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .review-form h3 {
+      font-size: clamp(2rem, 3vw, 3rem);
+      line-height: 0.92;
+    }
+
+    .review-form-field {
+      display: grid;
+      gap: 8px;
+    }
+
+    .review-form-field label {
+      font-size: 0.82rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .review-form-field select,
+    .review-form-field textarea {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: rgba(7, 12, 23, 0.92);
+      color: var(--text);
+      padding: 14px 16px;
+      font: inherit;
+    }
+
+    .review-form-field select {
+      min-height: 52px;
+    }
+
+    .review-form-field textarea {
+      min-height: 120px;
+      resize: vertical;
+    }
+
+    .review-form-meta {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: center;
+      color: var(--muted);
+      font-size: 0.84rem;
+    }
+
+    .review-form-feedback {
+      min-height: 1.4em;
+      color: var(--muted);
+      font-size: 0.92rem;
+    }
+
+    .review-form-feedback.is-error {
+      color: #ff8d8d;
+    }
+
+    .review-form-feedback.is-success {
+      color: var(--lime);
+    }
+
+    .review-form-preview {
+      grid-area: preview;
+      display: grid;
+      gap: 14px;
+      align-content: start;
+      position: relative;
+      z-index: 1;
+      min-width: 0;
+    }
+
+    .review-form-preview .eyebrow {
+      justify-self: start;
+    }
+
+    .review-preview-meta {
+      display: grid;
+      gap: 6px;
+    }
+
+    .review-preview-meta h4 {
+      margin: 0;
+      font-family: "Bebas Neue", sans-serif;
+      font-size: clamp(2rem, 3vw, 3rem);
+      letter-spacing: 0.02em;
+      line-height: 0.92;
+    }
+
+    .review-preview-meta p {
+      margin: 0;
+      color: var(--muted);
+    }
+
+    .review-form-card .art {
+      margin: 0;
+      min-height: 320px;
+      height: 320px;
+    }
+
+    .review-form-card .art-pack {
+      transform: translateY(8px) scale(1.03);
+    }
+
+    .review-form-submit {
+      grid-area: button;
+      justify-self: center;
+      align-self: start;
+      min-width: 220px;
+      text-align: center;
+    }
+
     .product-card {
       position: relative;
       overflow: hidden;
@@ -823,13 +952,14 @@
     }
 
     .art {
+      --swatch: linear-gradient(135deg, #122446, #37111d);
       margin: 18px 0;
       height: 200px;
       border-radius: 22px;
       border: 1px solid rgba(255, 255, 255, 0.08);
       background:
         linear-gradient(145deg, rgba(255, 255, 255, 0.08), transparent 50%),
-        var(--swatch, linear-gradient(135deg, #122446, #37111d));
+        var(--swatch);
       position: relative;
       overflow: hidden;
     }
@@ -1054,6 +1184,19 @@
       .products {
         grid-column: auto;
       }
+
+      .review-form-card {
+        grid-template-columns: 1fr;
+        grid-template-areas:
+          "form"
+          "preview"
+          "button";
+      }
+
+      .review-form-card .art {
+        min-height: 280px;
+        height: 280px;
+      }
     }
 
     @media (max-width: 760px) {
@@ -1062,6 +1205,10 @@
       .product-meta {
         align-items: start;
         flex-direction: column;
+      }
+
+      .review-form-card {
+        grid-column: auto;
       }
 
       .hero,
@@ -1084,6 +1231,10 @@
 
       .hero-card .flavor-visual {
         width: 100%;
+      }
+
+      .review-form-card {
+        grid-column: auto;
       }
 
       .cube h2 {
@@ -1127,7 +1278,7 @@
     <section class="hero">
       <article class="hero-card">
         <div class="eyebrow">ManaMarket drop 2026</div>
-        <article class="flavor-visual">
+        <div class="flavor-visual">
           <div class="flavor-visual-top">
             <span class="eyebrow">Flavor Preview</span>
             <span class="flavor-counter" data-flavor-counter>01 / 04</span>
@@ -1148,7 +1299,7 @@
             <div class="flavor-pips" data-flavor-pips></div>
             <button class="flavor-arrow" type="button" data-flavor-next aria-label="Nasta smak">&#8594;</button>
           </div>
-        </article>
+        </div>
         <p class="hero-copy">
           En butikssida byggd for att se ut som en release, inte en prislista. Fokus pa LOOT Cubes, tydlig smakprofil, brutal kontrast och call-to-actions som faktiskt driver klick.
         </p>
@@ -1300,6 +1451,57 @@
             </div>
           </div>
         </article>
+
+        <article class="review-card review-form-card">
+          <form id="review-form" class="review-form" data-review-form>
+            <div class="review-head">
+              <span class="stars">0-5 / 5</span>
+              <span class="muted">Din review</span>
+            </div>
+            <div>
+              <h3>Lagg till smakbetyg</h3>
+              <p>Valj smak, satt ett betyg mellan 0 och 5 och skriv en kort kommentar.</p>
+            </div>
+            <div class="review-form-field">
+              <label for="review-flavor">Smak</label>
+              <select id="review-flavor" name="flavor" data-review-flavor required>
+                <option value="">Valj smak</option>
+              </select>
+            </div>
+            <div class="review-form-field">
+              <label for="review-rating">Betyg</label>
+              <select id="review-rating" name="rating" data-review-rating required>
+                <option value="">Valj betyg</option>
+                <option value="0">0</option>
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+              </select>
+            </div>
+            <div class="review-form-field">
+              <label for="review-comment">Kommentar</label>
+              <textarea id="review-comment" name="comment" maxlength="150" placeholder="Max 150 bokstaver" data-review-comment required></textarea>
+            </div>
+            <div class="review-form-meta">
+              <span>Inloggade anvandare kan skicka reviews.</span>
+              <span data-review-char-count>0 / 150</span>
+            </div>
+            <div class="review-form-feedback" data-review-feedback aria-live="polite"></div>
+          </form>
+          <aside class="review-form-preview" aria-live="polite">
+            <span class="eyebrow">Smak Preview</span>
+            <div class="review-preview-meta">
+              <h4 data-review-preview-name>Valj en smak</h4>
+              <p data-review-preview-note>Gradientkort och packshot uppdateras nar du valjer en smak i dropdown-menyn.</p>
+            </div>
+            <div class="art" data-review-preview-art>
+              <img class="art-pack" src="bilder/Front/FrontStartPack.png" alt="" data-review-preview-image>
+            </div>
+          </aside>
+          <button class="cta review-form-submit" type="submit" form="review-form">Skicka review</button>
+        </article>
       </div>
     </section>
 
@@ -1351,6 +1553,7 @@
   <script src="js/supabase-config.js"></script>
   <script type="module" src="js/auth-nav.js"></script>
   <script type="module" src="js/flavor-carousel.js"></script>
+  <script type="module" src="js/review-form.js"></script>
   <script type="module" src="js/shop.js"></script>
 </body>
 </html>
