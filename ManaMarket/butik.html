@@ -268,6 +268,13 @@
       line-height: 0.9;
     }
 
+    .hero-pack-image {
+      width: min(100%, 560px);
+      margin-top: 18px;
+      object-fit: contain;
+      filter: drop-shadow(0 20px 28px rgba(0, 0, 0, 0.32));
+    }
+
     .hero-copy {
       max-width: 55ch;
       margin: 18px 0 28px;
@@ -282,35 +289,76 @@
       flex-wrap: wrap;
     }
 
-    .hero-stats {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 14px;
-      margin-top: 30px;
-    }
-
-    .mini-card {
-      border-radius: var(--radius-md);
-      padding: 18px;
-    }
-
-    .mini-card strong {
-      display: block;
-      font-size: 1.8rem;
-      margin-bottom: 6px;
-    }
-
-    .mini-card span {
-      color: var(--muted);
-      font-size: 0.92rem;
-    }
-
     .stack {
       border-radius: var(--radius-xl);
       padding: 24px;
       display: grid;
       gap: 16px;
       align-content: start;
+    }
+
+    .featured-steps {
+      display: grid;
+      gap: 14px;
+    }
+
+    .featured-step {
+      display: grid;
+      grid-template-columns: 82px 1fr;
+      gap: 14px;
+      align-items: center;
+      padding: 14px;
+      border-radius: 24px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      background:
+        linear-gradient(135deg, rgba(92, 225, 255, 0.12), rgba(255, 93, 177, 0.06)),
+        rgba(255, 255, 255, 0.03);
+    }
+
+    .featured-step-visual,
+    .featured-step-copy {
+      min-height: 88px;
+      border-radius: 20px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .featured-step-visual {
+      display: grid;
+      place-items: center;
+      padding: 12px;
+      background:
+        linear-gradient(145deg, rgba(255, 255, 255, 0.14), rgba(255, 255, 255, 0.02)),
+        rgba(7, 12, 23, 0.88);
+    }
+
+    .featured-step-visual img {
+      width: 52px;
+      height: 52px;
+      object-fit: contain;
+    }
+
+    .featured-step-copy {
+      display: grid;
+      align-content: center;
+      padding: 16px 18px;
+      background:
+        linear-gradient(135deg, rgba(11, 19, 33, 0.96), rgba(24, 18, 42, 0.86));
+    }
+
+    .featured-step-copy span {
+      color: var(--muted);
+      font-size: 0.82rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+    }
+
+    .featured-step-copy strong {
+      display: block;
+      margin-top: 6px;
+      font-family: "Bebas Neue", sans-serif;
+      font-size: 2rem;
+      line-height: 0.95;
+      letter-spacing: 0.02em;
     }
 
     .stack-head {
@@ -985,8 +1033,7 @@
       .split,
       .products,
       .flavor-showcase,
-      .reviews-grid,
-      .hero-stats {
+      .reviews-grid {
         grid-template-columns: 1fr;
       }
 
@@ -998,6 +1045,10 @@
 
       h1 {
         font-size: clamp(3rem, 20vw, 5rem);
+      }
+
+      .hero-pack-image {
+        width: min(100%, 420px);
       }
 
       .cube h2 {
@@ -1041,27 +1092,13 @@
     <section class="hero">
       <article class="hero-card">
         <div class="eyebrow">ManaMarket drop 2026</div>
-        <h1>Cube Energy.<br>Anime Hype.<br>Boss Loot.</h1>
+        <img class="hero-pack-image" src="bilder/Front/FrontStartPack.png" alt="ManaMarket start pack">
         <p class="hero-copy">
           En butikssida byggd for att se ut som en release, inte en prislista. Fokus pa LOOT Cubes, tydlig smakprofil, brutal kontrast och call-to-actions som faktiskt driver klick.
         </p>
         <div class="hero-actions">
           <a class="cta" href="#produkter">Se sortiment</a>
           <a class="ghost" href="https://lootdrink.de/en/collections/cubes" target="_blank" rel="noreferrer">Ga till originalkollektionen</a>
-        </div>
-        <div class="hero-stats">
-          <div class="mini-card">
-            <strong>20</strong>
-            <span>stacks i cube-format</span>
-          </div>
-          <div class="mini-card">
-            <strong>200 mg</strong>
-            <span>koffein per servering enligt produktsidorna</span>
-          </div>
-          <div class="mini-card">
-            <strong>289 SEK</strong>
-            <span>visat pris pa flera cube-produkter</span>
-          </div>
         </div>
       </article>
 
@@ -1070,17 +1107,60 @@
           <h2>Featured Drop</h2>
           <small>Spring 2026</small>
         </div>
-        <div class="cube">
-          <span class="cube-label">LOOT Cube Series</span>
-          <h2>Clover<br>Curse</h2>
+        <div class="featured-steps">
+          <article class="featured-step">
+            <div class="featured-step-visual">
+              <img src="bilder/Iconer/Shaker_Adding.png" alt="Shaker med vatten">
+            </div>
+            <div class="featured-step-copy">
+              <span>Steg 1</span>
+              <strong>500ml Vatten</strong>
+            </div>
+          </article>
+          <article class="featured-step">
+            <div class="featured-step-visual">
+              <img src="bilder/Iconer/Scoop.png" alt="Skopa">
+            </div>
+            <div class="featured-step-copy">
+              <span>Steg 2</span>
+              <strong>8g Skopa</strong>
+            </div>
+          </article>
+          <article class="featured-step">
+            <div class="featured-step-visual">
+              <img src="bilder/Iconer/Shaking_Shaker.png" alt="Shaker som skakas">
+            </div>
+            <div class="featured-step-copy">
+              <span>Steg 3</span>
+              <strong>Shaka om!</strong>
+            </div>
+          </article>
+          <article class="featured-step">
+            <div class="featured-step-visual">
+              <img src="bilder/Iconer/Caffein.png" alt="Koffein ikon">
+            </div>
+            <div class="featured-step-copy">
+              <span>Boost</span>
+              <strong>200mg koffein</strong>
+            </div>
+          </article>
+          <article class="featured-step">
+            <div class="featured-step-visual">
+              <img src="bilder/Iconer/Bull.png" alt="Taurin ikon">
+            </div>
+            <div class="featured-step-copy">
+              <span>Stack</span>
+              <strong>1000mg Taurin</strong>
+            </div>
+          </article>
         </div>
         <p class="muted">
-          Sour blackberry + blackcurrant vibe, kompakt cube-format och en layout som far produkten att kanna limiterad och samlarbar.
+          En snabb mix-guide direkt i hero-spalten. Tydligare onboarding, starkare visuell rytm och enklare for nya kunder att fatta hur cubes anvands.
         </p>
         <div class="pill-row">
-          <span class="pill">Fast delivery feel</span>
-          <span class="pill">High-focus branding</span>
-          <span class="pill">Streamer energy aesthetic</span>
+          <span class="pill">Quick prep flow</span>
+          <span class="pill">Visual instructions</span>
+          <span class="pill">Starter-friendly</span>
         </div>
       </aside>
     </section>
