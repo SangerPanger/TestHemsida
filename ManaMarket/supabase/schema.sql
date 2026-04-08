@@ -69,6 +69,7 @@ create table if not exists public.products (
   image_url text default '',
   price_cents integer not null check (price_cents >= 0),
   currency text not null default 'eur',
+  stock_quantity integer not null default 0 check (stock_quantity >= 0),
   active boolean not null default true,
   created_at timestamptz not null default timezone('utc', now())
 );

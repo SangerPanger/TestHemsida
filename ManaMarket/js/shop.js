@@ -1,5 +1,6 @@
 import { addToCart, getCartTotals } from "./cart.js";
 import { formatSek, products } from "./products.js";
+import { supabase } from "./supabase-client.js";
 
 const feedbackNode = document.querySelector("[data-cart-feedback]");
 const cartCountNodes = document.querySelectorAll("[data-cart-count]");
@@ -7,6 +8,7 @@ const productsGrid = document.querySelector("[data-products-grid]");
 const toggleProductsButton = document.querySelector("[data-toggle-products]");
 let feedbackTimeoutId = 0;
 let showAllProducts = false;
+let inventoryBySlug = new Map(products.map((product) => [product.slug, product.stockQuantity]));
 
 function renderCartCount() {
   const { itemCount } = getCartTotals();
@@ -130,14 +132,15 @@ function renderProducts() {
 
   productsGrid.innerHTML = visibleProducts.map((product) => `
     <article class="product-card">
-      <div class="product-top">
-        <span class="tag${product.tagTone === "alt" ? " alt" : ""}">${product.badge}</span>
-        <span class="muted">Cube format</span>
-      </div>
       <div class="art" style="--swatch: ${product.swatch};">
         <img class="art-pack" src="${product.image}" alt="${product.name}">
       </div>
       <h3>${product.name}</h3>
+      <div class="inventory-status ${Number(inventoryBySlug.get(product.slug) ?? product.stockQuantity) > 0 ? "is-in-stock" : "is-backorder"}">
+        <span class="inventory-dot" aria-hidden="true"></span>
+        <span class="inventory-label">${Number(inventoryBySlug.get(product.slug) ?? product.stockQuantity) > 0 ? "I lager" : "Bestallningsvara"}</span>
+        <span class="inventory-count">${Number(inventoryBySlug.get(product.slug) ?? product.stockQuantity) > 0 ? `${Number(inventoryBySlug.get(product.slug) ?? product.stockQuantity)} st · Leveranstid 2-5 dagar` : "Leveranstid: 1-2 veckor"}</span>
+      </div>
       <p>${product.description}</p>
       <div class="product-meta">
         <div class="price">${formatSek(product.priceSek)}</div>
@@ -158,7 +161,34 @@ toggleProductsButton?.addEventListener("click", () => {
   renderProducts();
 });
 
+async function loadInventoryStatus() {
+  const slugs = products.map((product) => product.slug).filter(Boolean);
+
+  try {
+    const { data, error } = await supabase
+      .from("products")
+      .select("slug, stock_quantity")
+      .in("slug", slugs);
+
+    if (error || !Array.isArray(data)) {
+      return;
+    }
+
+    inventoryBySlug = new Map(products.map((product) => [product.slug, product.stockQuantity]));
+    data.forEach((row) => {
+      if (typeof row.slug === "string" && Number.isFinite(row.stock_quantity)) {
+        inventoryBySlug.set(row.slug, row.stock_quantity);
+      }
+    });
+
+    renderProducts();
+  } catch {
+    // Keep local fallback stock values if Supabase inventory is unavailable.
+  }
+}
+
 window.addEventListener("mana-cart-updated", renderCartCount);
 
 renderProducts();
 renderCartCount();
+loadInventoryStatus();

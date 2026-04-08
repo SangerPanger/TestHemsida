@@ -872,6 +872,42 @@
       line-height: 0.92;
     }
 
+    .inventory-status {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin: 10px 0 0;
+      font-size: 0.9rem;
+    }
+
+    .inventory-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      flex: 0 0 auto;
+      box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.04);
+    }
+
+    .inventory-label {
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .inventory-count {
+      color: var(--muted);
+    }
+
+    .inventory-status.is-in-stock .inventory-dot {
+      background: #7dff9d;
+      box-shadow: 0 0 0 4px rgba(125, 255, 157, 0.12);
+    }
+
+    .inventory-status.is-backorder .inventory-dot {
+      background: #ffd45d;
+      box-shadow: 0 0 0 4px rgba(255, 212, 93, 0.12);
+    }
+
     .product-card p {
       color: var(--muted);
       margin: 10px 0 16px;
@@ -1170,9 +1206,6 @@
         <div>
           <div class="eyebrow">Product Grid</div>
           <h2>ManaMarket Picks</h2>
-          <p>
-            Jag har byggt en tydlig butiksyta runt LOOT Cubes-kollektionen. Korten ar stylade for att kannas premium, snabba att skanna och enkla att bygga vidare pa nar ni vill koppla riktig checkout senare.
-          </p>
         </div>
       </div>
       <div class="products-actions">
