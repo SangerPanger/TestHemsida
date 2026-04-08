@@ -5,7 +5,10 @@ const form = document.querySelector("[data-review-form]");
 
 if (form) {
   const flavorSelect = form.querySelector("[data-review-flavor]");
-  const ratingSelect = form.querySelector("[data-review-rating]");
+  const ratingInput = form.querySelector("[data-review-rating]");
+  const ratingGrid = form.querySelector("[data-review-rating-grid]");
+  const ratingBars = Array.from(form.querySelectorAll("[data-rating-value]"));
+  const ratingCurrent = form.querySelector("[data-review-rating-current]");
   const commentField = form.querySelector("[data-review-comment]");
   const charCount = form.querySelector("[data-review-char-count]");
   const feedback = form.querySelector("[data-review-feedback]");
@@ -35,6 +38,56 @@ if (form) {
     charCount.textContent = `${commentField.value.length} / 150`;
   }
 
+  function formatRating(value) {
+    return Number(value).toFixed(1);
+  }
+
+  function clampRating(value) {
+    if (!Number.isFinite(value)) {
+      return 0;
+    }
+
+    return Math.min(5, Math.max(0, Math.round(value * 2) / 2));
+  }
+
+  function updateRating(value) {
+    const normalized = clampRating(value);
+
+    if (ratingInput) {
+      ratingInput.value = normalized ? String(normalized) : "";
+    }
+
+    if (ratingGrid) {
+      ratingGrid.setAttribute("aria-valuenow", String(normalized));
+      ratingGrid.setAttribute("aria-valuetext", `${formatRating(normalized)} av 5`);
+    }
+
+    if (ratingCurrent) {
+      ratingCurrent.textContent = `${formatRating(normalized)} / 5.0`;
+    }
+
+    ratingBars.forEach((bar, index) => {
+      const barValue = index + 1;
+      const fill = bar.querySelector(".review-rating-bar-fill");
+      const fillAmount = Math.max(0, Math.min(1, normalized - (barValue - 1)));
+
+      bar.classList.toggle("is-active", fillAmount > 0);
+      bar.setAttribute("aria-pressed", fillAmount > 0 ? "true" : "false");
+
+      if (fill) {
+        fill.style.height = `${fillAmount * 100}%`;
+      }
+    });
+  }
+
+  function ratingFromPointer(event, button) {
+    const baseValue = Number(button.dataset.ratingValue || "0");
+    const rect = button.getBoundingClientRect();
+    const offsetX = event.clientX - rect.left;
+    const isHalf = offsetX < rect.width / 2;
+    return baseValue - (isHalf ? 0.5 : 0);
+  }
+
   function renderPreview(product) {
     if (!previewName || !previewNote || !previewArt || !previewImage) {
       return;
@@ -56,6 +109,36 @@ if (form) {
     previewImage.alt = product.name;
   }
 
+  ratingBars.forEach((bar) => {
+    bar.addEventListener("click", (event) => {
+      updateRating(ratingFromPointer(event, bar));
+    });
+  });
+
+  ratingGrid?.addEventListener("keydown", (event) => {
+    const currentValue = Number(ratingInput?.value || 0);
+
+    if (event.key === "ArrowRight" || event.key === "ArrowUp") {
+      event.preventDefault();
+      updateRating(currentValue + 0.5);
+    }
+
+    if (event.key === "ArrowLeft" || event.key === "ArrowDown") {
+      event.preventDefault();
+      updateRating(currentValue - 0.5);
+    }
+
+    if (event.key === "Home") {
+      event.preventDefault();
+      updateRating(0);
+    }
+
+    if (event.key === "End") {
+      event.preventDefault();
+      updateRating(5);
+    }
+  });
+
   commentField.addEventListener("input", updateCharCount);
   flavorSelect.addEventListener("change", () => {
     const selectedProduct = products.find((product) => product.slug === flavorSelect.value);
@@ -63,13 +146,14 @@ if (form) {
   });
 
   updateCharCount();
+  updateRating(0);
   renderPreview();
 
   form.addEventListener("submit", async (event) => {
     event.preventDefault();
 
     const flavorSlug = flavorSelect.value;
-    const rating = Number(ratingSelect.value);
+    const rating = Number(ratingInput?.value);
     const comment = commentField.value.trim();
     const selectedProduct = products.find((product) => product.slug === flavorSlug);
 
@@ -78,8 +162,8 @@ if (form) {
       return;
     }
 
-    if (!Number.isInteger(rating) || rating < 0 || rating > 5) {
-      setFeedback("Betyget maste vara mellan 0 och 5.", "is-error");
+    if (!Number.isFinite(rating) || rating < 0 || rating > 5 || Math.round(rating * 2) !== rating * 2) {
+      setFeedback("Betyget maste vara mellan 0.0 och 5.0 i steg om 0.5.", "is-error");
       return;
     }
 
@@ -119,6 +203,7 @@ if (form) {
 
       form.reset();
       updateCharCount();
+      updateRating(0);
       renderPreview();
       setFeedback("Review sparad. Den visas nar den ar godkand.", "is-success");
     } catch (error) {

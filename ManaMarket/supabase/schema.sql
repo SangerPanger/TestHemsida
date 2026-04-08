@@ -104,7 +104,7 @@ create table if not exists public.reviews (
   user_id uuid not null references auth.users(id) on delete cascade,
   flavor_slug text not null,
   flavor_name text not null,
-  rating smallint not null check (rating between 0 and 5),
+  rating numeric(2,1) not null check (rating between 0 and 5 and mod(rating * 10, 5) = 0),
   comment text not null check (char_length(comment) between 1 and 150),
   approved boolean not null default false,
   created_at timestamptz not null default timezone('utc', now()),

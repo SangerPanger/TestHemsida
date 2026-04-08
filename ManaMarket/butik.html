@@ -840,6 +840,78 @@
       resize: vertical;
     }
 
+    .review-rating {
+      display: grid;
+      gap: 12px;
+    }
+
+    .review-rating-grid {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .review-rating-bar {
+      position: relative;
+      width: 100%;
+      min-height: 72px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: rgba(7, 12, 23, 0.92);
+      cursor: pointer;
+      overflow: hidden;
+      padding: 0;
+    }
+
+    .review-rating-bar::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.08), transparent 55%);
+      pointer-events: none;
+    }
+
+    .review-rating-bar-fill {
+      position: absolute;
+      left: 0;
+      bottom: 0;
+      width: 100%;
+      height: 0%;
+      background: linear-gradient(180deg, #c8ff63, #5ce1ff);
+      transition: height 180ms ease, opacity 180ms ease;
+      opacity: 0.2;
+    }
+
+    .review-rating-bar.is-active .review-rating-bar-fill {
+      opacity: 1;
+    }
+
+    .review-rating-bar-value {
+      position: absolute;
+      inset: auto 10px 10px;
+      z-index: 1;
+      text-align: center;
+      font-size: 0.82rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      color: var(--text);
+    }
+
+    .review-rating-scale {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      color: var(--muted);
+      font-size: 0.8rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .review-rating-current {
+      color: var(--lime);
+      font-weight: 700;
+    }
+
     .review-form-meta {
       display: flex;
       justify-content: space-between;
@@ -1197,6 +1269,14 @@
         min-height: 280px;
         height: 280px;
       }
+
+      .review-rating-grid {
+        gap: 8px;
+      }
+
+      .review-rating-bar {
+        min-height: 64px;
+      }
     }
 
     @media (max-width: 760px) {
@@ -1468,17 +1548,36 @@
                 <option value="">Valj smak</option>
               </select>
             </div>
-            <div class="review-form-field">
+            <div class="review-form-field review-rating">
               <label for="review-rating">Betyg</label>
-              <select id="review-rating" name="rating" data-review-rating required>
-                <option value="">Valj betyg</option>
-                <option value="0">0</option>
-                <option value="1">1</option>
-                <option value="2">2</option>
-                <option value="3">3</option>
-                <option value="4">4</option>
-                <option value="5">5</option>
-              </select>
+              <input id="review-rating" type="hidden" name="rating" value="" data-review-rating required>
+              <div class="review-rating-grid" data-review-rating-grid role="slider" aria-label="Betyg" aria-valuemin="0" aria-valuemax="5" aria-valuenow="0" aria-valuetext="0.0 av 5" tabindex="0">
+                <button class="review-rating-bar" type="button" data-rating-value="1" aria-label="Bar 1">
+                  <span class="review-rating-bar-fill"></span>
+                  <span class="review-rating-bar-value">1</span>
+                </button>
+                <button class="review-rating-bar" type="button" data-rating-value="2" aria-label="Bar 2">
+                  <span class="review-rating-bar-fill"></span>
+                  <span class="review-rating-bar-value">2</span>
+                </button>
+                <button class="review-rating-bar" type="button" data-rating-value="3" aria-label="Bar 3">
+                  <span class="review-rating-bar-fill"></span>
+                  <span class="review-rating-bar-value">3</span>
+                </button>
+                <button class="review-rating-bar" type="button" data-rating-value="4" aria-label="Bar 4">
+                  <span class="review-rating-bar-fill"></span>
+                  <span class="review-rating-bar-value">4</span>
+                </button>
+                <button class="review-rating-bar" type="button" data-rating-value="5" aria-label="Bar 5">
+                  <span class="review-rating-bar-fill"></span>
+                  <span class="review-rating-bar-value">5</span>
+                </button>
+              </div>
+              <div class="review-rating-scale">
+                <span>0.0</span>
+                <span class="review-rating-current" data-review-rating-current>0.0 / 5.0</span>
+                <span>5.0</span>
+              </div>
             </div>
             <div class="review-form-field">
               <label for="review-comment">Kommentar</label>
