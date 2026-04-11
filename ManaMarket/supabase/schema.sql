@@ -163,17 +163,17 @@ set search_path = public
 as $$
 declare
   normalized_code text := upper(trim(coalesce(p_code, '')));
-  invite_is_valid boolean;
+  is_valid boolean;
 begin
+  -- Exclusively check profiles table for referral_code (as per user request to only accept referral_codes)
   select exists (
     select 1
-    from public.invite_codes
-    where upper(trim(code)) = normalized_code
-      and active = true
+    from public.profiles
+    where upper(trim(referral_code)) = normalized_code
   )
-  into invite_is_valid;
+  into is_valid;
 
-  return invite_is_valid;
+  return is_valid;
 end;
 $$;
 
@@ -246,6 +246,7 @@ begin
 end;
 $$;
 
+drop trigger if exists on_order_paid_distribute_commissions on public.orders;
 create trigger on_order_paid_distribute_commissions
   after update on public.orders
   for each row execute procedure public.process_order_commissions();

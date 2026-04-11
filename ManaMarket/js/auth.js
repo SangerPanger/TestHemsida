@@ -112,7 +112,7 @@ function showModePrompt() {
     "",
     "Vill du",
     "1. logga in",
-    "2. registrera konto [inbjudan-kravs]",
+    "2. registrera konto [referal-kod-kravs]",
     "Skriv 1 eller 2."
   ], () => showInput("text"));
 }
@@ -128,11 +128,22 @@ function showSigninFlow() {
 
 function showSignupFlow() {
   flow = "signup-invite";
+  const storedRef = sessionStorage.getItem("mana_referral");
+
+  if (storedRef) {
+    pending.inviteCode = storedRef;
+    commandInput.value = storedRef;
+  }
+
   typeLines([
     "",
     "Registrera konto vald.",
-    "Ange din inbjudningskod."
+    "Ange din referal-kod."
   ], () => showInput("text"));
+
+  if (storedRef) {
+    commandInput.value = storedRef;
+  }
 }
 
 function handleGlobalCommand(command) {
@@ -294,7 +305,7 @@ async function submitSignup() {
           last_name: pending.lastName,
           full_name: fullName,
           invite_code: pending.inviteCode,
-          referral_code: sessionStorage.getItem("mana_referral") || "",
+          referral_code: pending.inviteCode || sessionStorage.getItem("mana_referral") || "",
           street_1: pending.street1,
           postal_code: pending.postalCode,
           city: pending.city
