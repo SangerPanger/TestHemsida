@@ -123,7 +123,12 @@ async function loadProfile() {
   const resolvedAddress = resolveAddress(primaryAddress, user);
   const profileName = resolveProfileName(profile, user);
   const email = profile?.email || user.email || "-";
-  const referralCode = profile?.referral_code || "-";
+  let referralCode = profile?.referral_code || "-";
+
+  // If code is missing (e.g. for some legacy reasons even after backfill),
+  // we can show a placeholder or handle it.
+  // But for now, we expect it to be there if the user is in profiles.
+
   const baseUrl = window.location.origin + window.location.pathname.replace("minprofil.html", "auth.html");
   const referralLink = referralCode !== "-" ? `${baseUrl}?ref=${referralCode}` : "-";
 

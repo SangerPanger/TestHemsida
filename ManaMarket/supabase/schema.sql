@@ -50,6 +50,15 @@ create table if not exists public.profiles (
   referral_code text unique default null
 );
 
+-- Ensure columns exist if the table was already created
+alter table public.profiles add column if not exists referrer_id uuid references public.profiles(id) on delete set null;
+alter table public.profiles add column if not exists referral_code text unique default null;
+
+-- Backfill referral codes for existing users who don't have one
+update public.profiles
+set referral_code = upper(substring(md5(random()::text) from 1 for 8))
+where referral_code is null;
+
 create unique index if not exists profiles_referral_code_upper_idx
   on public.profiles ((upper(trim(referral_code))));
 
