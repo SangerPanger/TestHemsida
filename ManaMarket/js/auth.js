@@ -5,7 +5,13 @@ const inputLine = document.getElementById("input-line");
 const commandInput = document.getElementById("commandInput");
 
 const speed = 18;
-const nextParam = new URLSearchParams(window.location.search).get("next");
+const urlParams = new URLSearchParams(window.location.search);
+const nextParam = urlParams.get("next");
+const refCode = urlParams.get("ref");
+
+if (refCode) {
+  sessionStorage.setItem("mana_referral", refCode);
+}
 const nextPath = nextParam === "checkout"
   ? "checkout.html"
   : nextParam === "profile"
@@ -288,6 +294,7 @@ async function submitSignup() {
           last_name: pending.lastName,
           full_name: fullName,
           invite_code: pending.inviteCode,
+          referral_code: sessionStorage.getItem("mana_referral") || "",
           street_1: pending.street1,
           postal_code: pending.postalCode,
           city: pending.city

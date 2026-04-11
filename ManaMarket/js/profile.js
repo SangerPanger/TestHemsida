@@ -112,16 +112,20 @@ async function loadProfile() {
   gate.hidden = true;
   content.hidden = false;
 
-  const [{ data: profile }, { data: addresses }, { data: orders, error: ordersError }] = await Promise.all([
-    supabase.from("profiles").select("full_name, email").eq("id", user.id).maybeSingle(),
+  const [{ data: profile }, { data: addresses }, { data: orders, error: ordersError }, { data: commissionBalance }] = await Promise.all([
+    supabase.from("profiles").select("full_name, email, referral_code").eq("id", user.id).maybeSingle(),
     supabase.from("addresses").select("street_1, postal_code, city, country, is_default, created_at").eq("user_id", user.id).order("is_default", { ascending: false }).order("created_at", { ascending: false }).limit(1),
-    supabase.from("orders").select("id, status, total_cents, currency, created_at, order_items(product_name, quantity, unit_price_cents)").eq("user_id", user.id).order("created_at", { ascending: false })
+    supabase.from("orders").select("id, status, total_cents, currency, created_at, order_items(product_name, quantity, unit_price_cents)").eq("user_id", user.id).order("created_at", { ascending: false }),
+    supabase.rpc("get_total_available_commission", { p_user_id: user.id })
   ]);
 
   const primaryAddress = Array.isArray(addresses) && addresses.length ? addresses[0] : null;
   const resolvedAddress = resolveAddress(primaryAddress, user);
   const profileName = resolveProfileName(profile, user);
   const email = profile?.email || user.email || "-";
+  const referralCode = profile?.referral_code || "-";
+  const baseUrl = window.location.origin + window.location.pathname.replace("minprofil.html", "auth.html");
+  const referralLink = referralCode !== "-" ? `${baseUrl}?ref=${referralCode}` : "-";
 
   setText("[data-profile-name]", profileName);
   setText("[data-profile-full-name]", profileName);
@@ -129,14 +133,18 @@ async function loadProfile() {
   setText("[data-profile-email-row]", email);
   setText("[data-profile-street]", resolvedAddress.street);
   setText("[data-profile-postal]", resolvedAddress.postal);
-  setText("[data-profile-city]", resolvedAddress.city);
   setText("[data-profile-city-row]", resolvedAddress.city);
   setText("[data-profile-country]", resolvedAddress.country);
-  setText("[data-address-street]", resolvedAddress.street);
-  setText("[data-address-city]", resolvedAddress.city);
-  setText("[data-address-postal]", resolvedAddress.postal);
-  setText("[data-address-default]", resolvedAddress.isDefault);
   setText("[data-profile-order-count]", String(Array.isArray(orders) ? orders.length : 0));
+
+  setText("[data-profile-referral-code]", referralCode);
+  const linkInput = document.querySelector("[data-profile-referral-link]");
+  if (linkInput) {
+    linkInput.value = referralLink;
+  }
+
+  const balanceCents = typeof commissionBalance === "number" ? commissionBalance : 0;
+  setText("[data-profile-commission-balance]", formatCurrency(balanceCents, "SEK"));
 
   if (ordersError) {
     statusNode.textContent = "Profil laddad, men orders kunde inte hamtas.";

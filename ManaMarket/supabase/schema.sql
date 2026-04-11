@@ -9,12 +9,28 @@ language plpgsql
 security definer
 set search_path = public
 as $$
+declare
+  v_referrer_id uuid;
+  v_referral_code text;
 begin
-  insert into public.profiles (id, email, full_name)
+  -- Resolve referrer_id from referral_code in metadata
+  if new.raw_user_meta_data ? 'referral_code' then
+    select id into v_referrer_id
+    from public.profiles
+    where referral_code = new.raw_user_meta_data ->> 'referral_code'
+    limit 1;
+  end if;
+
+  -- Generate a random referral code for the new user
+  v_referral_code := upper(substring(md5(random()::text) from 1 for 8));
+
+  insert into public.profiles (id, email, full_name, referrer_id, referral_code)
   values (
     new.id,
     new.email,
-    coalesce(new.raw_user_meta_data ->> 'full_name', '')
+    coalesce(new.raw_user_meta_data ->> 'full_name', ''),
+    v_referrer_id,
+    v_referral_code
   )
   on conflict (id) do update
   set email = excluded.email;
@@ -29,8 +45,13 @@ create table if not exists public.profiles (
   full_name text default '',
   phone text default '',
   created_at timestamptz not null default timezone('utc', now()),
-  updated_at timestamptz not null default timezone('utc', now())
+  updated_at timestamptz not null default timezone('utc', now()),
+  referrer_id uuid references public.profiles(id) on delete set null,
+  referral_code text unique default null
 );
+
+create unique index if not exists profiles_referral_code_upper_idx
+  on public.profiles ((upper(trim(referral_code))));
 
 create table if not exists public.addresses (
   id uuid primary key default gen_random_uuid(),
@@ -167,15 +188,101 @@ create trigger set_invite_codes_updated_at
   before update on public.invite_codes
   for each row execute procedure public.set_updated_at();
 
-drop trigger if exists set_orders_updated_at on public.orders;
-create trigger set_orders_updated_at
-  before update on public.orders
-  for each row execute procedure public.set_updated_at();
+create or replace function public.process_order_commissions()
+returns trigger
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v_current_user_id uuid;
+  v_referrer_id uuid;
+  v_commission_amount integer;
+  v_level integer := 1;
+begin
+  -- Only process if the order status changed to 'paid'
+  if (old.status != 'paid' and new.status = 'paid') then
+    v_current_user_id := new.user_id;
+
+    -- Level 1: Initial commission is 10% of the subtotal (subtotal_cents)
+    -- As per example: E buys for 1000 SEK, D (referrer) earns 100 SEK.
+    -- v_commission_amount is 10% of subtotal_cents.
+    v_commission_amount := floor(new.subtotal_cents * 0.1);
+
+    -- Loop until the commission is less than 100 cents (1 SEK) or no more referrers
+    while v_commission_amount >= 100 loop
+      -- Find the referrer of the current user
+      select referrer_id into v_referrer_id
+      from public.profiles
+      where id = v_current_user_id
+      limit 1;
+
+      -- If no referrer, we stop the line
+      if v_referrer_id is null then
+        exit;
+      end if;
+
+      -- Insert the commission record
+      insert into public.commissions (user_id, order_id, amount_cents, status, level)
+      values (v_referrer_id, new.id, v_commission_amount, 'available', v_level);
+
+      -- Next level: 10% of the current commission
+      v_commission_amount := floor(v_commission_amount * 0.1);
+      v_current_user_id := v_referrer_id;
+      v_level := v_level + 1;
+    end loop;
+  end if;
+
+  return new;
+end;
+$$;
+
+create trigger on_order_paid_distribute_commissions
+  after update on public.orders
+  for each row execute procedure public.process_order_commissions();
 
 drop trigger if exists set_reviews_updated_at on public.reviews;
 create trigger set_reviews_updated_at
   before update on public.reviews
   for each row execute procedure public.set_updated_at();
+
+create table if not exists public.commissions (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid not null references public.profiles(id) on delete cascade,
+  order_id uuid references public.orders(id) on delete cascade,
+  amount_cents integer not null check (amount_cents > 0),
+  status text not null default 'available' check (status in ('available', 'used')),
+  level integer not null check (level >= 1),
+  created_at timestamptz not null default timezone('utc', now())
+);
+
+alter table public.commissions enable row level security;
+
+drop policy if exists "Commissions are viewable by owner" on public.commissions;
+create policy "Commissions are viewable by owner"
+  on public.commissions
+  for select
+  to authenticated
+  using (auth.uid() = user_id);
+
+create or replace function public.get_total_available_commission(p_user_id uuid)
+returns integer
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  total_available integer;
+begin
+  select coalesce(sum(amount_cents), 0)
+  into total_available
+  from public.commissions
+  where user_id = p_user_id
+    and status = 'available';
+
+  return total_available;
+end;
+$$;
 
 alter table public.profiles enable row level security;
 alter table public.addresses enable row level security;

@@ -322,24 +322,17 @@
     <div data-profile-content hidden>
       <section class="hero">
         <article class="hero-card">
-          <div class="eyebrow">Min profil</div>
-          <h1><span data-profile-name>Din profil</span><br>Din adress.<br>Dina orders.</h1>
-          <p class="hero-copy">
-            Har ser du dina sparade kontouppgifter, leveransuppgifter och tidigare bestallningar i samma stil som resten av ManaMarket.
-          </p>
-          <div class="hero-stats">
-            <div class="stat">
-              <strong data-profile-email>...</strong>
-              <span class="muted">konto-email</span>
+          <div class="panel-head">
+            <div>
+              <div class="eyebrow">Profiluppgifter</div>
             </div>
-            <div class="stat">
-              <strong data-profile-order-count>0</strong>
-              <span class="muted">bestallningar</span>
-            </div>
-            <div class="stat">
-              <strong data-profile-city>Ingen ort</strong>
-              <span class="muted">primar leveransort</span>
-            </div>
+          </div>
+          <div class="data-list">
+            <div class="data-row"><span>Namn</span><strong data-profile-full-name>-</strong></div>
+            <div class="data-row"><span>Email</span><strong data-profile-email-row>-</strong></div>
+            <div class="data-row"><span>Adress</span><strong data-profile-street>-</strong></div>
+            <div class="data-row"><span>Postnummer</span><strong data-profile-postal>-</strong></div>
+            <div class="data-row"><span>Ort</span><strong data-profile-city-row>-</strong></div>
           </div>
         </article>
 
@@ -362,33 +355,38 @@
         <article class="panel">
           <div class="panel-head">
             <div>
-              <div class="eyebrow">Profiluppgifter</div>
-              <h2>Dina uppgifter</h2>
+              <div class="eyebrow">Referral System</div>
+              <h2>Bjud in vanner</h2>
             </div>
           </div>
+          <p class="muted" style="margin-bottom: 16px;">
+            Dela din lank och tjana 10% rabatt pa deras kop.
+          </p>
           <div class="data-list">
-            <div class="data-row"><span>Namn</span><strong data-profile-full-name>-</strong></div>
-            <div class="data-row"><span>Email</span><strong data-profile-email-row>-</strong></div>
-            <div class="data-row"><span>Adress</span><strong data-profile-street>-</strong></div>
-            <div class="data-row"><span>Postnummer</span><strong data-profile-postal>-</strong></div>
-            <div class="data-row"><span>Ort</span><strong data-profile-city-row>-</strong></div>
-            <div class="data-row"><span>Land</span><strong data-profile-country>-</strong></div>
+            <div class="data-row">
+              <span>Din kod</span>
+              <strong data-profile-referral-code>-</strong>
+            </div>
+            <div class="data-row" style="flex-direction: column; align-items: stretch; gap: 8px;">
+              <span>Din personliga lank</span>
+              <input type="text" data-profile-referral-link readonly
+                style="background: var(--panel); border: 1px solid var(--line); color: var(--cyan); padding: 10px; border-radius: 8px; font-family: inherit; font-size: 0.9rem; width: 100%;">
+            </div>
+          </div>
+          <div class="hero-stats">
+            <div class="stat">
+              <strong data-profile-commission-balance>0 SEK</strong>
+              <span class="muted">rabatt-saldo</span>
+            </div>
+            <div class="stat">
+              <strong data-profile-order-count>0</strong>
+              <span class="muted">bestallningar</span>
+            </div>
           </div>
         </article>
 
         <article class="panel">
-          <div class="panel-head">
-            <div>
-              <div class="eyebrow">Adressbok</div>
-              <h2>Primar leveransadress</h2>
-            </div>
-          </div>
-          <div class="data-list">
-            <div class="data-row"><span>Adressrad</span><strong data-address-street>-</strong></div>
-            <div class="data-row"><span>Ort</span><strong data-address-city>-</strong></div>
-            <div class="data-row"><span>Postnummer</span><strong data-address-postal>-</strong></div>
-            <div class="data-row"><span>Status</span><strong data-address-default>-</strong></div>
-          </div>
+
         </article>
       </section>
 
