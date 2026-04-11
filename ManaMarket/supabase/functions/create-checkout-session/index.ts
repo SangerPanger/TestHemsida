@@ -23,20 +23,44 @@ const stripe = new Stripe(stripeSecretKey, {
 });
 
 const productCatalog = {
-  "clover-curse": {
-    name: "Clover Curse",
-    unitAmountOre: 28900
-  },
   "ultra-instinct": {
     name: "Ultra Instinct",
     unitAmountOre: 28900
   },
-  "sunburst-rush": {
-    name: "Sunburst Rush",
+  "loot-devil-fruit-dose": {
+    name: "Devil Fruit",
     unitAmountOre: 28900
   },
-  "starter-stack": {
-    name: "Starter Stack",
+  "limited-black-loot-edition": {
+    name: "Black LOOT Edition",
+    unitAmountOre: 28900
+  },
+  "rare-raspberry": {
+    name: "Rare Raspberry",
+    unitAmountOre: 28900
+  },
+  "cactus-calamity": {
+    name: "Cactus Calamity",
+    unitAmountOre: 28900
+  },
+  "loot-sour-shock-dose": {
+    name: "Sour Shock",
+    unitAmountOre: 28900
+  },
+  "loot-tiki-tropicali-dose": {
+    name: "Tiki Tropicali",
+    unitAmountOre: 28900
+  },
+  "loot-kimetsu-no-kiba-dose": {
+    name: "Kimetsu No Kiba",
+    unitAmountOre: 28900
+  },
+  "loot-phoenix-flames-dose": {
+    name: "Phoenix Flames",
+    unitAmountOre: 28900
+  },
+  "invincible-ice-tea": {
+    name: "Invincible Ice Tea",
     unitAmountOre: 28900
   }
 } as const;
