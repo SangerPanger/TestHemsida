@@ -139,6 +139,8 @@ Deno.serve(async (request) => {
         : "";
     const siteUrl = isValidSiteUrl(requestedSiteUrl) ? requestedSiteUrl : "";
 
+    const cartItemsForMetadata = [];
+
     if (items.length === 0) {
       return json({ error: "Varukorgen ar tom." }, 400);
     }
@@ -195,6 +197,14 @@ Deno.serve(async (request) => {
         },
         quantity
       });
+
+      // Spara ner infon för att skicka till webhooken
+      cartItemsForMetadata.push({
+        id: dbProduct.slug,
+        name: dbProduct.name,
+        quantity: quantity,
+        price: unitAmount
+      });
     }
 
     const shippingOre = 4900;
@@ -233,7 +243,8 @@ Deno.serve(async (request) => {
       cancel_url: `${siteUrl}checkout-cancel.html`,
       metadata: {
         user_id: user.id,
-        item_count: String(items.length)
+        item_count: String(items.length),
+        cart_items: JSON.stringify(cartItemsForMetadata)
       }
     });
 
