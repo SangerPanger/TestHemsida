@@ -433,9 +433,23 @@ create policy "Reviews are updatable by owner"
   using (auth.uid() = user_id)
   with check (auth.uid() = user_id);
 
-drop policy if exists "Reviews are deletable by owner" on public.reviews;
-create policy "Reviews are deletable by owner"
-  on public.reviews
-  for delete
-  to authenticated
-  using (auth.uid() = user_id);
+-- Seed products
+insert into public.products (slug, name, description, price_cents, stock_quantity, active)
+values
+  ('ultra-instinct', 'Ultra Instinct', 'Peach ice tea / clean focus', 28900, 14, true),
+  ('loot-devil-fruit-dose', 'Devil Fruit', 'Multivitamin / anime drop', 28900, 11, true),
+  ('limited-black-loot-edition', 'Black LOOT Edition', 'Blackberry / blackcurrant dark', 28900, 0, true),
+  ('rare-raspberry', 'Rare Raspberry', 'Raspberry / sweet-sour', 28900, 9, true),
+  ('cactus-calamity', 'Cactus Calamity', 'Cactus lime / sharp fresh', 28900, 7, true),
+  ('loot-sour-shock-dose', 'Sour Shock', 'Sour candy / electric hit', 28900, 0, true),
+  ('loot-tiki-tropicali-dose', 'Tiki Tropicali', 'Tropical mix / beach energy', 28900, 12, true),
+  ('loot-kimetsu-no-kiba-dose', 'Kimetsu No Kiba', 'Limited anime / collector front', 28900, 0, true),
+  ('loot-phoenix-flames-dose', 'Phoenix Flames', 'Fiery fruit / red-orange heat', 28900, 6, true),
+  ('invincible-ice-tea', 'Invincible Ice Tea', 'Ice tea / smooth chill', 28900, 8, true)
+on conflict (slug) do update
+set
+  name = excluded.name,
+  description = excluded.description,
+  price_cents = excluded.price_cents,
+  stock_quantity = excluded.stock_quantity,
+  active = excluded.active;

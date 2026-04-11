@@ -22,6 +22,7 @@ const stripe = new Stripe(stripeSecretKey, {
   apiVersion: "2024-06-20"
 });
 
+// productCatalog is kept as fallback or reference if needed, but we now use the database
 const productCatalog = {
   "ultra-instinct": {
     name: "Ultra Instinct",
@@ -153,23 +154,44 @@ Deno.serve(async (request) => {
     const lineItems = [];
     let subtotalOre = 0;
 
+    // Fetch product data from database to ensure up-to-date pricing and stock
+    const { data: dbProducts, error: dbError } = await supabase
+      .from("products")
+      .select("slug, name, price_cents, stock_quantity, active")
+      .in("slug", items.map((item: any) => item.id));
+
+    if (dbError) {
+      throw new Error(`Kunde inte hamta produktdata: ${dbError.message}`);
+    }
+
+    const productMap = new Map(dbProducts?.map(p => [p.slug, p]));
+
     for (const item of items) {
       const productId = typeof item?.id === "string" ? item.id : "";
       const quantity = Number.isFinite(item?.quantity) ? Math.max(1, Math.floor(item.quantity)) : 0;
-      const product = productCatalog[productId as keyof typeof productCatalog];
 
-      if (!product || quantity < 1) {
-        return json({ error: "Ogiltig produkt i varukorgen." }, 400);
+      const dbProduct = productMap.get(productId);
+
+      if (!dbProduct || !dbProduct.active) {
+        return json({ error: `Produkten "${productId}" hittades inte eller ar inte aktiv.` }, 400);
       }
 
-      subtotalOre += product.unitAmountOre * quantity;
+      if (dbProduct.stock_quantity < quantity) {
+        return json({
+          error: `Tyvarr finns bara ${dbProduct.stock_quantity} st kvar av "${dbProduct.name}". Justera din varukorg.`
+        }, 400);
+      }
+
+      const unitAmount = dbProduct.price_cents;
+      subtotalOre += unitAmount * quantity;
+
       lineItems.push({
         price_data: {
           currency: "sek",
           product_data: {
-            name: product.name
+            name: dbProduct.name
           },
-          unit_amount: product.unitAmountOre
+          unit_amount: unitAmount
         },
         quantity
       });
