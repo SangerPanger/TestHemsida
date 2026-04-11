@@ -210,7 +210,8 @@ declare
   v_level integer := 1;
 begin
   -- Only process if the order status changed to 'paid'
-  if (old.status != 'paid' and new.status = 'paid') then
+  -- We use (old.status is distinct from 'paid' and new.status = 'paid') to handle nulls and initial inserts
+  if (new.status = 'paid' and (old.status is null or old.status != 'paid')) then
     v_current_user_id := new.user_id;
 
     -- Level 1: Initial commission is 10% of the subtotal (subtotal_cents)
@@ -248,7 +249,7 @@ $$;
 
 drop trigger if exists on_order_paid_distribute_commissions on public.orders;
 create trigger on_order_paid_distribute_commissions
-  after update on public.orders
+  after insert or update on public.orders
   for each row execute procedure public.process_order_commissions();
 
 drop trigger if exists set_reviews_updated_at on public.reviews;

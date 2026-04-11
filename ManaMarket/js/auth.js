@@ -130,20 +130,17 @@ function showSignupFlow() {
   flow = "signup-invite";
   const storedRef = sessionStorage.getItem("mana_referral");
 
-  if (storedRef) {
-    pending.inviteCode = storedRef;
-    commandInput.value = storedRef;
-  }
-
   typeLines([
     "",
     "Registrera konto vald.",
     "Ange din referal-kod."
-  ], () => showInput("text"));
-
-  if (storedRef) {
-    commandInput.value = storedRef;
-  }
+  ], () => {
+    showInput("text");
+    if (storedRef) {
+      commandInput.value = storedRef;
+      pending.inviteCode = storedRef;
+    }
+  });
 }
 
 function handleGlobalCommand(command) {
@@ -304,7 +301,6 @@ async function submitSignup() {
           first_name: pending.firstName,
           last_name: pending.lastName,
           full_name: fullName,
-          invite_code: pending.inviteCode,
           referral_code: pending.inviteCode || sessionStorage.getItem("mana_referral") || "",
           street_1: pending.street1,
           postal_code: pending.postalCode,
