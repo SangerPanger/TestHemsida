@@ -33,7 +33,7 @@ if (form) {
       return email.split("@")[0];
     }
 
-    return "ManaMarket User";
+    return "manabutiken User";
   }
 
   function getInitials(name) {
@@ -58,7 +58,7 @@ if (form) {
       card.classList.add("is-pending");
     }
 
-    const displayName = (review.display_name || "").trim() || "ManaMarket User";
+    const displayName = (review.display_name || "").trim() || "manabutiken User";
     const metaLabel = review.approved ? review.flavor_name : "Pending review";
 
     const head = document.createElement("div");

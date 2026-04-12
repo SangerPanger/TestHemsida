@@ -228,7 +228,7 @@ Deno.serve(async (request) => {
         amount_off: discountOre,
         currency: "sek",
         duration: "once",
-        name: "ManaMarket cart discount"
+        name: "manabutiken cart discount"
       });
 
       discounts = [{ coupon: coupon.id }];

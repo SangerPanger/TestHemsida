@@ -1,4 +1,4 @@
--- ManaMarket Supabase schema
+-- manabutiken Supabase schema
 -- Run this in Supabase SQL Editor.
 
 create extension if not exists "pgcrypto";

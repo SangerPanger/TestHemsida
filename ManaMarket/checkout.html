@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>ManaMarket | Checkout</title>
-  <meta name="description" content="ManaMarket checkout med varukorg, orderoversikt och tydliga checkout-falt.">
+  <title>manabutiken | Checkout</title>
+  <meta name="description" content="manabutiken checkout med varukorg, orderoversikt och tydliga checkout-falt.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Bebas+Neue&display=swap" rel="stylesheet">
@@ -270,6 +270,17 @@
       color: rgba(255, 255, 255, 0.14);
     }
 
+    .thumb-img {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 60px;
+      height: 60px;
+      object-fit: contain;
+      z-index: 1;
+    }
+
     .item h3 { font-size: 1.8rem; }
     .qty,
     .price {
@@ -421,8 +432,8 @@
   <header class="topbar">
     <div class="shell topbar-inner">
       <a class="brand" href="index.html">
-        <span class="brand-mark">MM</span>
-        <span>ManaMarket</span>
+        <span class="brand-mark">MB</span>
+        <span>manabutiken</span>
       </a>
       <nav class="nav" aria-label="Huvudnavigation">
         <a href="butik.html">Butik</a>
@@ -445,52 +456,12 @@
     </section>
 
     <div data-checkout-content hidden>
-    <section class="hero">
-      <article class="hero-card">
-        <div class="eyebrow">Checkout</div>
-        <h1>Din loot.<br>Din cart.<br>Din run.</h1>
-        <p class="hero-copy">
-          En checkout-sida som matchar butikens energi. Har finns varukorg, orderoversikt och checkout-falt i samma premiumstil.
-        </p>
-        <div class="hero-stats">
-          <div class="stat">
-            <strong data-checkout-email>...</strong>
-            <span class="muted">inloggad kund</span>
-          </div>
-          <div class="stat">
-            <strong data-cart-subtotal>0 SEK</strong>
-            <span class="muted">subtotal</span>
-          </div>
-          <div class="stat">
-            <strong data-cart-count>0</strong>
-            <span class="muted">items i carten</span>
-          </div>
-        </div>
-      </article>
-
-      <aside class="panel">
-        <div class="panel-head">
-          <div>
-            <div class="eyebrow">Order Summary</div>
-            <h2>Din varukorg</h2>
-          </div>
-        </div>
-        <div class="summary">
-          <div class="summary-line"><span>Subtotal</span><strong data-cart-subtotal>0 SEK</strong></div>
-          <div class="summary-line"><span>Frakt</span><strong data-cart-shipping>0 SEK</strong></div>
-          <div class="summary-line"><span>Discount</span><strong data-cart-discount>0 SEK</strong></div>
-          <div class="summary-line total"><span>Totalt</span><strong data-cart-total>0 SEK</strong></div>
-        </div>
-        <p class="footnote">Varukorgen ar nu lokal och sparas i din webblasare. Stripe kan kopplas pa ovanpa detta senare.</p>
-      </aside>
-    </section>
 
     <section class="checkout-grid">
       <article class="panel">
         <div class="panel-head">
           <div>
-            <div class="eyebrow">Cart Items</div>
-            <h2>Produkter</h2>
+            <div class="eyebrow">Din Varukorg</div>
           </div>
           <span class="muted"><span data-cart-count>0</span> valda items</span>
         </div>
@@ -503,8 +474,7 @@
       <article class="panel">
         <div class="panel-head">
           <div>
-            <div class="eyebrow">Buyer Info</div>
-            <h2>Leverans & betalning</h2>
+            <div class="eyebrow">Leverans & betalning</div>
           </div>
         </div>
         <form>
@@ -537,19 +507,18 @@
             </label>
           </div>
         </form>
-
-        <div class="panel-head" style="margin-top: 24px;">
+        <br>
+        <div class="panel-head">
           <div>
-            <div class="eyebrow">Payment</div>
-            <h2>Betalsatt</h2>
+            <div class="eyebrow">Totalbelopp</div>
           </div>
         </div>
-        <div class="payment-list">
-          <div class="payment-row"><span>Kort</span><strong>Visa / Mastercard</strong></div>
-          <div class="payment-row"><span>Express</span><strong>PayPal</strong></div>
-          <div class="payment-row"><span>Wallet</span><strong>Apple Pay</strong></div>
+        <div class="summary">
+          <div class="summary-line"><span>Subtotal</span><strong data-cart-subtotal>0 SEK</strong></div>
+          <div class="summary-line"><span>Frakt</span><strong data-cart-shipping>0 SEK</strong></div>
+          <div class="summary-line"><span>Rabatt</span><strong data-cart-discount>0 SEK</strong></div>
+          <div class="summary-line total"><span>Totalt</span><strong data-cart-total>0 SEK</strong></div>
         </div>
-        <p class="footnote">Betalsatt valjs inne i Stripe Checkout efter att du klickat pa Slutfor kop.</p>
         <div class="checkout-status" data-checkout-status hidden></div>
 
         <div style="margin-top: 22px;">
@@ -557,6 +526,7 @@
           <button class="ghost" type="button" data-clear-cart style="margin-left:12px;">Tom varukorg</button>
           <button class="ghost" type="button" data-checkout-logout style="margin-left:12px;">Logga ut</button>
         </div>
+        <p class="footnote">Betalsätt väljs inne i Stripe Checkout efter att du klickat pa Slutför köp.</p>
       </article>
     </section>
     </div>

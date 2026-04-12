@@ -572,7 +572,7 @@ async function init() {
   }
 
   const intro = [
-    "ManaMarket access initieras...",
+    "manabutiken access initieras...",
     "Registrerade kunder far fortsatt till butik och checkout."
   ];
 
