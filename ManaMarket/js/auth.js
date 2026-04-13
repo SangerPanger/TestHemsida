@@ -4,7 +4,7 @@ const output = document.getElementById("output");
 const inputLine = document.getElementById("input-line");
 const commandInput = document.getElementById("commandInput");
 
-const speed = 18;
+const speed = 4;
 const urlParams = new URLSearchParams(window.location.search);
 const nextParam = urlParams.get("next");
 const refCode = urlParams.get("ref");

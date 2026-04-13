@@ -36,6 +36,25 @@ if (form) {
     return "manabutiken User";
   }
 
+  function formatPublicName(name) {
+    const parts = String(name || "")
+      .trim()
+      .split(/\s+/)
+      .filter(Boolean);
+
+    if (parts.length === 0) {
+      return "manabutiken User";
+    }
+
+    if (parts.length === 1) {
+      return parts[0];
+    }
+
+    const firstName = parts[0];
+    const lastName = parts[parts.length - 1];
+    return `${firstName} ${lastName[0]}.`;
+  }
+
   function getInitials(name) {
     const parts = String(name || "")
       .trim()
@@ -59,6 +78,7 @@ if (form) {
     }
 
     const displayName = (review.display_name || "").trim() || "manabutiken User";
+    const publicName = formatPublicName(displayName);
     const metaLabel = review.approved ? review.flavor_name : "Pending review";
 
     const head = document.createElement("div");
@@ -89,7 +109,7 @@ if (form) {
 
     const userMeta = document.createElement("div");
     const strong = document.createElement("strong");
-    strong.textContent = displayName;
+    strong.textContent = publicName;
     const sub = document.createElement("span");
     sub.textContent = review.approved ? review.flavor_slug : "Vantar pa godkannande";
 
