@@ -1356,6 +1356,199 @@
         min-height: 280px;
       }
     }
+    .flow-state-section {
+      margin: 60px 0;
+      display: flex;
+      flex-direction: column;
+      gap: 60px;
+    }
+
+    .flow-hero-banner {
+      position: relative;
+      border-radius: var(--radius-xl);
+      overflow: hidden;
+      aspect-ratio: 16/7;
+      border: 1px solid var(--line);
+    }
+
+    .flow-hero-banner img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .flow-hero-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(90deg, rgba(5, 9, 16, 0.9) 0%, rgba(5, 9, 16, 0.4) 50%, transparent 100%);
+      display: flex;
+      align-items: center;
+      padding: 0 60px;
+    }
+
+    .flow-hero-card {
+      max-width: 440px;
+      padding: 32px;
+      background: var(--panel-strong);
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--cyan);
+      border-radius: var(--radius-lg);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+    }
+
+    .flow-hero-card h2 {
+      margin: 0;
+      font-family: "Bebas Neue", sans-serif;
+      font-size: 2.5rem;
+      line-height: 1.1;
+      color: var(--text);
+    }
+
+    .flow-info-split {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 48px;
+      align-items: center;
+      background: var(--panel);
+      padding: 48px;
+      border-radius: var(--radius-xl);
+      border: 1px solid var(--line);
+    }
+
+    .flow-info-content h2 {
+      font-family: "Bebas Neue", sans-serif;
+      font-size: 2.8rem;
+      color: var(--cyan);
+      margin-bottom: 24px;
+    }
+
+    .flow-info-content p {
+      color: var(--muted);
+      font-size: 1.1rem;
+      line-height: 1.6;
+      margin-bottom: 20px;
+    }
+
+    .flow-info-image img {
+      width: 100%;
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow);
+    }
+
+    .flow-banner-mid {
+      border-radius: var(--radius-xl);
+      overflow: hidden;
+      border: 1px solid var(--line);
+    }
+
+    .flow-banner-mid img {
+      width: 100%;
+      display: block;
+    }
+
+    .flow-ingredients-box {
+      background: var(--panel);
+      padding: 60px;
+      border-radius: var(--radius-xl);
+      border: 1px solid var(--line);
+      text-align: center;
+    }
+
+    .flow-ingredients-box h2 {
+      font-family: "Bebas Neue", sans-serif;
+      font-size: 2.5rem;
+      margin-bottom: 40px;
+      max-width: 800px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .flow-grid-3x2 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 32px;
+      text-align: left;
+    }
+
+    .flow-ingredient {
+      padding: 24px;
+      background: rgba(255, 255, 255, 0.03);
+      border-radius: var(--radius-md);
+      border: 1px solid var(--line);
+    }
+
+    .flow-ingredient h3 {
+      font-family: "Bebas Neue", sans-serif;
+      font-size: 1.8rem;
+      color: var(--cyan);
+      margin: 0 0 8px 0;
+    }
+
+    .flow-ingredient small {
+      display: block;
+      color: var(--pink);
+      font-weight: 700;
+      margin-bottom: 12px;
+      text-transform: uppercase;
+      font-size: 0.75rem;
+    }
+
+    .flow-ingredient p {
+      font-size: 0.9rem;
+      color: var(--muted);
+      line-height: 1.5;
+      margin: 0;
+    }
+
+    .flow-summary-text {
+      margin-top: 40px;
+      color: var(--muted);
+      font-size: 1.1rem;
+      max-width: 900px;
+      margin-left: auto;
+      margin-right: auto;
+      line-height: 1.6;
+    }
+
+    .flow-usp-banner {
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      border: 1px solid var(--line);
+    }
+
+    .flow-usp-banner img {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+
+    @media (max-width: 1024px) {
+      .flow-grid-3x2 {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      .flow-info-split {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .flow-hero-overlay {
+        padding: 20px;
+        background: rgba(5, 9, 16, 0.7);
+      }
+      .flow-hero-card h2 {
+        font-size: 1.8rem;
+      }
+      .flow-grid-3x2 {
+        grid-template-columns: 1fr;
+      }
+      .flow-ingredients-box {
+        padding: 30px 20px;
+      }
+      .flow-hero-banner {
+        aspect-ratio: 1/1;
+      }
+    }
   </style>
 </head>
 <body>
@@ -1371,6 +1564,7 @@
         <a href="#reviews">Reviews</a>
         <a href="#vibes">Varfor den slar</a>
         <a href="#faq">FAQ</a>
+        <a href="#testa">Testa</a>
         <a class="ghost cart-link" href="checkout.html" aria-label="Ga till varukorg">
           <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
             <circle cx="9" cy="20" r="1.8"></circle>
@@ -1415,7 +1609,7 @@
         </p>
         <div class="hero-actions">
           <a class="cta" href="#produkter">Se sortiment</a>
-          <a class="ghost" href="https://lootdrink.de/en/collections/cubes" target="_blank" rel="noreferrer">Ga till originalkollektionen</a>
+          <a class="ghost" href="#testa">Läs mer om Loot Cubes</a>
         </div>
       </article>
 
@@ -1471,15 +1665,88 @@
             </div>
           </article>
         </div>
-        <p class="muted">
-          En snabb mix-guide direkt i hero-spalten. Tydligare onboarding, starkare visuell rytm och enklare for nya kunder att fatta hur cubes anvands.
-        </p>
-        <div class="pill-row">
-          <span class="pill">Quick prep flow</span>
-          <span class="pill">Visual instructions</span>
-          <span class="pill">Starter-friendly</span>
-        </div>
       </aside>
+    </section>
+
+    <section class="flow-state-section">
+      <!-- 1. Banner med gradientkort -->
+      <div class="flow-hero-banner">
+        <img src="bilder/VadArLoot/2402-loot_flow_state_banner_01.png" alt="LOOT Flow State Banner">
+        <div class="flow-hero-overlay">
+          <div class="flow-hero-card">
+            <h2>Vad är LOOT Cube Game booster och dess <br>kraft-pulver formel?</h2>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2. Mellanbanner -->
+      <div class="flow-banner-mid">
+        <img src="bilder/VadArLoot/2402-LOOT_BANNERSFLOW_STATE_FORMEL_WEB-100.png" alt="LOOT Flow State Formel Banner">
+      </div>
+
+      <!-- 3. Info sektion med sourshock bild -->
+      <div id="testa" class="flow-info-split">
+        <div class="flow-info-content">
+          <h2>Vad är ett kraft-tillstånd?</h2>
+          <p>
+          En viktig komponent i LOOT Game Booster är vår kraft-pulver®-formel. Denna formel är en särskilt utvecklad blandning av ingredienser som koffein, med målet att uppnå det så kallade “kraft-tillståndet” som amerikanerna kallar för flow.
+          </p>
+          <p>
+          kraft-tillståndet, är ett tillstånd där människor befinner sig i maximal koncentration och produktiv kreativitet. Det är tillståndet där människor arbetar som mest effektivt och känner sig som bäst.
+          </p>
+        </div>
+        <div class="flow-info-image">
+          <img src="bilder/VadArLoot/sourshock_Kopie.png" alt="LOOT Sourshock">
+        </div>
+      </div>
+
+      <!-- 4. Ingrediens Grid (3x2) -->
+      <div class="flow-ingredients-box">
+        <h3>Kraft-Pulver®-formeln från LOOT innehåller en kombination av bland annat koffein, biotin, mineraler och många vitaminer, som alla på olika sätt bidrar till att uppnå kraft-tillståndet.</h3>
+        <br>
+        <div class="flow-grid-3x2">
+          <article class="flow-ingredient">
+            <h3>Koffein</h3>
+            <p>ökar den kognitiva prestationsförmågan och främjar uppmärksamhet och koncentration. Det hjälper kroppen att frigöra energi från kolhydrater och är viktigt för nervsystemets funktion. Koffein kan bidra till att minska trötthet och utmattning, vilket är särskilt viktigt vid långa spelsessioner.</p>
+          </article>
+
+          <article class="flow-ingredient">
+            <h3>Biotin</h3>
+            <small>(även känt som vitamin B7)</small>
+            <p>är viktigt för metabolismen av kolhydrater, proteiner och fetter. Det kan bidra till att förbättra kroppens energiproduktion och även hjälpa till att hålla hår och hud friska.</p>
+          </article>
+
+          <article class="flow-ingredient">
+            <h3>Vitamin B {+12}</h3>
+            <small>inklusive riboflavin</small>
+            <p>kan bidra till att stödja nervsystemets och hjärnans funktion genom att främja syntesen av signalsubstanser. <br><br>Vitamin-B12 är särskilt kopplat till välmående och energi, här får du hela 250% av dagliga intaget.</p>
+          </article>
+
+          <article class="flow-ingredient">
+            <h3>Magnesium</h3>
+            <p>är ett mineral som är viktigt för musklernas och nervernas funktion. Det kan hjälpa till att minska kramper och muskelspänningar samt reducera trötthet, vilket kan vara fördelaktigt för spelare som sitter mycket i statisk belastning på musklerna.</p>
+          </article>
+
+          <article class="flow-ingredient">
+            <h3>Zink</h3>
+            <p>också ett mineral, är viktigt för många funktioner i kroppen, inklusive immunförsvaret och DNA-syntesen, samt bidrar till att upprätthålla normal syn.</p>
+          </article>
+
+          <article class="flow-ingredient">
+            <h3>Vitamin C</h3>
+            <p>är en antioxidant som kan bidra till att stärka immunförsvaret och skydda cellerna mot skador från fria radikaler. Det kan också hjälpa till att minska trötthet och utmattning.</p>
+          </article>
+        </div>
+
+        <p class="flow-summary-text">
+          Tillsammans hjälper dessa ingredienser till att uppnå Kraft-tillståndet, eller “kraft-tillstånd”, så att spelare kan förbättra sina färdigheter och få ut maximalt av sitt spelande.
+        </p>
+      </div>
+
+      <!-- 5. USP Banner -->
+      <div class="flow-usp-banner">
+        <img src="bilder/VadArLoot/LOOT_website_banner_icons_desktop-USPIcons-wide.png" alt="LOOT USPs">
+      </div>
     </section>
 
     <section id="produkter" class="section-card">
