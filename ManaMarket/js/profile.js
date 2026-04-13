@@ -1,3 +1,4 @@
+import { getCartTotals } from "./cart.js";
 import { supabase } from "./supabase-client.js";
 
 const gate = document.querySelector("[data-profile-gate]");
@@ -100,6 +101,14 @@ function resolveAddress(address, user) {
   };
 }
 
+function updateCartCount() {
+  const cartCountNodes = document.querySelectorAll("[data-cart-count]");
+  const { itemCount } = getCartTotals();
+  cartCountNodes.forEach((node) => {
+    node.textContent = String(itemCount);
+  });
+}
+
 async function loadProfile() {
   const { data, error } = await supabase.auth.getSession();
 
@@ -166,4 +175,7 @@ logoutButton?.addEventListener("click", async () => {
   window.location.href = "auth.html";
 });
 
+window.addEventListener("mana-cart-updated", updateCartCount);
+
 loadProfile();
+updateCartCount();

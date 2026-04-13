@@ -98,7 +98,7 @@
       display: grid;
       place-items: center;
       border-radius: 14px;
-      background: linear-gradient(135deg, var(--cyan), var(--pink));
+      background: floralwhite;
       color: #08101d;
       font-family: "Bebas Neue", sans-serif;
       font-size: 1.5rem;
@@ -138,7 +138,7 @@
       justify-content: center;
       gap: 10px;
       border: 1px solid rgba(92, 225, 255, 0.4);
-      background: linear-gradient(135deg, var(--cyan), #7cf7d4);
+      background: linear-gradient(135deg, #12476a, #5ce1ff 48%,#9ad56a);
       color: #041019;
       box-shadow: 0 8px 18px rgba(92, 225, 255, 0.14);
       cursor: pointer;
@@ -164,7 +164,7 @@
       align-items: center;
       justify-content: center;
       border: 1px solid var(--line);
-      background: rgba(255, 255, 255, 0.04);
+      background: linear-gradient(135deg, rgba(92, 225, 255, 0.12), rgba(255, 93, 177, 0.06)), rgba(255, 255, 255, 0.03);
       color: var(--text);
     }
 
@@ -1362,7 +1362,7 @@
   <header class="topbar">
     <div class="shell topbar-inner">
       <a class="brand" href="butik.html">
-        <span class="brand-mark">MB</span>
+        <span class="brand-mark"><img src="bilder/logo/MB_logo_TB_UT.png" alt="Manabutikens_Logga"></span>
         <span>manabutiken</span>
       </a>
       <nav class="nav" aria-label="Huvudnavigation">
@@ -1388,10 +1388,9 @@
   <main class="shell">
     <section class="hero">
       <article class="hero-card">
-        <div class="eyebrow">manabutiken drop 2026</div>
         <div class="flavor-visual">
           <div class="flavor-visual-top">
-            <span class="eyebrow">Flavor Preview</span>
+            <span class="eyebrow">taste-preview</span>
             <span class="flavor-counter" data-flavor-counter>01 / 04</span>
           </div>
           <div class="flavor-stage">
@@ -1422,8 +1421,8 @@
 
       <aside class="stack">
         <div class="stack-head">
-          <h2>Featured Drop</h2>
-          <small>Spring 2026</small>
+          <h2>Loot cube {Potion-powder guide}</h2>
+          <small>kraft-pulver</small>
         </div>
         <div class="featured-steps">
           <article class="featured-step">
@@ -1487,15 +1486,15 @@
       <div class="section-top">
         <div>
           <div class="eyebrow">Product Grid</div>
-          <h2>manabutiken Picks</h2>
         </div>
       </div>
+
+      <div class="products" data-products-grid></div>
+      <br>
       <div class="products-actions">
         <button class="ghost" type="button" data-toggle-products>Alla cubes</button>
       </div>
       <div class="cart-feedback" data-cart-feedback hidden></div>
-
-      <div class="products" data-products-grid></div>
     </section>
 
     <section id="reviews" class="section-card">

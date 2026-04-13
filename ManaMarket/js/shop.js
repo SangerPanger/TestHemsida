@@ -152,7 +152,7 @@ function renderProducts() {
   attachAddToCartHandlers();
 
   if (toggleProductsButton) {
-    toggleProductsButton.textContent = showAllProducts ? "Visa fa cubes" : "Alla cubes";
+    toggleProductsButton.textContent = showAllProducts ? "Visa Färre Produkter" : "Visa Alla Produkter";
   }
 }
 

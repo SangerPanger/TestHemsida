@@ -13,6 +13,7 @@ async function syncAuthNav() {
   authLinks.forEach((link) => {
     link.textContent = isLoggedIn ? "Min profil" : "Logga in";
     link.setAttribute("href", isLoggedIn ? "minprofil.html" : "auth.html");
+    link.style.color = "Black";
   });
 }
 

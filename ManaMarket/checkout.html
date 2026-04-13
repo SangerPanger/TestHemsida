@@ -81,11 +81,18 @@
       display: grid;
       place-items: center;
       border-radius: 14px;
-      background: linear-gradient(135deg, var(--cyan), var(--pink));
+      background: floralwhite;
       color: #08101d;
       font-family: "Bebas Neue", sans-serif;
       font-size: 1.5rem;
       box-shadow: 0 8px 20px rgba(92, 225, 255, 0.18);
+    }
+
+    .brand-mark img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: block;
     }
 
     .nav {
@@ -114,7 +121,7 @@
       align-items: center;
       justify-content: center;
       border: 1px solid rgba(92, 225, 255, 0.4);
-      background: linear-gradient(135deg, var(--cyan), #7cf7d4);
+      background: linear-gradient(135deg, #12476a, #5ce1ff 48%, #9ad56a);
       color: #041019;
       box-shadow: 0 8px 18px rgba(92, 225, 255, 0.14);
     }
@@ -431,15 +438,16 @@
 <body>
   <header class="topbar">
     <div class="shell topbar-inner">
-      <a class="brand" href="index.html">
-        <span class="brand-mark">MB</span>
+      <a class="brand" href="butik.html">
+        <span class="brand-mark"><img src="bilder/logo/MB_logo_TB_UT.png" alt="Manabutikens_Logga"></span>
         <span>manabutiken</span>
       </a>
       <nav class="nav" aria-label="Huvudnavigation">
         <a href="butik.html">Butik</a>
-        <a href="galleri.html">Galleri</a>
+        <a class="cta" href="auth.html" data-auth-nav>Logga in</a>
+        <!--<a href="galleri.html">Galleri</a>
         <a href="auth.html" data-auth-nav>Logga in</a>
-        <a class="ghost" href="checkout.html">Varukorg <span data-cart-count>0</span></a>
+        <a class="ghost" href="checkout.html">Varukorg <span data-cart-count>0</span></a>-->
       </nav>
     </div>
   </header>
