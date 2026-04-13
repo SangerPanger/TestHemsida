@@ -24,7 +24,7 @@ function createItemMarkup(item) {
   article.className = "item";
   article.innerHTML = `
     <div class="thumb" style="--swatch: ${item.swatch};">
-      <img src="${item.image}" alt="${item.name}" class="thumb-img">
+      <img src="${item.imageV1 || item.image}" alt="${item.name}" class="thumb-img">
     </div>
     <div>
       <h3>${item.name}</h3>

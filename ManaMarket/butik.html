@@ -666,18 +666,12 @@
       pointer-events: none;
     }
 
-    .flavor-pack-kicker {
-      font-size: 0.82rem;
-      letter-spacing: 0.24em;
-      text-transform: uppercase;
-      color: rgba(255, 255, 255, 0.72);
-    }
 
     .flavor-pack-name {
       font-family: "Bebas Neue", sans-serif;
-      font-size: clamp(3.6rem, 7vw, 5.2rem);
+      font-size: 0.82rem;
+      letter-spacing: 0.24em;
       line-height: 0.82;
-      letter-spacing: 0.02em;
       text-transform: uppercase;
     }
 
@@ -721,6 +715,9 @@
       gap: 8px;
       align-items: center;
       justify-content: center;
+      flex-wrap: wrap;
+      max-width: 200px;
+      margin: 0 auto;
     }
 
     .flavor-pip {
@@ -1590,7 +1587,6 @@
           <div class="flavor-stage">
             <div class="flavor-pack" data-flavor-pack style="--flavor-swatch: linear-gradient(135deg, #161d47, #3d1847 52%, #b53b79);">
               <div class="flavor-pack-copy">
-                <span class="flavor-pack-kicker">manabutiken drop</span>
                 <span class="flavor-pack-name" data-flavor-pack-name>Clover Curse</span>
                 <span class="flavor-pack-sub" data-flavor-pack-sub>Sour blackberry. Blackcurrant. Dark neon.</span>
               </div>

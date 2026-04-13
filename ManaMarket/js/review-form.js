@@ -235,7 +235,7 @@ if (form) {
     previewName.textContent = product.name;
     previewNote.textContent = product.note;
     previewArt.style.setProperty("--swatch", product.swatch);
-    previewImage.src = product.image;
+    previewImage.src = product.imageV2 || product.image;
     previewImage.alt = product.name;
   }
 

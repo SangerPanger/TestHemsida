@@ -6,8 +6,21 @@ const feedbackNode = document.querySelector("[data-cart-feedback]");
 const cartCountNodes = document.querySelectorAll("[data-cart-count]");
 const productsGrid = document.querySelector("[data-products-grid]");
 const toggleProductsButton = document.querySelector("[data-toggle-products]");
+const flavorPackNode = document.querySelector("[data-flavor-pack]");
+const flavorNameNode = document.querySelector("[data-flavor-pack-name]");
+const flavorSubNode = document.querySelector("[data-flavor-pack-sub]");
+const flavorImageNode = document.querySelector("[data-flavor-pack-image]");
+const flavorCounterNode = document.querySelector("[data-flavor-counter]");
+const flavorPipsNode = document.querySelector("[data-flavor-pips]");
+const flavorPrevBtn = document.querySelector("[data-flavor-prev]");
+const flavorNextBtn = document.querySelector("[data-flavor-next]");
+
 let feedbackTimeoutId = 0;
 let showAllProducts = false;
+let currentFlavorIndex = 0;
+
+// Vi använder alla smaker för "taste-preview" hjälten
+const previewFlavors = products;
 let inventoryBySlug = new Map(products.map((product) => [product.slug, product.stockQuantity]));
 
 function renderCartCount() {
@@ -133,7 +146,7 @@ function renderProducts() {
   productsGrid.innerHTML = visibleProducts.map((product) => `
     <article class="product-card">
       <div class="art" style="--swatch: ${product.swatch};">
-        <img class="art-pack" src="${product.image}" alt="${product.name}">
+        <img class="art-pack" src="${product.imageV1 || product.image}" alt="${product.name}">
       </div>
       <h3>${product.name}</h3>
       <div class="inventory-status ${Number(inventoryBySlug.get(product.slug) ?? product.stockQuantity) > 0 ? "is-in-stock" : "is-backorder"}">
@@ -156,8 +169,57 @@ function renderProducts() {
   }
 }
 
+function renderFlavor() {
+  if (!flavorPackNode) return;
+
+  const flavor = previewFlavors[currentFlavorIndex];
+  if (!flavor) return;
+
+  // Uppdatera texter
+  if (flavorNameNode) flavorNameNode.textContent = flavor.name;
+  if (flavorSubNode) flavorSubNode.textContent = flavor.packSub || flavor.note;
+  if (flavorCounterNode) {
+    flavorCounterNode.textContent = `${String(currentFlavorIndex + 1).padStart(2, '0')} / ${String(previewFlavors.length).padStart(2, '0')}`;
+  }
+
+  // Uppdatera bild
+  if (flavorImageNode) {
+    flavorImageNode.src = flavor.imageV2 || flavor.image;
+    flavorImageNode.alt = flavor.name;
+  }
+
+  // Uppdatera gradient/swatch
+  flavorPackNode.style.setProperty('--flavor-swatch', flavor.swatch);
+
+  // Uppdatera pips
+  if (flavorPipsNode) {
+    flavorPipsNode.innerHTML = previewFlavors.map((_, i) => `
+      <span class="flavor-pip ${i === currentFlavorIndex ? 'is-active' : ''}"></span>
+    `).join("");
+  }
+}
+
+function nextFlavor() {
+  currentFlavorIndex = (currentFlavorIndex + 1) % previewFlavors.length;
+  renderFlavor();
+}
+
+function prevFlavor() {
+  currentFlavorIndex = (currentFlavorIndex - 1 + previewFlavors.length) % previewFlavors.length;
+  renderFlavor();
+}
+
 toggleProductsButton?.addEventListener("click", () => {
   showAllProducts = !showAllProducts;
+  renderProducts();
+});
+
+flavorNextBtn?.addEventListener("click", nextFlavor);
+flavorPrevBtn?.addEventListener("click", prevFlavor);
+
+// Trigga "Visa Alla Produkter" när man klickar på "Se sortiment"
+document.querySelector('.hero-actions .cta[href="#produkter"]')?.addEventListener("click", () => {
+  showAllProducts = true;
   renderProducts();
 });
 
@@ -190,5 +252,6 @@ async function loadInventoryStatus() {
 window.addEventListener("mana-cart-updated", renderCartCount);
 
 renderProducts();
+renderFlavor();
 renderCartCount();
 loadInventoryStatus();
