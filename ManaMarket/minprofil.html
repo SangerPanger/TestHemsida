@@ -67,6 +67,30 @@
       gap: 16px;
       padding: 18px 0;
     }
+
+    .payment-badge {
+      display: flex;
+      align-items: center;
+      height: 28px;
+      opacity: 0.8;
+      transition: opacity 200ms ease;
+    }
+
+    .payment-badge:hover {
+      opacity: 1;
+    }
+
+    .payment-badge img {
+      max-height: 100%;
+      width: auto;
+      object-fit: contain;
+    }
+
+    @media (max-width: 960px) {
+      .payment-badge {
+        display: none;
+      }
+    }
     .brand {
       display: flex;
       align-items: center;
@@ -100,6 +124,31 @@
       align-items: center;
       gap: 10px;
       flex-wrap: wrap;
+      margin-left: auto;
+    }
+
+    .nav-user-area {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 4px;
+    }
+
+    .shipping-info {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: #9ad56a; /* Lime color matching the brand gradient */
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      text-transform: uppercase;
+      margin-left: 20px;
+    }
+
+    .shipping-info svg {
+      width: 14px;
+      height: 14px;
     }
     .nav a,
     .cta,
@@ -340,6 +389,18 @@
         <span class="brand-mark"><img src="bilder/logo/MB_logo_TB_UT.png" alt="Manabutikens_Logga"></span>
         <span>manabutiken</span>
       </a>
+      <div class="shipping-info">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="1" y="3" width="15" height="13"></rect>
+          <polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon>
+          <circle cx="5.5" cy="18.5" r="2.5"></circle>
+          <circle cx="18.5" cy="18.5" r="2.5"></circle>
+        </svg>
+        <span>Fri frakt över 499 kr</span>
+      </div>
+      <!--<div class="payment-badge">
+        <img src="bilder/logo/Payment/LogoPayment.png" alt="Betalsätt">
+      </div>-->
       <nav class="nav" aria-label="Huvudnavigation">
         <a href="butik.html">Butik</a>
         <a class="ghost cart-link" href="checkout.html" aria-label="Ga till varukorg">
@@ -350,7 +411,10 @@
           </svg>
           <span>Varukorg</span>
           <span class="cart-count" data-cart-count>0</span>
+          <!--<a class="cta" href="auth.html" data-auth-nav>Logga in</a>-->
         </a>
+        <div class="nav-user-area">
+        </div>
       </nav>
     </div>
   </header>
