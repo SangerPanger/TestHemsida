@@ -1102,6 +1102,58 @@
       font-size: 0.9rem;
     }
 
+    /* Mana Rating Styles */
+    .mana-rating-container {
+      margin: 12px 0 8px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-family: "Bebas Neue", sans-serif;
+      letter-spacing: 0.05em;
+    }
+
+    .mana-label {
+      font-size: 0.75rem;
+      color: var(--cyan);
+      opacity: 0.9;
+      white-space: nowrap;
+    }
+
+    .mana-bar-outer {
+      flex: 1;
+      height: 8px;
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid rgba(0, 255, 255, 0.2);
+      border-radius: 2px;
+      position: relative;
+      overflow: hidden;
+      box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.5);
+    }
+
+    .mana-bar-inner {
+      height: 100%;
+      background: linear-gradient(90deg, #00d2ff 0%, #3a7bd5 100%);
+      box-shadow: 0 0 10px rgba(0, 210, 255, 0.6);
+      transition: width 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+    }
+
+    .mana-bar-glare {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 50%;
+      background: rgba(255, 255, 255, 0.15);
+      pointer-events: none;
+    }
+
+    .mana-value {
+      font-size: 1.1rem;
+      color: #fff;
+      text-shadow: 0 0 8px rgba(0, 210, 255, 0.5);
+      min-width: 2ch;
+    }
+
     .inventory-dot {
       width: 10px;
       height: 10px;
@@ -1558,10 +1610,9 @@
       <nav class="nav" aria-label="Huvudnavigation">
         <a href="#produkter">Produkter</a>
         <a href="#flavors">Smaker</a>
-        <a href="#reviews">Reviews</a>
-        <a href="#vibes">Varfor den slar</a>
+        <a href="#reviews">Recensioner</a>
         <a href="#faq">FAQ</a>
-        <a href="#testa">Testa</a>
+        <!--<a href="#testa">Testa</a>-->
         <a class="ghost cart-link" href="checkout.html" aria-label="Ga till varukorg">
           <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
             <circle cx="9" cy="20" r="1.8"></circle>
@@ -1576,7 +1627,7 @@
     </div>
   </header>
 
-  <main class="shell">
+  <main id="flavors" class="shell">
     <section class="hero">
       <article class="hero-card">
         <div class="flavor-visual">
@@ -1600,7 +1651,7 @@
             <button class="flavor-arrow" type="button" data-flavor-next aria-label="Nasta smak">&#8594;</button>
           </div>
         </div>
-        <p class="hero-copy">
+        <p class="hero-copy" data-flavor-description>
           En butikssida byggd for att se ut som en release, inte en prislista. Fokus pa LOOT Cubes, tydlig smakprofil, brutal kontrast och call-to-actions som faktiskt driver klick.
         </p>
         <div class="hero-actions">
@@ -1748,14 +1799,13 @@
     <section id="produkter" class="section-card">
       <div class="section-top">
         <div>
-          <div class="eyebrow">Product Grid</div>
         </div>
       </div>
 
       <div class="products" data-products-grid></div>
       <br>
       <div class="products-actions">
-        <button class="ghost" type="button" data-toggle-products>Alla cubes</button>
+        <button class="eyebrow" type="button" data-toggle-products>Alla cubes</button>
       </div>
       <div class="cart-feedback" data-cart-feedback hidden></div>
     </section>
@@ -1763,11 +1813,7 @@
     <section id="reviews" class="section-card">
       <div class="section-top">
         <div>
-          <div class="eyebrow">Community Noise</div>
-          <h2>Reviews som bygger hype</h2>
-          <p>
-            Den har sektionen ger sidan social proof. Jag har stylat den som community-feedback sa butiken kanns mer levande och mindre statisk.
-          </p>
+          <div class="eyebrow">Kundrecensioner</div>
         </div>
       </div>
 
@@ -1833,7 +1879,7 @@
           <form id="review-form" class="review-form" data-review-form>
             <div class="review-head">
               <span class="stars">0-5 / 5</span>
-              <span class="muted">Din review</span>
+              <span class="muted">Din Recension</span>
             </div>
             <div>
               <h3>Lagg till smakbetyg</h3>
@@ -1887,10 +1933,10 @@
             <div class="review-form-feedback" data-review-feedback aria-live="polite"></div>
           </form>
           <aside class="review-form-preview" aria-live="polite">
-            <span class="eyebrow">Smak Preview</span>
+            <span class="eyebrow">Smak att betygsätta</span>
             <div class="review-preview-meta">
-              <h4 data-review-preview-name>Valj en smak</h4>
-              <p data-review-preview-note>Gradientkort och packshot uppdateras nar du valjer en smak i dropdown-menyn.</p>
+              <h4 data-review-preview-name>Vem e smaken?</h4>
+              <p data-review-preview-note>Välj en i dropdown-menyn för att lämna betyg.</p><br>
             </div>
             <div class="art" data-review-preview-art>
               <img class="art-pack" src="bilder/GuessFlavor/GuessFlavorReview.png" alt="" data-review-preview-image>
@@ -1902,24 +1948,6 @@
     </section>
 
     <section class="split">
-      <article id="vibes" class="section-card">
-        <div class="eyebrow">Why It Works</div>
-        <h2>Butiken kanns som ett drop</h2>
-        <div class="feature-list">
-          <div class="feature">
-            <strong>Hero med attitude</strong>
-            Sidan oppnar med release-kansla i stallet for klassisk webbshopmall.
-          </div>
-          <div class="feature">
-            <strong>Kort som saljer snabbt</strong>
-            Varje produktblock har tydlig hierarki: smak, energi, pris, CTA.
-          </div>
-          <div class="feature">
-            <strong>Latt att bygga vidare</strong>
-            Du kan senare byta ut korten mot riktiga produkter, bilder och kundvagn utan att kasta designen.
-          </div>
-        </div>
-      </article>
 
       <article id="faq" class="section-card">
         <div class="eyebrow">FAQ</div>

@@ -86,13 +86,16 @@ if (form) {
 
     const stars = document.createElement("span");
     stars.className = "stars";
-    stars.textContent = `${Number(review.rating).toFixed(1)} / 5`;
+    stars.textContent = `${Number(review.rating).toFixed(1)} / 5.0`;
+    stars.style.marginRight = "10px";
 
     const muted = document.createElement("span");
     muted.className = "muted";
     muted.textContent = metaLabel;
 
     head.append(stars, muted);
+    head.style.marginBottom = "15px";
+    head.style.display = "block";
 
     const title = document.createElement("h3");
     title.textContent = review.flavor_name;
@@ -244,8 +247,8 @@ if (form) {
     }
 
     if (!product) {
-      previewName.textContent = "Valj en smak";
-      previewNote.textContent = "Gradientkort och packshot uppdateras nar du valjer en smak i dropdown-menyn.";
+      previewName.textContent = "Välj en smak att rösta";
+      previewNote.textContent = "Uppdateras när du väljer en smak i dropdown-menyn.";
       previewArt.style.setProperty("--swatch", "linear-gradient(135deg, #122446, #37111d)");
       previewImage.src = "bilder/Front/FrontStartPack.png";
       previewImage.alt = "";

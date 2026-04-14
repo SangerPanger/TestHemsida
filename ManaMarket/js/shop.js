@@ -9,6 +9,7 @@ const toggleProductsButton = document.querySelector("[data-toggle-products]");
 const flavorPackNode = document.querySelector("[data-flavor-pack]");
 const flavorNameNode = document.querySelector("[data-flavor-pack-name]");
 const flavorSubNode = document.querySelector("[data-flavor-pack-sub]");
+const flavorDescriptionNode = document.querySelector("[data-flavor-description]");
 const flavorImageNode = document.querySelector("[data-flavor-pack-image]");
 const flavorCounterNode = document.querySelector("[data-flavor-counter]");
 const flavorPipsNode = document.querySelector("[data-flavor-pips]");
@@ -22,6 +23,67 @@ let currentFlavorIndex = 0;
 // Vi använder alla smaker för "taste-preview" hjälten
 const previewFlavors = products;
 let inventoryBySlug = new Map(products.map((product) => [product.slug, product.stockQuantity]));
+let averageRatingsBySlug = new Map();
+
+async function fetchAverageRatings() {
+  try {
+    const { data, error } = await supabase
+      .from("reviews")
+      .select("flavor_slug, rating")
+      .eq("approved", true);
+
+    if (error) {
+      console.error("Error fetching reviews for ratings:", error);
+      return;
+    }
+
+    const totals = {};
+    const counts = {};
+
+    data.forEach((review) => {
+      const slug = review.flavor_slug;
+      const rating = Number(review.rating);
+      totals[slug] = (totals[slug] || 0) + rating;
+      counts[slug] = (counts[slug] || 0) + 1;
+    });
+
+    Object.keys(totals).forEach((slug) => {
+      averageRatingsBySlug.set(slug, totals[slug] / counts[slug]);
+    });
+  } catch (err) {
+    console.error("Failed to fetch average ratings:", err);
+  }
+}
+
+function renderManaRating(rating) {
+  if (rating === undefined || rating === null) {
+    return renderEmptyManaRating();
+  }
+
+  const percentage = (rating / 5) * 100;
+  return `
+    <div class="mana-rating-container" title="Medelbetyg: ${rating.toFixed(1)} / 5.0">
+      <div class="mana-label">BETYG</div>
+      <div class="mana-bar-outer">
+        <div class="mana-bar-inner" style="width: ${percentage}%"></div>
+        <div class="mana-bar-glare"></div>
+      </div>
+      <div class="mana-value">${rating.toFixed(1)}</div>
+    </div>
+  `;
+}
+
+function renderEmptyManaRating() {
+  return `
+    <div class="mana-rating-container is-empty" title="Inga betyg än">
+      <div class="mana-label">BETYG</div>
+      <div class="mana-bar-outer">
+        <div class="mana-bar-inner" style="width: 0%; opacity: 0.3;"></div>
+      </div>
+      <div class="mana-value" style="opacity: 0.3;">0.0</div>
+    </div>
+  `;
+}
 
 function renderCartCount() {
   const { itemCount } = getCartTotals();
@@ -149,12 +211,14 @@ function renderProducts() {
         <img class="art-pack" src="${product.imageV1 || product.image}" alt="${product.name}">
       </div>
       <h3>${product.name}</h3>
+      ${renderManaRating(averageRatingsBySlug.get(product.slug))}
       <div class="inventory-status ${Number(inventoryBySlug.get(product.slug) ?? product.stockQuantity) > 0 ? "is-in-stock" : "is-backorder"}">
         <span class="inventory-dot" aria-hidden="true"></span>
         <span class="inventory-label">${Number(inventoryBySlug.get(product.slug) ?? product.stockQuantity) > 0 ? "I lager" : "Bestallningsvara"}</span>
         <span class="inventory-count">${Number(inventoryBySlug.get(product.slug) ?? product.stockQuantity) > 0 ? `${Number(inventoryBySlug.get(product.slug) ?? product.stockQuantity)} st · Leveranstid 2-5 dagar` : "Leveranstid: 1-2 veckor"}</span>
       </div>
-      <p>${product.description}</p>
+      <p><strong style="color: var(--cyan);">Aura & Vibe: </strong><br>${product.profile} - ${product.bestFor}<br><br>
+      <strong style="color: var(--lime);">Smak: </strong><br>${product.packSub}</p>
       <div class="product-meta">
         <div class="price">${formatSek(product.priceSek)}</div>
         <button class="cta" type="button" data-add-to-cart data-product-id="${product.id}" data-product-name="${product.name}" data-product-price-sek="${product.priceSek}">Lagg till i varukorg</button>
@@ -178,6 +242,7 @@ function renderFlavor() {
   // Uppdatera texter
   if (flavorNameNode) flavorNameNode.textContent = flavor.name;
   if (flavorSubNode) flavorSubNode.textContent = flavor.packSub || flavor.note;
+  if (flavorDescriptionNode) flavorDescriptionNode.textContent = flavor.description;
   if (flavorCounterNode) {
     flavorCounterNode.textContent = `${String(currentFlavorIndex + 1).padStart(2, '0')} / ${String(previewFlavors.length).padStart(2, '0')}`;
   }
@@ -251,7 +316,12 @@ async function loadInventoryStatus() {
 
 window.addEventListener("mana-cart-updated", renderCartCount);
 
-renderProducts();
-renderFlavor();
-renderCartCount();
-loadInventoryStatus();
+async function initShop() {
+  await fetchAverageRatings();
+  renderProducts();
+  renderFlavor();
+  renderCartCount();
+  await loadInventoryStatus();
+}
+
+initShop();

@@ -5,20 +5,20 @@ export const products = [
     name: "Ultra Instinct",
     priceSek: 289,
     stockQuantity: 14,
-    note: "Peach ice tea / clean focus",
-    description: "Kyld peach ice tea-vibe med clean energi och en front som ser byggd ut for ren fokus.",
+    note: "Chicha morada / varm och fruktig",
+    description: "Chicha morada har en unik och uppfriskande smak som kan beskrivas som söt, fruktig och aromatisk – tänk dig en blandning mellan en kryddig fruktpunch och en len druvjuice.",
     badge: "Focus",
     tagTone: "alt",
     swatch: "linear-gradient(135deg, #10214f, #12476a 55%, #5ce1ff)",
     image: "bilder/UltraInstinct/T/UltraInstinctV2_Front-removebg-preview.png",
     imageV1: "bilder/UltraInstinct/T/UltraInstinctV2_Front-removebg-preview.png",
     imageV2: "bilder/UltraInstinct/T/Side/UltraInstinctV2_Front.Side.Right-removebg-preview.png",
-    flavorBadge: "Clean / Focus",
-    flavorTag: "Peach Ice Tea",
-    flavorNotes: "<strong>Vibe:</strong> peach ice tea med clean kyla, neonprecision och high-performance kansla utan brus.",
-    profile: "Locked-in mode",
-    bestFor: "Scrims och fokusblock",
-    packSub: "Peach ice tea. Clean hit. Focus mode."
+    flavorBadge: "Julig / Fruktbål",
+    flavorTag: "Chicha morada",
+    flavorNotes: "<strong>Vibe:</strong> Chicha morada, Kryddig druvjuice.",
+    profile: "Den tänkande spelaren",
+    bestFor: "Sena kvällar med RTS",
+    packSub: "Kryddig druvjuice"
   },
   {
     id: "loot-devil-fruit-dose",
@@ -26,8 +26,8 @@ export const products = [
     name: "Devil Fruit",
     priceSek: 289,
     stockQuantity: 11,
-    note: "Multivitamin / anime drop",
-    description: "Fruktig multivitamin-profil med stark shonen-vibe och ett uttryck som kanns collector-grade.",
+    note: "Multivitamin | anime drop",
+    description: "Fruktig multivitamin-smak med tydlig “juicecocktail”-känsla. Frisk och lätt att dricka ofta, en sån där klassisk smakupplvelser av guldiga 'klock' toner",
     badge: "Anime",
     tagTone: "",
     swatch: "linear-gradient(135deg, #57207f, #b6276d 52%, #ff9a57)",
@@ -37,18 +37,18 @@ export const products = [
     flavorBadge: "Fruit / Bright",
     flavorTag: "Multivitamin",
     flavorNotes: "<strong>Vibe:</strong> tropisk multivitamin med anime-energi, samlarbar front och tydlig power-up kansla.",
-    profile: "Shonen power-up",
-    bestFor: "Senkvallar och stream hype",
-    packSub: "Multivitamin. Bright hit. Anime energy."
+    profile: "Meme-samlaren",
+    bestFor: "Twitch på en skärmen, spel på andra",
+    packSub: "Fruktig Multivitamin"
   },
   {
     id: "limited-black-loot-edition",
     slug: "limited-black-loot-edition",
-    name: "Black LOOT Edition",
+    name: "Black Clover Curse",
     priceSek: 289,
     stockQuantity: 0,
-    note: "Blackberry / blackcurrant dark",
-    description: "Mork berry-profil i black edition-form med samma premiumdrop-kansla som en limiterad release.",
+    note: "Björnbär | Svarta vinbär",
+    description: "Mörka-bär med tydlig syra. En Sagolik smak av björnbär och svartvinbär med skarp svart karaktär som ger tillbakablick utav skolutflykten bland berg och skog.",
     badge: "Limited",
     tagTone: "",
     swatch: "linear-gradient(135deg, #10131b, #2c173d 52%, #7f2f5d)",
@@ -58,9 +58,9 @@ export const products = [
     flavorBadge: "Sour / Dark",
     flavorTag: "Black Edition",
     flavorNotes: "<strong>Vibe:</strong> sour blackberry och blackcurrant i svart limited look som kanns dyrare direkt.",
-    profile: "Rare loot drop",
-    bestFor: "Nattpass och ranked grind",
-    packSub: "Blackberry. Blackcurrant. Dark neon."
+    profile: "Inget före 2008, tack",
+    bestFor: "Soliga dagar, persiennerna nere",
+    packSub: "Björnbär & Svarta vinbär"
   },
   {
     id: "rare-raspberry",
@@ -69,7 +69,7 @@ export const products = [
     priceSek: 289,
     stockQuantity: 9,
     note: "Raspberry / sweet-sour",
-    description: "Hallonprofil med candy edge och en visuell ton som skriker streamer energy utan att bli barnslig.",
+    description: "Blå-hallon-profil. En fyllig fruktig smak av hallon med en unik karaktär som ger en tydlig friskhet som motverkar att den blir för sliskig.",
     badge: "Top Pick",
     tagTone: "",
     swatch: "linear-gradient(135deg, #40164a, #92254b 50%, #ff7c96)",
@@ -79,9 +79,9 @@ export const products = [
     flavorBadge: "Berry / Candy",
     flavorTag: "Raspberry",
     flavorNotes: "<strong>Vibe:</strong> sweet-sour raspberry med candy-glow och en tydlig rare drop-kansla i kortet.",
-    profile: "Streamer candy",
-    bestFor: "Late night queue sessions",
-    packSub: "Raspberry. Sweet-sour. Candy glow."
+    profile: "Spelar bara ranked",
+    bestFor: "Snabba köer och långa nätter",
+    packSub: "Sötsur godis hallon"
   },
   {
     id: "cactus-calamity",
@@ -90,7 +90,7 @@ export const products = [
     priceSek: 289,
     stockQuantity: 7,
     note: "Cactus lime / sharp fresh",
-    description: "Skarp, frisk profil med okenvibe och ett uttryck som sticker ut direkt i produktgrid och showcase.",
+    description: "Exotisk lemonad av kaktusfikon & calamansi, en framträdande ton av citrus som ger en frisk och syrlig finish med mild, bärliknande smak som påminner om en korsning mellan vattenmelon och bubbelgum eller kiwi.",
     badge: "Wildcard",
     tagTone: "alt",
     swatch: "linear-gradient(135deg, #0f342b, #256f4b 56%, #c8ff63)",
@@ -100,9 +100,9 @@ export const products = [
     flavorBadge: "Fresh / Sharp",
     flavorTag: "Cactus Lime",
     flavorNotes: "<strong>Vibe:</strong> cactus lime med frisk punch, torr heat och en look som kanns som desert-tech.",
-    profile: "Sharp refresh",
-    bestFor: "Dagpass och comeback games",
-    packSub: "Cactus lime. Sharp fresh. Desert tech."
+    profile: "En med snabba flicks",
+    bestFor: "Peakar alltid mid",
+    packSub: "Kaktusfikon & calamansi"
   },
   {
     id: "loot-sour-shock-dose",
@@ -111,7 +111,7 @@ export const products = [
     priceSek: 289,
     stockQuantity: 0,
     note: "Sour candy / electric hit",
-    description: "En mer aggressiv sour-profil med elektrisk look och tydligt gamer-plock for folk som vill ha edge.",
+    description: "Sura godisar med hint av äpple. Nostalgiskt syrliga tuggummin med flytande kärna som var populära under 90- och 00-talet för den som minns.",
     badge: "Shock",
     tagTone: "",
     swatch: "linear-gradient(135deg, #19244f, #2f3ed9 45%, #63f0ff)",
@@ -121,9 +121,9 @@ export const products = [
     flavorBadge: "Sour / Electric",
     flavorTag: "Shock Candy",
     flavorNotes: "<strong>Vibe:</strong> sour candy med elblatt glow, snabb attack och en hardcore arena-kansla.",
-    profile: "Electric rush",
-    bestFor: "Clutch games och hard reset",
-    packSub: "Sour candy. Electric hit. Fast reset."
+    profile: "Han, ace-jagaren",
+    bestFor: "Clutch or kick",
+    packSub: "Sura godisar & lite äpple"
   },
   {
     id: "loot-tiki-tropicali-dose",
@@ -132,7 +132,7 @@ export const products = [
     priceSek: 289,
     stockQuantity: 12,
     note: "Tropical mix / beach energy",
-    description: "Tropisk profil med varma farger och semesterhype, men fortfarande stylad som en premium cube-drop.",
+    description: "Tropisk sommar-tema där kokos moggar de andra smakerna av mango och ananas för en fyllig Piña colada liknande upplevelse. Naturligt mild än överdrivet söt.",
     badge: "Tropical",
     tagTone: "",
     swatch: "linear-gradient(135deg, #4f1d3c, #d55b3a 52%, #ffcf63)",
@@ -142,9 +142,9 @@ export const products = [
     flavorBadge: "Tropical / Warm",
     flavorTag: "Island Mix",
     flavorNotes: "<strong>Vibe:</strong> tropisk mix med varm glow, candy-fruit ton och semesterdrop fast i gamer-form.",
-    profile: "Vacation stack",
-    bestFor: "Lan, content nights",
-    packSub: "Tropical mix. Warm glow. Island energy."
+    profile: "TBS med 1 min max tur",
+    bestFor: "Sommarlov & Garage-Lan",
+    packSub: "Kokos, mango, ananas."
   },
   {
     id: "loot-kimetsu-no-kiba-dose",
@@ -153,7 +153,7 @@ export const products = [
     priceSek: 289,
     stockQuantity: 0,
     note: "Limited anime / collector front",
-    description: "Anime collab-look med tung limited-kansla och en diagonal packshot som ser byggd for hype ut.",
+    description: "En nostalgisk tysk \"KiBa\"-hybrid där mörka, fylliga körsbär frontar med en krämig banan-eftersmak. Upplevelsen påminner mer om en lyxig nektar eller röd godis-smoothie än en vattnig sportdryck.",
     badge: "Collab",
     tagTone: "alt",
     swatch: "linear-gradient(135deg, #123252, #1e5c4f 48%, #9ad56a)",
@@ -163,9 +163,9 @@ export const products = [
     flavorBadge: "Anime / Limited",
     flavorTag: "Collector",
     flavorNotes: "<strong>Vibe:</strong> limited anime drop med collector-front, manga-energi och collab-tyngd i varje view.",
-    profile: "Collector flex",
-    bestFor: "Display shelf och fan drops",
-    packSub: "Anime collab. Limited flex. Collector glow."
+    profile: "Pay 2 win",
+    bestFor: "Gacha games & Ghibli studio",
+    packSub: "Körsbär & Banan-hintar."
   },
   {
     id: "loot-phoenix-flames-dose",
@@ -174,7 +174,7 @@ export const products = [
     priceSek: 289,
     stockQuantity: 6,
     note: "Fiery fruit / red-orange heat",
-    description: "Eldig profil med phoenix-farger och stark diagonal silhuett som gor smaken till ett naturligt center card.",
+    description: "En explosion där den syrliga kiwin skär igenom den tunga sötman från ananasen för en riktigt \"vass\" och uppfriskande kombo. En ljus och elektrisk fruktsmak som känns betydligt uppiggande.",
     badge: "Hot Drop",
     tagTone: "",
     swatch: "linear-gradient(135deg, #48182f, #c2362f 48%, #ffb35d)",
@@ -184,18 +184,18 @@ export const products = [
     flavorBadge: "Fiery / Loud",
     flavorTag: "Phoenix",
     flavorNotes: "<strong>Vibe:</strong> fiery fruit med varm glow, loud contrast och full phoenix-revival energi.",
-    profile: "Hot streak",
-    bestFor: "Win streaks och montage nights",
-    packSub: "Fiery fruit. Loud glow. Revival mode."
+    profile: "Finns bara smg & rush",
+    bestFor: "Trycka en sista innan sängen",
+    packSub: "Ananas & Syrlig-kiwi"
   },
   {
     id: "invincible-ice-tea",
     slug: "invincible-ice-tea",
-    name: "Invincible Ice Tea",
+    name: "Pixel Peach Icetea",
     priceSek: 289,
     stockQuantity: 8,
     note: "Ice tea / smooth chill",
-    description: "En smooth ice tea-variant med sval premiumkansla och mjukare profil for kunder som vill ha clean refresh.",
+    description: "En autentisk och krispig persika-té smak där den sträva té-basen balanserar upp den söta persikan för en läskande upplevelse. Som en iskall iste-burk direkt från kylen.",
     badge: "Smooth",
     tagTone: "alt",
     swatch: "linear-gradient(135deg, #25314c, #62748c 50%, #d7efff)",
@@ -205,9 +205,9 @@ export const products = [
     flavorBadge: "Iced / Smooth",
     flavorTag: "Ice Tea",
     flavorNotes: "<strong>Vibe:</strong> sval ice tea med smooth finish, clean premiumton och mindre aggressiv energikansla.",
-    profile: "Chill focus",
-    bestFor: "Long sessions utan overload",
-    packSub: "Ice tea. Smooth chill. Clean refresh."
+    profile: "skärmen full av UI",
+    bestFor: "Söndags-eftermiddag & öppet fönster",
+    packSub: "Is-té & Persika"
   }
 ];
 
