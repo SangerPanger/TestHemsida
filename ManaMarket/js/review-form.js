@@ -20,6 +20,17 @@ if (form) {
   const previewArt = document.querySelector("[data-review-preview-art]");
   const previewImage = document.querySelector("[data-review-preview-image]");
 
+  const toggleReviewsBtn = document.querySelector("[data-toggle-reviews]");
+  const paginationNode = document.querySelector("[data-reviews-pagination]");
+  const prevPageBtn = document.querySelector("[data-reviews-prev]");
+  const nextPageBtn = document.querySelector("[data-reviews-next]");
+  const pageInfoNode = document.querySelector("[data-reviews-page-info]");
+
+  let allReviews = [];
+  let showExpandedReviews = false;
+  let currentPage = 1;
+  const reviewsPerPage = 9;
+
   function getDisplayName(user) {
     const metadataName = user?.user_metadata?.full_name?.trim();
 
@@ -132,12 +143,47 @@ if (form) {
 
     if (!reviews.length) {
       reviewsEmpty.hidden = false;
+      if (toggleReviewsBtn) toggleReviewsBtn.hidden = true;
+      if (paginationNode) paginationNode.hidden = true;
       return;
     }
 
     reviewsEmpty.hidden = true;
 
-    reviews.forEach((review) => {
+    // Bestäm vilka recensioner som ska visas
+    let visibleReviews = [];
+    if (!showExpandedReviews) {
+      visibleReviews = reviews.slice(0, 3);
+      if (toggleReviewsBtn) {
+        toggleReviewsBtn.hidden = reviews.length <= 3;
+        toggleReviewsBtn.textContent = "Visa alla recensioner";
+      }
+      if (paginationNode) paginationNode.hidden = true;
+    } else {
+      // Visa 9 per sida
+      const totalPages = Math.ceil(reviews.length / reviewsPerPage);
+      if (currentPage > totalPages) currentPage = totalPages;
+      if (currentPage < 1) currentPage = 1;
+
+      const start = (currentPage - 1) * reviewsPerPage;
+      visibleReviews = reviews.slice(start, start + reviewsPerPage);
+
+      if (toggleReviewsBtn) {
+        toggleReviewsBtn.hidden = false;
+        toggleReviewsBtn.textContent = "Visa färre";
+      }
+
+      if (paginationNode) {
+        paginationNode.hidden = totalPages <= 1;
+        if (pageInfoNode) {
+          pageInfoNode.textContent = `Sida ${currentPage} / ${totalPages}`;
+        }
+        if (prevPageBtn) prevPageBtn.disabled = currentPage === 1;
+        if (nextPageBtn) nextPageBtn.disabled = currentPage === totalPages;
+      }
+    }
+
+    visibleReviews.forEach((review) => {
       const card = createReviewCard(review);
       card.dataset.reviewLive = "true";
       reviewsFeed.appendChild(card);
@@ -153,14 +199,14 @@ if (form) {
       const { data, error } = await supabase
         .from("reviews")
         .select("id, display_name, flavor_name, flavor_slug, rating, comment, approved, created_at")
-        .order("created_at", { ascending: false })
-        .limit(6);
+        .order("created_at", { ascending: false });
 
       if (error) {
         throw error;
       }
 
-      renderReviews(data ?? []);
+      allReviews = data ?? [];
+      renderReviews(allReviews);
     } catch (error) {
       console.error("Could not load reviews", error);
 
@@ -170,6 +216,31 @@ if (form) {
       }
     }
   }
+
+  // Handlers för de nya knapparna
+  toggleReviewsBtn?.addEventListener("click", () => {
+    showExpandedReviews = !showExpandedReviews;
+    if (showExpandedReviews) currentPage = 1;
+    renderReviews(allReviews);
+  });
+
+  prevPageBtn?.addEventListener("click", () => {
+    if (currentPage > 1) {
+      currentPage--;
+      renderReviews(allReviews);
+      // Scrolla upp till toppen av reviews sektionen för bättre UX
+      document.getElementById("reviews")?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  });
+
+  nextPageBtn?.addEventListener("click", () => {
+    const totalPages = Math.ceil(allReviews.length / reviewsPerPage);
+    if (currentPage < totalPages) {
+      currentPage++;
+      renderReviews(allReviews);
+      document.getElementById("reviews")?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  });
 
   products.forEach((product) => {
     const option = document.createElement("option");
@@ -362,6 +433,8 @@ if (form) {
       renderPreview();
       setFeedback("Review sparad. Den visas nar den ar godkand.", "is-success");
       await loadReviews();
+      // Om vi sparar en ny review, visa den (om den godkänns automatiskt, men här verkar den kräva godkännande)
+      // Men vi vill ändå uppdatera listan
     } catch (error) {
       console.error("Could not save review", error);
       setFeedback("Kunde inte spara review just nu.", "is-error");

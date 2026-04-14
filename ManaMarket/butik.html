@@ -1154,6 +1154,16 @@
       min-width: 2ch;
     }
 
+    .reviews-pagination button:disabled {
+      opacity: 0.3;
+      cursor: not-allowed;
+      filter: grayscale(1);
+    }
+
+    .reviews-pagination span {
+      user-select: none;
+    }
+
     .inventory-dot {
       width: 10px;
       height: 10px;
@@ -1243,6 +1253,17 @@
     .faq {
       display: grid;
       gap: 12px;
+    }
+
+    .faq-container[data-expanded="false"] .faq details:nth-child(n+4) {
+      display: none;
+    }
+
+    .faq-actions {
+      grid-column: 1 / -1;
+      margin-top: 2rem;
+      display: flex;
+      justify-content: center;
     }
 
     details {
@@ -1875,6 +1896,16 @@
           <div class="reviews-empty" data-reviews-empty>Inga sparade reviews visas an.</div>
         </div>
 
+        <div class="reviews-actions" style="grid-column: 1 / -1; margin-top: 2rem; display: flex; flex-direction: column; align-items: center; gap: 1rem;">
+          <button class="eyebrow" type="button" data-toggle-reviews>Visa alla recensioner</button>
+
+          <div class="reviews-pagination" data-reviews-pagination hidden style="display: flex; align-items:center; gap: 1.5rem;">
+            <button class="flavor-arrow" type="button" data-reviews-prev aria-label="Föregående sida">&#8592;</button>
+            <span class="muted" data-reviews-page-info style="font-family: 'Bebas Neue', sans-serif; letter-spacing: 0.1em;">Sida 1 / 1</span>
+            <button class="flavor-arrow" type="button" data-reviews-next aria-label="Nästa sida">&#8594;</button>
+          </div>
+        </div>
+
         <article class="review-card review-form-card">
           <form id="review-form" class="review-form" data-review-form>
             <div class="review-head">
@@ -1947,26 +1978,99 @@
       </div>
     </section>
 
-    <section class="split">
-
+    <section class="split faq-container" data-expanded="false">
       <article id="faq" class="section-card">
         <div class="eyebrow">FAQ</div>
-        <h2>Snabba svar</h2>
+        <p></p>
         <div class="faq">
-          <details open>
-            <summary>Ar detta en riktig checkout?</summary>
-            <p>Inte an. Just nu ar detta en stark butikssida med CTA-lankar ut till LOOT Cubes-kollektionen.</p>
+          <details>
+            <summary>Kan LOOT Cube Game Bosters användas till annat än spelande/gaming?</summary>
+            <p>LOOT-produkter är inte begränsade till spelande. Många använder dem vid arbete, studier, långa bilresor, träning eller fester. Testa själv vad som passar.</p>
           </details>
           <details>
-            <summary>Kan vi lagga in riktiga produktbilder senare?</summary>
-            <p>Ja. Korten ar byggda sa att du enkelt kan ersatta gradient-art med riktiga bilder eller CMS-data.</p>
+            <summary>Hur tar jag LOOT?</summary>
+            <p>Blanda 1 portion (8 g pulver) med 500 ml kallt vatten i en LOOT-shaker. Isbitar rekommenderas.</p>
           </details>
           <details>
-            <summary>Varfor den har stilen?</summary>
-            <p>LOOT Cubes har gamer-, anime- och performance-vibe. Den har designen matchar det battre an en neutral butiksmall.</p>
+            <summary>Hur skiljer sig LOOT från andra energidrycker?</summary>
+            <p>LOOT är utvecklat med noggrant utvalda ingredienser och fokus på kvalitet. Märket är tyskt och därav innehaver annorlunda och unika smaker.</p>
+          </details>
+          <details>
+            <summary>Vad får jag för pengarna?</summary>
+            <p>Produkten är utvecklad under 9 månader med experter. Den innehåller noggrant doserade ingredienser och har premiumkvalitet.</p>
+          </details>
+          <details>
+            <summary>Hur många portioner per burk?</summary>
+            <p>400 g = cirka 50 portioner.</p>
+          </details>
+          <details>
+            <summary>Kommer nya smaker?</summary>
+            <p>Ja, nya smaker och produkter utvecklas kontinuerligt.</p>
+          </details>
+          <details>
+            <summary>Kan man blanda smaker?</summary>
+            <p>Ja.</p>
+          </details>
+          <details>
+            <summary>Får man dricka LOOT vid amning?</summary>
+            <p>Nej, på grund av koffein.</p>
+          </details>
+          <details>
+            <summary>Tål shakers diskmaskin?</summary>
+            <p>Ja, men plocka isär dem först.</p>
+          </details>
+          <details>
+            <summary>Influenser / Samarbeten?</summary>
+            <p>Vi sponsrar gärna aktörer, allt från små till stora men med ett minimumkrav på minst 1000 visningar per inlägg. Kontakta oss på mail för mer information.</p>
           </details>
         </div>
       </article>
+
+      <article class="section-card">
+        <p><br></p>
+        <div class="faq">
+          <details>
+            <summary>Innehåller LOOT koffein?</summary>
+            <p>Ja, från naturliga källor.</p>
+          </details>
+          <details>
+            <summary>Är LOOT laktosfritt, glutenfritt & vegan-vänligt?</summary>
+            <p>Ja, ja och ja.</p>
+          </details>
+          <details>
+            <summary>Är LOOT helt sockerfritt?</summary>
+            <p>Nej, innehåller lite dextros, under 4g per portion.</p>
+          </details>
+          <details>
+            <summary>Allergener?</summary>
+            <p>Inga vanliga allergener enligt analyser.</p>
+          </details>
+          <details>
+            <summary>Näringsvärden?</summary>
+            <p>Finns på förpackning och produktbilder.</p>
+          </details>
+          <details>
+            <summary>Finns det en Max per dag?</summary>
+            <p>Beror på individ, ett intag upp till 400 mg per dag anses generellt vara säkert för friska vuxna, enligt EU-myndigheten EFSA.</p>
+          </details>
+          <details>
+            <summary>Pulver löser sig inte?</summary>
+            <p>Låt det stå ett tag och Skaka igen. (Ett tips, häl i 1dl vatten först sen en skopa kraft-pulver, ska i 10-20 sekunder, häll i resterande 4dl vatten, ska 10–20 sekunder igen.)</p>
+          </details>
+          <details>
+            <summary>Klumpar?</summary>
+            <p>Använd alltid shaker med filter.</p>
+          </details>
+          <details>
+            <summary>Utgånget datum?</summary>
+            <p>Kan ofta användas ändå, om det ser, luktar och smakar normalt. Så länge fukt inte har trängt in i burken.</p>
+          </details>
+        </div>
+      </article>
+
+      <div class="faq-actions">
+        <button class="eyebrow" type="button" data-toggle-faq>Visa alla frågor</button>
+      </div>
     </section>
 
     <p class="footer-note">
@@ -1979,5 +2083,6 @@
   <script type="module" src="js/flavor-carousel.js"></script>
   <script type="module" src="js/review-form.js"></script>
   <script type="module" src="js/shop.js"></script>
+  <script src="js/faq-toggle.js"></script>
 </body>
 </html>
