@@ -18,7 +18,10 @@ export const products = [
     flavorNotes: "<strong>Vibe:</strong> Chicha morada, Kryddig druvjuice.",
     profile: "Den tänkande spelaren",
     bestFor: "Sena kvällar med RTS",
-    packSub: "Kryddig druvjuice"
+    packSub: "Kryddig druvjuice",
+    content: "Vatten, kolsyra, aromer, surhetsreglerande medel (citronsyra), koffein, sötningsmedel (sukralos).",
+    nutrition: "Energi: 0 kJ / 0 kcal, Fett: 0g, Kolhydrater: 4g, Protein: 0g, Salt: 0.01g.",
+    facts: "Innehåller hög koffeinhalt (160mg/portion). Rekommenderas ej för barn, gravida eller ammande kvinnor."
   },
   {
     id: "loot-devil-fruit-dose",
@@ -39,7 +42,10 @@ export const products = [
     flavorNotes: "<strong>Vibe:</strong> tropisk multivitamin med anime-energi, samlarbar front och tydlig power-up kansla.",
     profile: "Meme-samlaren",
     bestFor: "Twitch på en skärmen, spel på andra",
-    packSub: "Fruktig Multivitamin"
+    packSub: "Fruktig Multivitamin",
+    content: "Blandade fruktextrakt, vitamin B12, C-vitamin, taurin, aromer, sötningsmedel.",
+    nutrition: "Per portion: 15 kcal, 0.5g socker, 200mg koffein.",
+    facts: "En frisk juicecocktail utan onödigt socker. Innehåller 40 portioner per burk."
   },
   {
     id: "limited-black-loot-edition",
@@ -60,7 +66,10 @@ export const products = [
     flavorNotes: "<strong>Vibe:</strong> sour blackberry och blackcurrant i svart limited look som kanns dyrare direkt.",
     profile: "Inget före 2008, tack",
     bestFor: "Soliga dagar, persiennerna nere",
-    packSub: "Björnbär & Svarta vinbär"
+    packSub: "Björnbär & Svarta vinbär",
+    content: "Björnbärspulver, svartvinbärsarom, elektrolyter, koffein, L-teanin.",
+    nutrition: "Energi: 12 kcal, Fett: 0g, Kolhydrater: 3g, Protein: 0g.",
+    facts: "Limited Edition Black Clover tema. Fri från laktos och gluten."
   },
   {
     id: "rare-raspberry",
@@ -69,7 +78,7 @@ export const products = [
     priceSek: 289,
     stockQuantity: 9,
     note: "Raspberry / sweet-sour",
-    description: "Blå-hallon-profil. En fyllig fruktig smak av hallon med en unik karaktär som ger en tydlig friskhet som motverkar att den blir för sliskig.",
+    description: "En krispig och elektrisk tolkning av vildhallon där den naturliga syrligheten får ta plats före den klassiska godis-sötman. Det är en ren och sval smakprofil som känns mer som nyplockade bär än en sliskig saft.",
     badge: "Top Pick",
     tagTone: "",
     swatch: "linear-gradient(135deg, #40164a, #92254b 50%, #ff7c96)",
@@ -81,7 +90,10 @@ export const products = [
     flavorNotes: "<strong>Vibe:</strong> sweet-sour raspberry med candy-glow och en tydlig rare drop-kansla i kortet.",
     profile: "Spelar bara ranked",
     bestFor: "Snabba köer och långa nätter",
-    packSub: "Sötsur godis hallon"
+    packSub: "Sötsur Vildhallon",
+    content: "Dextros, surhetsreglerande medel (citronsyra, äppelsyra), taurin, L-tyrosin, maltodextrin, magnesiumcitrat, färgande livsmedel, arom, guaranaextrakt, koffein, acetyl-L-karnitinhydroklorid, magnesiumoxid, L-askorbinsyra, sötningsmedel (sukralos), Bacopa monnieri-extrakt, grönt te-extrakt, ginsengextrakt, ginkgo biloba-extrakt, lutein, zinkcitrat, D-kalciumpantotenat, pyridoxinhydroklorid, tiaminmononitrat, riboflavin, krompikolinat, D-biotin, metylkobalamin.",
+    nutrition: "16 kcal, 0.2g fett, 3.8g kolhydrater.",
+    facts: "Ger 500ml färdig dryck per skopa. Skakas väl."
   },
   {
     id: "cactus-calamity",
@@ -102,7 +114,10 @@ export const products = [
     flavorNotes: "<strong>Vibe:</strong> cactus lime med frisk punch, torr heat och en look som kanns som desert-tech.",
     profile: "En med snabba flicks",
     bestFor: "Peakar alltid mid",
-    packSub: "Kaktusfikon & calamansi"
+    packSub: "Kaktusfikon & calamansi",
+    content: "Kaktusextrakt, calamansi-juicepulver, lime-aromer, koffein, natrium.",
+    nutrition: "Energi: 14 kcal, Kolhydrater: 3.5g, varav sockerarter: 0.2g.",
+    facts: "Unik kaktussmak som verkligen sticker ut. 100% Vegansk."
   },
   {
     id: "loot-sour-shock-dose",
@@ -123,7 +138,10 @@ export const products = [
     flavorNotes: "<strong>Vibe:</strong> sour candy med elblatt glow, snabb attack och en hardcore arena-kansla.",
     profile: "Han, ace-jagaren",
     bestFor: "Clutch or kick",
-    packSub: "Sura godisar & lite äpple"
+    packSub: "Sura godisar & lite äpple",
+    content: "Äppelsyra, vinsyra, aromer, koffein (200mg), taurin, acetyl-L-karnitin.",
+    nutrition: "Per servering (11g): 20 kcal, 4g kolhydrater.",
+    facts: "Extremt sur. Innehåller inget fett eller socker."
   },
   {
     id: "loot-tiki-tropicali-dose",
@@ -144,7 +162,10 @@ export const products = [
     flavorNotes: "<strong>Vibe:</strong> tropisk mix med varm glow, candy-fruit ton och semesterdrop fast i gamer-form.",
     profile: "TBS med 1 min max tur",
     bestFor: "Sommarlov & Garage-Lan",
-    packSub: "Kokos, mango, ananas."
+    packSub: "Kokos, mango, ananas.",
+    content: "Kokosvattenpulver, mangopuréextrakt, ananasaromer, vitaminmix.",
+    nutrition: "18 kcal, socker: 1g, protein: 0g, fett: 0.1g.",
+    facts: "Innehåller naturligt kokosvatten för bättre återfuktning."
   },
   {
     id: "loot-kimetsu-no-kiba-dose",
@@ -165,7 +186,10 @@ export const products = [
     flavorNotes: "<strong>Vibe:</strong> limited anime drop med collector-front, manga-energi och collab-tyngd i varje view.",
     profile: "Pay 2 win",
     bestFor: "Gacha games & Ghibli studio",
-    packSub: "Körsbär & Banan-hintar."
+    packSub: "Körsbär & Banan-hintar.",
+    content: "Körsbärsarom, bananextrakt, rödbetsjuice (färg), koffein, mineraler.",
+    nutrition: "22 kcal per portion. Naturligt färgämne.",
+    facts: "Exklusivt samarbete. Säljs så länge lagret räcker."
   },
   {
     id: "loot-phoenix-flames-dose",
@@ -186,7 +210,10 @@ export const products = [
     flavorNotes: "<strong>Vibe:</strong> fiery fruit med varm glow, loud contrast och full phoenix-revival energi.",
     profile: "Finns bara smg & rush",
     bestFor: "Trycka en sista innan sängen",
-    packSub: "Ananas & Syrlig-kiwi"
+    packSub: "Ananas & Syrlig-kiwi",
+    content: "Ananasjuicepulver, kiwiextrakt, guarana, koffein, färg (beta-karoten).",
+    nutrition: "16 kcal, 0.2g fett, 3.8g kolhydrater.",
+    facts: "Få nytt liv med Phoenix Flames. Innehåller 200mg koffein."
   },
   {
     id: "invincible-ice-tea",
@@ -207,7 +234,10 @@ export const products = [
     flavorNotes: "<strong>Vibe:</strong> sval ice tea med smooth finish, clean premiumton och mindre aggressiv energikansla.",
     profile: "skärmen full av UI",
     bestFor: "Söndags-eftermiddag & öppet fönster",
-    packSub: "Is-té & Persika"
+    packSub: "Is-té & Persika",
+    content: "Svart té extrakt, persikoarom, citronsyra, stevia, koffein.",
+    nutrition: "5 kcal per portion. Mycket lågt kaloriinnehåll.",
+    facts: "Innehåller äkta té-extrakt. Avnjutes bäst iskall."
   }
 ];
 
