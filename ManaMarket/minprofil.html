@@ -146,6 +146,48 @@
       margin-left: 20px;
     }
 
+    /* Bottombar Styles */
+    .bottombar {
+      margin-top: 80px;
+      padding: 60px 0;
+      background: rgba(5, 9, 16, 0.95);
+      border-top: 1px solid var(--line);
+      width: 100%;
+    }
+
+    .bottombar-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 30px;
+      margin-bottom: 40px;
+    }
+
+    .bottombar-link {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 0.95rem;
+      transition: all 0.2s ease;
+      display: inline-block;
+      padding: 8px 0;
+    }
+
+    .bottombar-link:hover {
+      color: var(--cyan);
+      transform: translateX(5px);
+    }
+
+    @media (max-width: 960px) {
+      .bottombar-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 480px) {
+      .bottombar-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
     .shipping-info svg {
       width: 14px;
       height: 14px;
@@ -512,7 +554,26 @@
         <div class="empty-state hidden" data-order-empty>Inga bestallningar an. Nar riktiga orders finns i Supabase visas de har.</div>
       </section>
     </div>
+
   </main>
+
+  <footer class="bottombar">
+    <div class="shell">
+      <div class="bottombar-grid">
+        <a href="vilkor.html#allmanna-villkor" class="bottombar-link">Allmänna villkor</a>
+        <a href="vilkor.html#gdpr" class="bottombar-link">Dataskyddsinformation (GDPR)</a>
+        <a href="vilkor.html#leveransvillkor" class="bottombar-link">Leveransvillkor</a>
+        <a href="vilkor.html#betalningsvillkor" class="bottombar-link">Betalningsvillkor</a>
+        <a href="vilkor.html#angerratt" class="bottombar-link">Ångerrätt, Retur & Byte</a>
+        <a href="vilkor.html#returformular" class="bottombar-link">Returformulär</a>
+        <a href="vilkor.html#kontakt" class="bottombar-link">Kontakt (Kontaktuppgifter)</a>
+        <a href="vilkor.html#cookieinstallningar" class="bottombar-link">Cookieinställningar</a>
+      </div>
+      <p class="footer-note">
+        &copy; 2026 manabutiken. Produktnamn och smaker är inspirerade av LOOT Cubes-kollektionen.
+      </p>
+    </div>
+  </footer>
 
   <script src="js/supabase-config.js"></script>
   <script type="module" src="js/profile.js"></script>

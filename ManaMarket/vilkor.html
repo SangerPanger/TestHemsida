@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="sv">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>manabutiken | Villkor</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Bebas+Neue&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #090d16;
+      --bg-soft: rgba(13, 20, 34, 0.78);
+      --panel: rgba(17, 27, 46, 0.78);
+      --panel-strong: rgba(24, 38, 65, 0.95);
+      --line: rgba(153, 198, 255, 0.16);
+      --text: #f5f7ff;
+      --muted: #98a7ca;
+      --cyan: #5ce1ff;
+      --lime: #c8ff63;
+      --pink: #ff5db1;
+      --orange: #ff9f5a;
+      --shadow: 0 10px 28px rgba(0, 0, 0, 0.28);
+      --radius-xl: 32px;
+      --radius-lg: 24px;
+      --radius-md: 18px;
+      --max-width: 1200px;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--text);
+      font-family: "Space Grotesk", sans-serif;
+      background: linear-gradient(135deg, #05070c 0%, #090d16 45%, #121b2c 100%);
+      line-height: 1.6;
+    }
+
+    .shell {
+      width: min(calc(100% - 32px), var(--max-width));
+      margin: 0 auto;
+      padding: 60px 0;
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      backdrop-filter: blur(8px);
+      background: rgba(5, 9, 16, 0.88);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .topbar-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 18px 0;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-family: "Bebas Neue", sans-serif;
+      font-size: 28px;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      text-decoration: none;
+      color: var(--text);
+    }
+
+    .brand span { color: var(--cyan); }
+
+    .content-panel {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-lg);
+      padding: 40px;
+      margin-bottom: 40px;
+    }
+
+    h1 { font-family: "Bebas Neue", sans-serif; font-size: 48px; margin-bottom: 30px; color: var(--cyan); }
+    h2 { font-family: "Bebas Neue", sans-serif; font-size: 32px; margin-top: 40px; margin-bottom: 20px; color: var(--lime); border-bottom: 1px solid var(--line); padding-bottom: 10px; }
+    p { margin-bottom: 20px; color: var(--text); opacity: 0.9; }
+
+    .back-link {
+      display: inline-block;
+      margin-bottom: 20px;
+      color: var(--cyan);
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    footer {
+      border-top: 1px solid var(--line);
+      padding: 40px 0;
+      margin-top: 60px;
+      text-align: center;
+      color: var(--muted);
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+
+  <header class="topbar">
+    <div class="shell topbar-inner">
+      <a href="butik.html" class="brand">
+        mana<span>butiken</span>
+      </a>
+      <nav>
+        <a href="butik.html" style="color: var(--cyan); text-decoration: none; font-weight: bold;">Tillbaka till butiken</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="shell">
+    <div class="content-panel">
+      <h1>Villkor & Information</h1>
+
+      <section id="allmannavillkor">
+        <h2>Allmänna villkor</h2>
+        <div id="text-allmannaVillkor"></div>
+      </section>
+
+      <section id="gdpr">
+        <h2>Dataskyddsinformation (GDPR)</h2>
+        <div id="text-gdpr"></div>
+      </section>
+
+      <section id="leveransvillkor">
+        <h2>Leveransvillkor</h2>
+        <div id="text-leveransvillkor"></div>
+      </section>
+
+      <section id="betalningsvillkor">
+        <h2>Betalningsvillkor</h2>
+        <div id="text-betalningsvillkor"></div>
+      </section>
+
+      <section id="angerratt">
+        <h2>Ångerrätt, Retur & Byte</h2>
+        <div id="text-angerratt"></div>
+      </section>
+
+      <section id="returformular">
+        <h2>Returformulär</h2>
+        <div id="text-returformular"></div>
+      </section>
+
+      <section id="kontakt">
+        <h2>Kontakt (Kontaktuppgifter)</h2>
+        <div id="text-kontakt"></div>
+      </section>
+
+      <section id="cookieinstallningar">
+        <h2>Cookieinställningar</h2>
+        <div id="text-cookieinstallningar"></div>
+      </section>
+    </div>
+  </main>
+
+  <script src="js/legal-texts.js"></script>
+  <script>
+    // Injicera texter dynamiskt
+    Object.keys(legalTexts).forEach(key => {
+      const element = document.getElementById(`text-${key}`);
+      if (element) {
+        element.innerHTML = legalTexts[key];
+      }
+    });
+  </script>
+
+  <footer>
+    <div class="shell">
+      &copy; 2026 manabutiken. Alla rättigheter förbehållna.
+    </div>
+  </footer>
+
+</body>
+</html>
