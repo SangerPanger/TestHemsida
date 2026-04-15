@@ -210,9 +210,19 @@ Deno.serve(async (request) => {
     }
 
     let remainingDiscountToApply = adjustedTotalDiscountOre;
+
+    // --- NY LOGIK: DRA AV RABATT FRÅN FRAKTEN FÖRST ---
+    // (Användaren vill att frakten dras först vid summa över 499 kr)
+    const canTakeFromShipping = Math.max(0, shippingOre); // Antar att vi kan dra hela frakten om rabatten räcker
+    const toTakeFromShipping = Math.min(remainingDiscountToApply, canTakeFromShipping);
+    const finalShippingOre = shippingOre - toTakeFromShipping;
+    remainingDiscountToApply -= toTakeFromShipping;
+
     const finalLineItems = [];
 
-    for (const item of lineItems) {
+    // --- DRA AV RESTERANDE RABATT FRÅN PRODUKTERNA ---
+    for (let i = 0; i < lineItems.length; i++) {
+      const item = lineItems[i];
       if (remainingDiscountToApply <= 0) {
         finalLineItems.push(item);
         continue;
@@ -231,13 +241,20 @@ Deno.serve(async (request) => {
         remainingDiscountToApply -= toTake;
         const newTotal = itemTotal - toTake;
 
+        let description = `Ordinarie pris: ${(itemTotal / 100).toFixed(2)} kr`;
+        // Om det är första produkten och vi har en total rabatt, visa hur mycket kunden sparar totalt
+        if (i === 0 && adjustedTotalDiscountOre > 0) {
+          const originalTotal = (subtotalOre + shippingOre) / 100;
+          description += ` | Totalt ordinarie: ${originalTotal.toFixed(2)} kr | Du sparar: ${(adjustedTotalDiscountOre / 100).toFixed(2)} kr`;
+        }
+
         finalLineItems.push({
           price_data: {
             ...item.price_data,
             product_data: {
               ...item.price_data.product_data,
               name: item.price_data.product_data.name + (quantity > 1 ? ` (${quantity} st)` : "") + " (Rabatterad)",
-              description: `Ordinarie pris: ${(itemTotal / 100).toFixed(2)} kr`
+              description: description
             },
             unit_amount: newTotal
           },
@@ -247,9 +264,6 @@ Deno.serve(async (request) => {
         finalLineItems.push(item);
       }
     }
-
-    // Om det finns rabatt kvar (t.ex. som skulle täcka frakt), dra den från frakten
-    const finalShippingOre = Math.max(0, shippingOre - remainingDiscountToApply);
 
     console.log(`[DEBUG] Final line_items: ${JSON.stringify(finalLineItems)}`);
     console.log(`[DEBUG] finalShippingOre: ${finalShippingOre}`);
