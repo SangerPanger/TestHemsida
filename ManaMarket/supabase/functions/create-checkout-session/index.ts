@@ -129,6 +129,9 @@ Deno.serve(async (request) => {
 
     const body = await request.json();
     const items = Array.isArray(body?.items) ? body.items : [];
+    const requestedCommissionDiscountSek = Number.isFinite(body?.commissionDiscountSek)
+      ? Math.max(0, Math.floor(body.commissionDiscountSek))
+      : 0;
     const requestedOrigin = typeof body?.origin === "string" ? body.origin : "";
     const requestedSiteUrl = typeof body?.siteUrl === "string" ? body.siteUrl : "";
     const headerOrigin = request.headers.get("origin") || "";
@@ -208,7 +211,28 @@ Deno.serve(async (request) => {
     }
 
     const shippingOre = 4900;
-    const discountOre = subtotalOre >= 85000 ? 5000 : 0;
+    const cartDiscountOre = subtotalOre >= 85000 ? 5000 : 0;
+
+    const { data: availableCommissionOre, error: commissionError } = await supabase.rpc(
+      "get_total_available_commission",
+      { p_user_id: user.id }
+    );
+
+    if (commissionError) {
+      throw new Error(`Kunde inte hamta tillgangligt rabattsaldo: ${commissionError.message}`);
+    }
+
+    const requestedCommissionDiscountOre = requestedCommissionDiscountSek * 100;
+    const maxCommissionDiscountOre = Math.max(0, Math.min(
+      Number(availableCommissionOre) || 0,
+      subtotalOre + shippingOre - cartDiscountOre
+    ));
+
+    if (requestedCommissionDiscountOre > maxCommissionDiscountOre) {
+      return json({ error: "Vald rabatt overstiger tillgangligt rabattsaldo." }, 400);
+    }
+
+    const totalDiscountOre = cartDiscountOre + requestedCommissionDiscountOre;
 
     lineItems.push({
       price_data: {
@@ -223,9 +247,9 @@ Deno.serve(async (request) => {
 
     let discounts: Array<{ coupon: string }> | undefined;
 
-    if (discountOre > 0) {
+    if (totalDiscountOre > 0) {
       const coupon = await stripe.coupons.create({
-        amount_off: discountOre,
+        amount_off: totalDiscountOre,
         currency: "sek",
         duration: "once",
         name: "manabutiken cart discount"
@@ -244,7 +268,8 @@ Deno.serve(async (request) => {
       metadata: {
         user_id: user.id,
         item_count: String(items.length),
-        cart_items: JSON.stringify(cartItemsForMetadata)
+        cart_items: JSON.stringify(cartItemsForMetadata),
+        commission_discount_ore: String(requestedCommissionDiscountOre)
       }
     });
 

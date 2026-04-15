@@ -432,6 +432,35 @@
       border-color: rgba(92, 225, 255, 0.35);
       background: rgba(92, 225, 255, 0.08);
     }
+    .discount-value {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .discount-stepper {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .discount-stepper button {
+      width: 28px;
+      height: 28px;
+      padding: 0;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.06);
+      color: var(--text);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font: inherit;
+      line-height: 1;
+    }
+    .discount-stepper button:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+    }
 
     form {
       display: grid;
@@ -623,7 +652,16 @@
         <div class="summary">
           <div class="summary-line"><span>Subtotal</span><strong data-cart-subtotal>0 SEK</strong></div>
           <div class="summary-line"><span>Frakt</span><strong data-cart-shipping>0 SEK</strong></div>
-          <div class="summary-line"><span>Rabatt</span><strong data-cart-discount>0 SEK</strong></div>
+          <div class="summary-line">
+            <span>Rabatt</span>
+            <strong class="discount-value">
+              <span class="discount-stepper">
+                <button type="button" aria-label="Oka rabatt" data-discount-increase>&uarr;</button>
+                <button type="button" aria-label="Minska rabatt" data-discount-decrease>&darr;</button>
+              </span>
+              <span data-cart-discount>0 SEK</span>
+            </strong>
+          </div>
           <div class="summary-line total"><span>Totalt</span><strong data-cart-total>0 SEK</strong></div>
         </div>
         <div class="checkout-status" data-checkout-status hidden></div>

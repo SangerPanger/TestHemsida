@@ -99,7 +99,7 @@ export function getCartTotals() {
   const itemCount = items.reduce((sum, item) => sum + item.quantity, 0);
   const subtotalSek = items.reduce((sum, item) => sum + item.lineTotalSek, 0);
   const shippingSek = itemCount > 0 ? 49 : 0;
-  const discountSek = subtotalSek >= 850 ? 50 : 0;
+  const discountSek = subtotalSek >= 499 ? 50 : 0;
   const totalSek = Math.max(0, subtotalSek + shippingSek - discountSek);
 
   return {

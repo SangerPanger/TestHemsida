@@ -295,6 +295,22 @@ begin
 end;
 $$;
 
+drop function if exists public.get_referrer_code(uuid);
+
+create or replace function public.get_referrer_code(p_user_id uuid)
+returns text
+language sql
+security definer
+set search_path = public
+as $$
+  select parent.referral_code
+  from public.profiles child
+  join public.profiles parent
+    on parent.id = child.referrer_id
+  where child.id = p_user_id
+  limit 1;
+$$;
+
 drop function if exists public.get_referred_users(uuid);
 
 create or replace function public.get_referred_users(p_user_id uuid)

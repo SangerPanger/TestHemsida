@@ -170,12 +170,13 @@ async function loadProfile() {
   gate.hidden = true;
   content.hidden = false;
 
-  const [{ data: profile }, { data: addresses }, { data: orders, error: ordersError }, { data: commissionBalance }, { data: referredUsers, error: referredUsersError }] = await Promise.all([
+  const [{ data: profile }, { data: addresses }, { data: orders, error: ordersError }, { data: commissionBalance }, { data: referredUsers, error: referredUsersError }, { data: referrerCodeData }] = await Promise.all([
     supabase.from("profiles").select("full_name, email, referral_code, referrer_id").eq("id", user.id).maybeSingle(),
     supabase.from("addresses").select("street_1, postal_code, city, country, is_default, created_at").eq("user_id", user.id).order("is_default", { ascending: false }).order("created_at", { ascending: false }).limit(1),
     supabase.from("orders").select("id, status, total_cents, currency, created_at, order_items(product_name, quantity, unit_price_cents)").eq("user_id", user.id).order("created_at", { ascending: false }),
     supabase.rpc("get_total_available_commission", { p_user_id: user.id }),
-    supabase.rpc("get_referred_users", { p_user_id: user.id })
+    supabase.rpc("get_referred_users", { p_user_id: user.id }),
+    supabase.rpc("get_referrer_code", { p_user_id: user.id })
   ]);
 
   const primaryAddress = Array.isArray(addresses) && addresses.length ? addresses[0] : null;
@@ -183,7 +184,7 @@ async function loadProfile() {
   const profileName = resolveProfileName(profile, user);
   const email = profile?.email || user.email || "-";
   let referralCode = profile?.referral_code || "-";
-  let referrerCode = "-";
+  const referrerCode = referrerCodeData || "-";
 
   // If code is missing (e.g. for some legacy reasons even after backfill),
   // we can show a placeholder or handle it.
@@ -191,16 +192,6 @@ async function loadProfile() {
 
   const baseUrl = window.location.origin + window.location.pathname.replace("minprofil.html", "auth.html");
   const referralLink = referralCode !== "-" ? `${baseUrl}?ref=${referralCode}` : "-";
-
-  if (profile?.referrer_id) {
-    const { data: referrerProfile } = await supabase
-      .from("profiles")
-      .select("referral_code")
-      .eq("id", profile.referrer_id)
-      .maybeSingle();
-
-    referrerCode = referrerProfile?.referral_code || "-";
-  }
 
   setText("[data-profile-name]", profileName);
   setText("[data-profile-full-name]", profileName);

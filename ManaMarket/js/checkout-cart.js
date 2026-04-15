@@ -9,6 +9,8 @@ const subtotalNodes = document.querySelectorAll("[data-cart-subtotal]");
 const shippingNode = document.querySelector("[data-cart-shipping]");
 const discountNode = document.querySelector("[data-cart-discount]");
 const totalNode = document.querySelector("[data-cart-total]");
+const discountIncreaseButton = document.querySelector("[data-discount-increase]");
+const discountDecreaseButton = document.querySelector("[data-discount-decrease]");
 const clearButton = document.querySelector("[data-clear-cart]");
 const completeButton = document.querySelector("[data-complete-order]");
 const checkoutStatus = document.querySelector("[data-checkout-status]");
@@ -18,6 +20,31 @@ const emailInput = document.querySelector("[data-checkout-email-input]");
 const streetInput = document.querySelector("[data-checkout-street]");
 const postalInput = document.querySelector("[data-checkout-postal]");
 const cityInput = document.querySelector("[data-checkout-city]");
+
+const DISCOUNT_STEP_SEK = 10;
+let availableCommissionSek = 0;
+let selectedCommissionDiscountSek = 0;
+
+function getMaxSelectableDiscountSek(totals) {
+  return Math.max(0, Math.min(availableCommissionSek, totals.subtotalSek + totals.shippingSek));
+}
+
+function clampSelectedDiscount(totals) {
+  const maxSelectable = getMaxSelectableDiscountSek(totals);
+  selectedCommissionDiscountSek = Math.max(0, Math.min(selectedCommissionDiscountSek, maxSelectable));
+}
+
+function updateDiscountStepperState(totals) {
+  const maxSelectable = getMaxSelectableDiscountSek(totals);
+
+  if (discountIncreaseButton) {
+    discountIncreaseButton.disabled = selectedCommissionDiscountSek + DISCOUNT_STEP_SEK > maxSelectable;
+  }
+
+  if (discountDecreaseButton) {
+    discountDecreaseButton.disabled = selectedCommissionDiscountSek - DISCOUNT_STEP_SEK < 0;
+  }
+}
 
 function createItemMarkup(item) {
   const article = document.createElement("div");
@@ -66,6 +93,9 @@ function renderCheckout() {
   }
 
   const totals = getCartTotals();
+  clampSelectedDiscount(totals);
+  const effectiveDiscountSek = totals.discountSek + selectedCommissionDiscountSek;
+  const effectiveTotalSek = Math.max(0, totals.subtotalSek + totals.shippingSek - effectiveDiscountSek);
 
   itemCountNodes.forEach((node) => {
     node.textContent = String(totals.itemCount);
@@ -80,12 +110,14 @@ function renderCheckout() {
   }
 
   if (discountNode) {
-    discountNode.textContent = totals.discountSek > 0 ? `- ${formatSek(totals.discountSek)}` : `${formatSek(0)}`;
+    discountNode.textContent = effectiveDiscountSek > 0 ? `- ${formatSek(effectiveDiscountSek)}` : `${formatSek(0)}`;
   }
 
   if (totalNode) {
-    totalNode.textContent = formatSek(totals.totalSek);
+    totalNode.textContent = formatSek(effectiveTotalSek);
   }
+
+  updateDiscountStepperState(totals);
 
   itemList.innerHTML = "";
 
@@ -97,6 +129,8 @@ function renderCheckout() {
     if (checkoutStatus) {
       checkoutStatus.hidden = true;
     }
+    selectedCommissionDiscountSek = 0;
+    updateDiscountStepperState(totals);
     return;
   }
 
@@ -208,6 +242,38 @@ async function prefillCheckoutFields() {
   }
 }
 
+async function loadAvailableCommission() {
+  try {
+    const { data, error } = await supabase.auth.getSession();
+    if (error || !data.session?.user?.id) {
+      availableCommissionSek = 0;
+      selectedCommissionDiscountSek = 0;
+      renderCheckout();
+      return;
+    }
+
+    const { data: commissionBalance, error: commissionError } = await supabase.rpc("get_total_available_commission", {
+      p_user_id: data.session.user.id
+    });
+
+    if (commissionError) {
+      availableCommissionSek = 0;
+      selectedCommissionDiscountSek = 0;
+      renderCheckout();
+      return;
+    }
+
+    availableCommissionSek = Math.max(0, Math.floor((Number(commissionBalance) || 0) / 100));
+    const totals = getCartTotals();
+    selectedCommissionDiscountSek = Math.min(selectedCommissionDiscountSek, getMaxSelectableDiscountSek(totals));
+    renderCheckout();
+  } catch {
+    availableCommissionSek = 0;
+    selectedCommissionDiscountSek = 0;
+    renderCheckout();
+  }
+}
+
 async function startStripeCheckout(event) {
   event.preventDefault();
 
@@ -248,6 +314,7 @@ async function startStripeCheckout(event) {
           id: item.id,
           quantity: item.quantity
         })),
+        commissionDiscountSek: selectedCommissionDiscountSek,
         origin,
         siteUrl
       })
@@ -288,9 +355,22 @@ clearButton?.addEventListener("click", () => {
   renderCheckout();
 });
 
+discountIncreaseButton?.addEventListener("click", () => {
+  const totals = getCartTotals();
+  const maxSelectable = getMaxSelectableDiscountSek(totals);
+  selectedCommissionDiscountSek = Math.min(maxSelectable, selectedCommissionDiscountSek + DISCOUNT_STEP_SEK);
+  renderCheckout();
+});
+
+discountDecreaseButton?.addEventListener("click", () => {
+  selectedCommissionDiscountSek = Math.max(0, selectedCommissionDiscountSek - DISCOUNT_STEP_SEK);
+  renderCheckout();
+});
+
 completeButton?.addEventListener("click", startStripeCheckout);
 
 window.addEventListener("mana-cart-updated", renderCheckout);
 
 renderCheckout();
 prefillCheckoutFields();
+loadAvailableCommission();
