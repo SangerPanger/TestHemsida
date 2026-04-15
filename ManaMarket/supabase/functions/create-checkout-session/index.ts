@@ -211,7 +211,11 @@ Deno.serve(async (request) => {
     }
 
     const shippingOre = 4900;
-    const cartDiscountOre = subtotalOre >= 49900 ? 5000 : 0; // Synk med frontend: 50 kr rabatt vid kop over 499 kr
+    const cartDiscountThresholdOre = 49900;
+    const cartDiscountValueOre = 5000;
+    const cartDiscountOre = subtotalOre >= cartDiscountThresholdOre ? cartDiscountValueOre : 0; // Synk med frontend: 50 kr rabatt vid kop over 499 kr
+
+    console.log(`[DEBUG] subtotalOre: ${subtotalOre}, cartDiscountOre: ${cartDiscountOre}`);
 
     const { data: availableCommissionOre, error: commissionError } = await supabase.rpc(
       "get_total_available_commission",
@@ -219,20 +223,23 @@ Deno.serve(async (request) => {
     );
 
     if (commissionError) {
+      console.error(`[ERROR] Kunde inte hamta tillgangligt rabattsaldo: ${commissionError.message}`);
       throw new Error(`Kunde inte hamta tillgangligt rabattsaldo: ${commissionError.message}`);
     }
 
-    const requestedCommissionDiscountOre = requestedCommissionDiscountSek * 100;
-    const maxCommissionDiscountOre = Math.max(0, Math.min(
-      Number(availableCommissionOre) || 0,
-      subtotalOre + shippingOre - cartDiscountOre
-    ));
+    const requestedCommissionDiscountOre = Math.floor(requestedCommissionDiscountSek * 100);
+    const maxPossibleCommissionDiscountOre = Math.max(0, subtotalOre + shippingOre - cartDiscountOre);
+    const maxCommissionDiscountOre = Math.min(
+      Math.floor(Number(availableCommissionOre) || 0),
+      maxPossibleCommissionDiscountOre
+    );
 
-    if (requestedCommissionDiscountOre > maxCommissionDiscountOre) {
-      return json({ error: "Vald rabatt overstiger tillgangligt rabattsaldo." }, 400);
-    }
+    console.log(`[DEBUG] requestedCommissionDiscountOre: ${requestedCommissionDiscountOre}, availableCommissionOre: ${availableCommissionOre}, maxCommissionDiscountOre: ${maxCommissionDiscountOre}`);
 
-    const totalDiscountOre = cartDiscountOre + requestedCommissionDiscountOre;
+    const appliedCommissionDiscountOre = Math.min(requestedCommissionDiscountOre, maxCommissionDiscountOre);
+    const totalDiscountOre = Math.floor(cartDiscountOre + appliedCommissionDiscountOre);
+
+    console.log(`[DEBUG] appliedCommissionDiscountOre: ${appliedCommissionDiscountOre}, totalDiscountOre: ${totalDiscountOre}`);
 
     lineItems.push({
       price_data: {
@@ -248,14 +255,22 @@ Deno.serve(async (request) => {
     let discounts: Array<{ coupon: string }> | undefined;
 
     if (totalDiscountOre > 0) {
-      const coupon = await stripe.coupons.create({
-        amount_off: totalDiscountOre,
-        currency: "sek",
-        duration: "once",
-        name: "manabutiken cart discount"
-      });
+      try {
+        const coupon = await stripe.coupons.create({
+          amount_off: totalDiscountOre,
+          currency: "sek",
+          duration: "once",
+          name: "manabutiken cart discount"
+        });
 
-      discounts = [{ coupon: coupon.id }];
+        console.log(`[DEBUG] Skapad Stripe-kupong: ${coupon.id} med amount_off: ${totalDiscountOre}`);
+        discounts = [{ coupon: coupon.id }];
+      } catch (couponError) {
+        console.error(`[ERROR] Misslyckades att skapa Stripe-kupong: ${couponError.message}`);
+        // Vi fortsatter utan rabatt om kupongen misslyckas, eller sa kan vi throwa
+        // Har valjer vi att throwa for att inte vilseleda kunden
+        throw new Error(`Kunde inte skapa rabatt: ${couponError.message}`);
+      }
     }
 
     const session = await stripe.checkout.sessions.create({
