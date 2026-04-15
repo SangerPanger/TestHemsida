@@ -1,5 +1,5 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-import Stripe from "https://esm.sh/stripe@14.25.0?target=deno";
+import Stripe from "https://esm.sh/stripe@16.1.0?target=deno";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -21,50 +21,6 @@ if (!supabaseUrl || !supabaseAnonKey) {
 const stripe = new Stripe(stripeSecretKey, {
   apiVersion: "2024-06-20"
 });
-
-// productCatalog is kept as fallback or reference if needed, but we now use the database
-const productCatalog = {
-  "ultra-instinct": {
-    name: "Ultra Instinct",
-    unitAmountOre: 28900
-  },
-  "loot-devil-fruit-dose": {
-    name: "Devil Fruit",
-    unitAmountOre: 28900
-  },
-  "limited-black-loot-edition": {
-    name: "Black LOOT Edition",
-    unitAmountOre: 28900
-  },
-  "rare-raspberry": {
-    name: "Rare Raspberry",
-    unitAmountOre: 28900
-  },
-  "cactus-calamity": {
-    name: "Cactus Calamity",
-    unitAmountOre: 28900
-  },
-  "loot-sour-shock-dose": {
-    name: "Sour Shock",
-    unitAmountOre: 28900
-  },
-  "loot-tiki-tropicali-dose": {
-    name: "Tiki Tropicali",
-    unitAmountOre: 28900
-  },
-  "loot-kimetsu-no-kiba-dose": {
-    name: "Kimetsu No Kiba",
-    unitAmountOre: 28900
-  },
-  "loot-phoenix-flames-dose": {
-    name: "Phoenix Flames",
-    unitAmountOre: 28900
-  },
-  "invincible-ice-tea": {
-    name: "Invincible Ice Tea",
-    unitAmountOre: 28900
-  }
-} as const;
 
 function json(data: unknown, status = 200) {
   return new Response(JSON.stringify(data), {
@@ -241,17 +197,6 @@ Deno.serve(async (request) => {
 
     console.log(`[DEBUG] appliedCommissionDiscountOre: ${appliedCommissionDiscountOre}, totalDiscountOre: ${totalDiscountOre}`);
 
-    lineItems.push({
-      price_data: {
-        currency: "sek",
-        product_data: {
-          name: "Frakt"
-        },
-        unit_amount: shippingOre
-      },
-      quantity: 1
-    });
-
     // Ensure we don't discount below Stripe's minimum amount (approx 5 SEK)
     // and definitely not below 0.
     const minimumAmountOre = 500;
@@ -264,57 +209,64 @@ Deno.serve(async (request) => {
       console.log(`[DEBUG] Justerar rabatt från ${totalDiscountOre} till ${adjustedTotalDiscountOre} för att behålla minimumbelopp 5 SEK.`);
     }
 
-    let discounts: Array<{ coupon: string }> | undefined;
+    let couponId: string | undefined;
 
     if (adjustedTotalDiscountOre > 0) {
       try {
-        // Stripe docs: To use a coupon, pass the coupon ID in the discounts array.
-        // Also check if we should apply it to specific line items if needed,
-        // but by default it applies to the total.
         const coupon = await stripe.coupons.create({
           amount_off: adjustedTotalDiscountOre,
           currency: "sek",
           duration: "once",
-          name: "Kundrabatt - Mana Market"
+          name: "Kundrabatt Mana Market"
         });
 
         console.log(`[DEBUG] Skapad Stripe-kupong: ${coupon.id} med amount_off: ${adjustedTotalDiscountOre}`);
-        discounts = [{ coupon: coupon.id }];
+        couponId = coupon.id;
       } catch (couponError) {
         console.error(`[ERROR] Misslyckades att skapa Stripe-kupong: ${couponError.message}`);
-        // Vi fortsatter utan rabatt om kupongen misslyckas, eller sa kan vi throwa
-        // Har valjer vi att throwa for att inte vilseleda kunden
         throw new Error(`Kunde inte skapa rabatt: ${couponError.message}`);
       }
     }
 
     console.log(`[DEBUG] Final line_items: ${JSON.stringify(lineItems)}`);
-    console.log(`[DEBUG] Final discounts: ${JSON.stringify(discounts)}`);
+    console.log(`[DEBUG] Final couponId: ${couponId}`);
 
-    // Prova att skicka med discounts direkt i checkout session
-    const sessionOptions: any = {
+    const sessionData: Stripe.Checkout.SessionCreateParams = {
       mode: "payment",
       customer_email: user.email,
       line_items: lineItems,
       success_url: `${siteUrl}checkout-success.html?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${siteUrl}checkout-cancel.html`,
+      shipping_options: [
+        {
+          shipping_rate_data: {
+            type: "fixed_amount",
+            fixed_amount: {
+              amount: shippingOre,
+              currency: "sek",
+            },
+            display_name: "Standardfrakt",
+          },
+        },
+      ],
       metadata: {
         user_id: user.id,
         item_count: String(items.length),
         cart_items: JSON.stringify(cartItemsForMetadata),
-        commission_discount_ore: String(requestedCommissionDiscountOre)
+        commission_discount_ore: String(requestedCommissionDiscountOre),
+        applied_discount_ore: String(adjustedTotalDiscountOre)
       }
     };
 
-    if (discounts && discounts.length > 0) {
-      sessionOptions.discounts = discounts;
+    if (couponId) {
+      sessionData.discounts = [{ coupon: couponId }];
     } else {
-      // Endast tillåt kampanjkoder om vi inte redan har applicerat en automatisk rabatt,
-      // eftersom Stripe Checkout bara stöder en rabatt/kod åt gången.
-      sessionOptions.allow_promotion_codes = true;
+      sessionData.allow_promotion_codes = true;
     }
 
-    const session = await stripe.checkout.sessions.create(sessionOptions);
+    const session = await stripe.checkout.sessions.create(sessionData);
+
+    console.log(`[DEBUG] Stripe Session skapad: ${session.id}, discounts: ${JSON.stringify(session.discounts)}`);
 
     return json({ url: session.url });
   } catch (error) {
