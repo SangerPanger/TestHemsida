@@ -3,6 +3,9 @@ import { supabase } from "./supabase-client.js";
 const output = document.getElementById("output");
 const inputLine = document.getElementById("input-line");
 const commandInput = document.getElementById("commandInput");
+const strengthContainer = document.getElementById("password-strength-container");
+const strengthBarFill = document.getElementById("strength-bar-fill");
+const strengthTime = document.getElementById("strength-time");
 
 const speed = 4;
 const urlParams = new URLSearchParams(window.location.search);
@@ -48,7 +51,70 @@ function resetInput(type = "text") {
 function showInput(type = "text") {
   resetInput(type);
   inputLine.classList.remove("hidden");
+  if (flow === "signup-password") {
+    strengthContainer.classList.remove("hidden");
+    updateStrength("");
+  } else {
+    strengthContainer.classList.add("hidden");
+  }
   focusInput();
+}
+
+function updateStrength(password) {
+  if (!password) {
+    strengthBarFill.innerHTML = "";
+    strengthTime.textContent = "";
+    return;
+  }
+
+  let charsetSize = 0;
+  if (/[a-z]/.test(password)) charsetSize += 26;
+  if (/[A-Z]/.test(password)) charsetSize += 26;
+  if (/[0-9]/.test(password)) charsetSize += 10;
+  if (/[^a-zA-Z0-9]/.test(password)) charsetSize += 33;
+
+  const entropy = password.length * Math.log2(charsetSize || 1);
+  const guesses = Math.pow(2, entropy);
+  const guessesPerSecond = 1e10; // 10 billion guesses/sec
+  const seconds = guesses / guessesPerSecond;
+
+  let timeStr = "";
+  if (seconds < 1) timeStr = "< 1 sek";
+  else if (seconds < 60) timeStr = Math.floor(seconds) + " sek";
+  else if (seconds < 3600) timeStr = Math.floor(seconds / 60) + " min";
+  else if (seconds < 86400) timeStr = Math.floor(seconds / 3600) + " tim";
+  else if (seconds < 31536000) timeStr = Math.floor(seconds / 86400) + " dag";
+  else if (seconds < 3153600000) timeStr = Math.floor(seconds / 31536000) + " år";
+  else if (seconds < 3153600000000) timeStr = Math.floor(seconds / 3153600000) + " millennier";
+  else timeStr = "oändlighet";
+
+  strengthTime.textContent = timeStr;
+
+  // Visual bar: Segmented ▊ characters
+  const maxSegments = 30;
+  let percent = 0;
+
+  if (timeStr === "oändlighet") {
+    percent = 100;
+  } else {
+    // 100 bits of entropy is "very strong" for our scale
+    percent = Math.min(100, (entropy / 100) * 100);
+  }
+
+  const activeSegments = Math.round((percent / 100) * maxSegments);
+  strengthBarFill.style.width = percent + "%";
+  strengthBarFill.innerHTML = "";
+  for (let i = 0; i < activeSegments; i++) {
+    const span = document.createElement("span");
+    span.textContent = "▊";
+    strengthBarFill.appendChild(span);
+  }
+
+  // Color logic
+  if (percent < 25) strengthBarFill.style.color = "#ff4d4d";
+  else if (percent < 50) strengthBarFill.style.color = "#ffa64d";
+  else if (percent < 75) strengthBarFill.style.color = "#ffff4d";
+  else strengthBarFill.style.color = "var(--text)";
 }
 
 function hideInput() {
@@ -110,20 +176,26 @@ function showModePrompt() {
 
   typeLines([
     "",
-    "Vill du",
+    "Kommandon:",
     "1. logga in",
-    "2. registrera konto [referal-kod-kravs]",
+    "2. registrera konto [ref-kod-krävs]",
+    "   tillbaka = [startar om flödet]",
     "Skriv 1 eller 2."
   ], () => showInput("text"));
 }
 
 function showSigninFlow() {
+  const savedAccounts = JSON.parse(localStorage.getItem("mana_saved_accounts") || "[]");
   flow = "signin-email";
-  typeLines([
-    "",
-    "Logga in vald.",
-    "Ange din email."
-  ], () => showInput("email"));
+
+  const lines = ["", "Logga in vald."];
+  if (savedAccounts.length > 0) {
+    lines.push("Ange mail eller skriv 1 för sparade konton.");
+  } else {
+    lines.push("Ange din email.");
+  }
+
+  typeLines(lines, () => showInput("email"));
 }
 
 function showSignupFlow() {
@@ -149,7 +221,7 @@ function handleGlobalCommand(command) {
       "Kommandon:",
       "1 = logga in",
       "2 = registrera konto",
-      "tillbaka = starta om flodet"
+      "tillbaka = starta om flödet"
     ], () => showInput(commandInput.type));
     return true;
   }
@@ -278,6 +350,14 @@ async function submitSignin() {
       return;
     }
 
+    // Save account to localStorage on successful login
+    const savedAccounts = JSON.parse(localStorage.getItem("mana_saved_accounts") || "[]");
+    const accountExists = savedAccounts.some(acc => acc.email === pending.email);
+    if (!accountExists) {
+      savedAccounts.push({ email: pending.email, password: pending.password });
+      localStorage.setItem("mana_saved_accounts", JSON.stringify(savedAccounts));
+    }
+
     await syncAddressFromMetadata(data.user);
 
     typeLine("Inloggad. Skickar dig vidare...", () => {
@@ -312,7 +392,7 @@ async function submitSignup() {
     if (error) {
       typeLines([
         `Fel: ${error.message}`,
-        "Registreringen stoppades. Skriv tillbaka for att forsoka igen."
+        "Registreringen stoppades. Skriv tillbaka för att försöka igen."
       ], () => {
         flow = "signup-invite";
         showInput("text");
@@ -325,7 +405,7 @@ async function submitSignup() {
     typeLines([
       "Konto skapat.",
       "Verifiera din email innan du loggar in.",
-      "Flodet startar om."
+      "Flödet startar om."
     ], () => showModePrompt());
   });
 }
@@ -334,10 +414,10 @@ function renderSession(email) {
   sessionMode = true;
   flow = "session";
   typeLines([
-    "Du ar redan inloggad.",
-    `Aktiv email: ${email || "okand"}`,
+    "Du är redan inloggad.",
+    `Aktiv email: ${email || "okänd"}`,
     "",
-    "1. fortsatt",
+    "1. fortsätt",
     "2. logga ut"
   ], () => showInput("text"));
 }
@@ -363,7 +443,7 @@ async function handleSessionCommand(command) {
     return;
   }
 
-  typeLine("Valj 1 for fortsatt eller 2 for att logga ut.", () => showInput("text"));
+  typeLine("Välj 1 för fortsätt vidare eller 2 för att logga ut.", () => showInput("text"));
 }
 
 async function handleCommand(rawCommand) {
@@ -401,6 +481,19 @@ async function handleCommand(rawCommand) {
       return;
 
     case "signin-email":
+      if (rawCommand.trim() === "1") {
+        const savedAccounts = JSON.parse(localStorage.getItem("mana_saved_accounts") || "[]");
+        if (savedAccounts.length > 0) {
+          flow = "signin-saved-accounts";
+          const accountLines = ["", "Välj ett konto:"];
+          savedAccounts.forEach((acc, i) => {
+            accountLines.push(`${i + 1}. ${acc.email}`);
+          });
+          typeLines(accountLines, () => showInput("text"));
+          return;
+        }
+      }
+
       pending.email = rawCommand.trim();
 
       if (!looksLikeEmail(pending.email)) {
@@ -410,6 +503,18 @@ async function handleCommand(rawCommand) {
 
       flow = "signin-password";
       typeLine("Ange ditt losenord.", () => showInput("password"));
+      return;
+
+    case "signin-saved-accounts":
+      const index = parseInt(rawCommand.trim()) - 1;
+      const accounts = JSON.parse(localStorage.getItem("mana_saved_accounts") || "[]");
+      if (accounts[index]) {
+        pending.email = accounts[index].email;
+        pending.password = accounts[index].password;
+        await submitSignin();
+      } else {
+        typeLine("Ogiltigt val. Försök igen eller skriv tillbaka.", () => showInput("text"));
+      }
       return;
 
     case "signin-password":
@@ -443,7 +548,7 @@ async function handleCommand(rawCommand) {
 
         pending.inviteValidated = true;
         flow = "signup-name";
-        typeLine("Kod godkand. Vad heter du?", () => showInput("text"));
+        typeLine("Kod godkänd. Vad är ditt förnamn?", () => showInput("text"));
       });
       return;
 
@@ -461,7 +566,7 @@ async function handleCommand(rawCommand) {
       }
 
       flow = "signup-last-name";
-      typeLine("Ange ditt efternamn.", () => showInput("text"));
+      typeLine("Och ditt efternamn.", () => showInput("text"));
       return;
 
     case "signup-last-name":
@@ -516,19 +621,19 @@ async function handleCommand(rawCommand) {
       pending.email = rawCommand.trim();
 
       if (!looksLikeEmail(pending.email)) {
-        typeLine("Det dar ser inte ut som en giltig email. Forsok igen.", () => showInput("email"));
+        typeLine("Det där ser inte ut som en giltig email. Försök igen.", () => showInput("email"));
         return;
       }
 
       flow = "signup-password";
-      typeLine("Skapa ett losenord. Minst 8 tecken.", () => showInput("password"));
+      typeLine("Skapa ett lösenord. Minst 12 tecken.", () => showInput("password"));
       return;
 
     case "signup-password":
       pending.password = rawCommand;
 
-      if (pending.password.length < 8) {
-        typeLine("Losenordet maste vara minst 8 tecken. Forsok igen.", () => showInput("password"));
+      if (pending.password.length < 12) {
+        typeLine("Lösenordet måste vara minst 12 tecken. Försök igen.", () => showInput("password"));
         return;
       }
 
@@ -543,6 +648,10 @@ async function handleCommand(rawCommand) {
 commandInput.addEventListener("keydown", async (event) => {
   if (event.key !== "Enter" || isTyping) {
     return;
+  }
+
+  if (flow === "signup-password") {
+    strengthContainer.classList.add("hidden");
   }
 
   const currentValue = commandInput.value;
@@ -561,6 +670,12 @@ commandInput.addEventListener("blur", () => {
   focusInput();
 });
 
+commandInput.addEventListener("input", () => {
+  if (flow === "signup-password") {
+    updateStrength(commandInput.value);
+  }
+});
+
 async function init() {
   const { data, error } = await supabase.auth.getSession();
 
@@ -572,8 +687,8 @@ async function init() {
   }
 
   const intro = [
-    "manabutiken access initieras...",
-    "Registrerade kunder far fortsatt till butik och checkout."
+    "manabutiken.se access initieras...",
+    "validerad kund krävs för att fortsätt till checkout."
   ];
 
   if (data.session) {

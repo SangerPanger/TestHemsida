@@ -90,10 +90,70 @@
 
     #input-line {
       display: flex;
-      align-items: baseline;
-      gap: 0.4ch;
+      flex-direction: column;
+      gap: 12px;
       margin-top: 12px;
       font-size: clamp(18px, 2.4vw, 28px);
+    }
+
+    .input-row {
+      display: flex;
+      align-items: baseline;
+      gap: 0.4ch;
+    }
+
+    #password-strength-container {
+      margin-top: 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      font-size: 0.6em;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--text-soft);
+    }
+
+    .strength-bar-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 1ch;
+    }
+
+    #strength-bar {
+      flex: 1;
+      height: 32px;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 2px;
+      font-family: monospace;
+      font-size: 24px;
+      letter-spacing: 0;
+      border: 1px solid var(--line);
+      padding: 0 6px;
+      background: rgba(125, 255, 125, 0.05);
+    }
+
+    #strength-bar-fill {
+      display: flex;
+      justify-content: space-between;
+      width: 100%;
+      color: var(--text);
+      transition: color 0.3s ease;
+      text-shadow: 0 0 8px currentColor;
+    }
+
+    .strength-desc {
+      margin-top: 4px;
+      font-size: 0.9em;
+      opacity: 0.8;
+    }
+
+    #strength-time {
+      flex: 0 0 auto;
+      min-width: 10ch;
     }
 
     #prompt {
@@ -142,8 +202,19 @@
     <div id="terminal-meta">Supabase auth terminal</div>
     <div id="output"></div>
     <div id="input-line" class="hidden">
-      <span id="prompt">&gt;</span>
-      <input type="text" id="commandInput" autocomplete="off" spellcheck="false" />
+      <div class="input-row">
+        <span id="prompt">&gt;</span>
+        <input type="text" id="commandInput" autocomplete="off" spellcheck="false" />
+      </div>
+      <div id="password-strength-container" class="hidden">
+        <div class="strength-bar-wrapper">
+          <div id="strength-bar">
+            <div id="strength-bar-fill"></div>
+          </div>
+          <div id="strength-time"></div>
+        </div>
+        <div class="strength-desc">Estimerad tid det tar att brute-force ditt lösenord</div>
+      </div>
     </div>
   </main>
 
