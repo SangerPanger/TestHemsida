@@ -211,7 +211,7 @@ Deno.serve(async (request) => {
     }
 
     const shippingOre = 4900;
-    const cartDiscountOre = subtotalOre >= 85000 ? 5000 : 0;
+    const cartDiscountOre = subtotalOre >= 49900 ? 5000 : 0; // Synk med frontend: 50 kr rabatt vid kop over 499 kr
 
     const { data: availableCommissionOre, error: commissionError } = await supabase.rpc(
       "get_total_available_commission",
