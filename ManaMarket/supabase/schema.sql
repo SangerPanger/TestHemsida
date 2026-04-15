@@ -295,32 +295,83 @@ begin
 end;
 $$;
 
+drop function if exists public.get_referred_users(uuid);
+
 create or replace function public.get_referred_users(p_user_id uuid)
 returns table (
   id uuid,
-  full_name text,
-  email text,
   created_at timestamptz,
   order_count bigint,
-  total_spent_cents bigint
+  commission_value_cents bigint,
+  roots_count bigint
 )
 language sql
 security definer
 set search_path = public
 as $$
+  with recursive direct_referrals as (
+    select p.id, p.created_at
+    from public.profiles p
+    where p.referrer_id = p_user_id
+  ),
+  referral_tree as (
+    select
+      d.id as root_id,
+      d.id as descendant_id,
+      0 as depth
+    from direct_referrals d
+
+    union all
+
+    select
+      rt.root_id,
+      p.id as descendant_id,
+      rt.depth + 1 as depth
+    from referral_tree rt
+    join public.profiles p
+      on p.referrer_id = rt.descendant_id
+  ),
+  direct_order_stats as (
+    select
+      o.user_id,
+      count(o.id) as order_count
+    from public.orders o
+    group by o.user_id
+  ),
+  branch_commissions as (
+    select
+      rt.root_id,
+      coalesce(sum(c.amount_cents), 0)::bigint as commission_value_cents
+    from referral_tree rt
+    join public.orders o
+      on o.user_id = rt.descendant_id
+    join public.commissions c
+      on c.order_id = o.id
+     and c.user_id = p_user_id
+     and c.status = 'available'
+    group by rt.root_id
+  ),
+  branch_roots as (
+    select
+      rt.root_id,
+      count(*) filter (where rt.depth > 0)::bigint as roots_count
+    from referral_tree rt
+    group by rt.root_id
+  )
   select
-    p.id,
-    p.full_name,
-    p.email,
-    p.created_at,
-    count(o.id) as order_count,
-    coalesce(sum(o.total_cents), 0)::bigint as total_spent_cents
-  from public.profiles p
-  left join public.orders o
-    on o.user_id = p.id
-  where p.referrer_id = p_user_id
-  group by p.id, p.full_name, p.email, p.created_at
-  order by p.created_at desc;
+    d.id,
+    d.created_at,
+    coalesce(dos.order_count, 0) as order_count,
+    coalesce(bc.commission_value_cents, 0) as commission_value_cents,
+    coalesce(br.roots_count, 0) as roots_count
+  from direct_referrals d
+  left join direct_order_stats dos
+    on dos.user_id = d.id
+  left join branch_commissions bc
+    on bc.root_id = d.id
+  left join branch_roots br
+    on br.root_id = d.id
+  order by d.created_at asc;
 $$;
 
 alter table public.profiles enable row level security;

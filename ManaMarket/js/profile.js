@@ -8,6 +8,7 @@ const orderEmpty = document.querySelector("[data-order-empty]");
 const referralUsersStatus = document.querySelector("[data-referral-users-status]");
 const referralUsersList = document.querySelector("[data-referral-users-list]");
 const referralUsersEmpty = document.querySelector("[data-referral-users-empty]");
+const navLogoutButton = document.querySelector("[data-nav-logout]");
 
 function setText(selector, value) {
   const node = document.querySelector(selector);
@@ -90,23 +91,28 @@ function renderReferralUsers(users) {
 
   referralUsersEmpty?.classList.add("hidden");
   referralUsersList.hidden = false;
-  referralUsersList.innerHTML = users.map((user) => {
-    const name = user.full_name || user.email || "Anvandare";
-    const email = user.email || "-";
+  referralUsersList.innerHTML = users.map((user, index) => {
     const orderCount = Number(user.order_count) || 0;
+    const invitedNumber = `#${index + 1}`;
+    const rootsCount = Number(user.roots_count) || 0;
+    const commissionValueCents = Number(user.commission_value_cents) || 0;
 
     return `
       <article class="referral-user-card">
         <div class="referral-user-top">
           <div>
-            <h3>${name}</h3>
-            <div class="referral-user-meta">${email}</div>
+            <h3>${invitedNumber}</h3>
+            <div class="referral-user-meta">Inbjuden anvandare</div>
           </div>
           <div class="order-badge">${orderCount} orders</div>
         </div>
         <div class="referral-user-stats">
           <span>Registrerad ${formatDate(user.created_at)}</span>
-          <strong>${formatCurrency(user.total_spent_cents, "SEK")}</strong>
+          <strong>Rabattvarde ${formatCurrency(commissionValueCents, "SEK")}</strong>
+        </div>
+        <div class="referral-user-stats">
+          <span>Rotter</span>
+          <strong>${rootsCount}</strong>
         </div>
       </article>
     `;
@@ -147,6 +153,11 @@ function updateCartCount() {
   });
 }
 
+async function handleLogout() {
+  await supabase.auth.signOut();
+  window.location.href = "auth.html";
+}
+
 async function loadProfile() {
   const { data, error } = await supabase.auth.getSession();
 
@@ -160,7 +171,7 @@ async function loadProfile() {
   content.hidden = false;
 
   const [{ data: profile }, { data: addresses }, { data: orders, error: ordersError }, { data: commissionBalance }, { data: referredUsers, error: referredUsersError }] = await Promise.all([
-    supabase.from("profiles").select("full_name, email, referral_code").eq("id", user.id).maybeSingle(),
+    supabase.from("profiles").select("full_name, email, referral_code, referrer_id").eq("id", user.id).maybeSingle(),
     supabase.from("addresses").select("street_1, postal_code, city, country, is_default, created_at").eq("user_id", user.id).order("is_default", { ascending: false }).order("created_at", { ascending: false }).limit(1),
     supabase.from("orders").select("id, status, total_cents, currency, created_at, order_items(product_name, quantity, unit_price_cents)").eq("user_id", user.id).order("created_at", { ascending: false }),
     supabase.rpc("get_total_available_commission", { p_user_id: user.id }),
@@ -172,6 +183,7 @@ async function loadProfile() {
   const profileName = resolveProfileName(profile, user);
   const email = profile?.email || user.email || "-";
   let referralCode = profile?.referral_code || "-";
+  let referrerCode = "-";
 
   // If code is missing (e.g. for some legacy reasons even after backfill),
   // we can show a placeholder or handle it.
@@ -179,6 +191,16 @@ async function loadProfile() {
 
   const baseUrl = window.location.origin + window.location.pathname.replace("minprofil.html", "auth.html");
   const referralLink = referralCode !== "-" ? `${baseUrl}?ref=${referralCode}` : "-";
+
+  if (profile?.referrer_id) {
+    const { data: referrerProfile } = await supabase
+      .from("profiles")
+      .select("referral_code")
+      .eq("id", profile.referrer_id)
+      .maybeSingle();
+
+    referrerCode = referrerProfile?.referral_code || "-";
+  }
 
   setText("[data-profile-name]", profileName);
   setText("[data-profile-full-name]", profileName);
@@ -191,6 +213,7 @@ async function loadProfile() {
   setText("[data-profile-order-count]", String(Array.isArray(orders) ? orders.length : 0));
 
   setText("[data-profile-referral-code]", referralCode);
+  setText("[data-profile-referral-code-stat]", referrerCode);
   const linkInput = document.querySelector("[data-profile-referral-link]");
   if (linkInput) {
     linkInput.value = referralLink;
@@ -203,7 +226,9 @@ async function loadProfile() {
     referralUsersStatus.textContent = "Kunde inte ladda inbjudna anvandare.";
     renderReferralUsers([]);
   } else {
-    const invitedUsers = Array.isArray(referredUsers) ? referredUsers : [];
+    const invitedUsers = Array.isArray(referredUsers)
+      ? [...referredUsers].sort((a, b) => new Date(a.created_at) - new Date(b.created_at))
+      : [];
     referralUsersStatus.textContent = invitedUsers.length
       ? `${invitedUsers.length} anvandare registrerade via din referral.`
       : "Inga registrerade anvandare via din referral an.";
@@ -219,6 +244,7 @@ async function loadProfile() {
 }
 
 window.addEventListener("mana-cart-updated", updateCartCount);
+navLogoutButton?.addEventListener("click", handleLogout);
 
 loadProfile();
 updateCartCount();
