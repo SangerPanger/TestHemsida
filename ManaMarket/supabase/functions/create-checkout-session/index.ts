@@ -268,11 +268,14 @@ Deno.serve(async (request) => {
 
     if (adjustedTotalDiscountOre > 0) {
       try {
+        // Stripe docs: To use a coupon, pass the coupon ID in the discounts array.
+        // Also check if we should apply it to specific line items if needed,
+        // but by default it applies to the total.
         const coupon = await stripe.coupons.create({
           amount_off: adjustedTotalDiscountOre,
           currency: "sek",
           duration: "once",
-          name: "manabutiken cart discount"
+          name: "Kundrabatt - Mana Market"
         });
 
         console.log(`[DEBUG] Skapad Stripe-kupong: ${coupon.id} med amount_off: ${adjustedTotalDiscountOre}`);
@@ -288,11 +291,11 @@ Deno.serve(async (request) => {
     console.log(`[DEBUG] Final line_items: ${JSON.stringify(lineItems)}`);
     console.log(`[DEBUG] Final discounts: ${JSON.stringify(discounts)}`);
 
-    const session = await stripe.checkout.sessions.create({
+    // Prova att skicka med discounts direkt i checkout session
+    const sessionOptions: any = {
       mode: "payment",
       customer_email: user.email,
       line_items: lineItems,
-      discounts,
       allow_promotion_codes: true,
       success_url: `${siteUrl}checkout-success.html?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${siteUrl}checkout-cancel.html`,
@@ -302,7 +305,13 @@ Deno.serve(async (request) => {
         cart_items: JSON.stringify(cartItemsForMetadata),
         commission_discount_ore: String(requestedCommissionDiscountOre)
       }
-    });
+    };
+
+    if (discounts && discounts.length > 0) {
+      sessionOptions.discounts = discounts;
+    }
+
+    const session = await stripe.checkout.sessions.create(sessionOptions);
 
     return json({ url: session.url });
   } catch (error) {
