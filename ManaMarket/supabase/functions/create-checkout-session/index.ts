@@ -293,7 +293,9 @@ Deno.serve(async (request) => {
         commission_discount_ore: String(appliedCommissionDiscountOre),
         applied_discount_ore: String(adjustedTotalDiscountOre)
       },
-      allow_promotion_codes: adjustedTotalDiscountOre === 0 // Tillåt endast koder om ingen automatisk rabatt finns
+      allow_promotion_codes: adjustedTotalDiscountOre === 0, // Tillåt endast koder om ingen automatisk rabatt finns
+      automatic_tax: { enabled: true },
+      billing_address_collection: "required"
     };
 
     const session = await stripe.checkout.sessions.create(sessionData);

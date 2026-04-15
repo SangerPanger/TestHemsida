@@ -6,6 +6,7 @@ const itemList = document.querySelector("[data-cart-items]");
 const emptyState = document.querySelector("[data-cart-empty]");
 const itemCountNodes = document.querySelectorAll("[data-cart-count]");
 const subtotalNodes = document.querySelectorAll("[data-cart-subtotal]");
+const vatNode = document.querySelector("[data-cart-vat]");
 const shippingNode = document.querySelector("[data-cart-shipping]");
 const discountNode = document.querySelector("[data-cart-discount]");
 const totalNode = document.querySelector("[data-cart-total]");
@@ -104,6 +105,10 @@ function renderCheckout() {
   subtotalNodes.forEach((node) => {
     node.textContent = formatSek(totals.subtotalSek);
   });
+
+  if (vatNode) {
+    vatNode.textContent = formatSek(totals.vatSek);
+  }
 
   if (shippingNode) {
     shippingNode.textContent = formatSek(totals.shippingSek);
