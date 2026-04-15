@@ -252,18 +252,30 @@ Deno.serve(async (request) => {
       quantity: 1
     });
 
+    // Ensure we don't discount below Stripe's minimum amount (approx 5 SEK)
+    // and definitely not below 0.
+    const minimumAmountOre = 500;
+    const currentTotalOre = subtotalOre + shippingOre;
+    const finalTotalAfterDiscountOre = currentTotalOre - totalDiscountOre;
+
+    let adjustedTotalDiscountOre = totalDiscountOre;
+    if (finalTotalAfterDiscountOre < minimumAmountOre) {
+      adjustedTotalDiscountOre = Math.max(0, currentTotalOre - minimumAmountOre);
+      console.log(`[DEBUG] Justerar rabatt från ${totalDiscountOre} till ${adjustedTotalDiscountOre} för att behålla minimumbelopp 5 SEK.`);
+    }
+
     let discounts: Array<{ coupon: string }> | undefined;
 
-    if (totalDiscountOre > 0) {
+    if (adjustedTotalDiscountOre > 0) {
       try {
         const coupon = await stripe.coupons.create({
-          amount_off: totalDiscountOre,
+          amount_off: adjustedTotalDiscountOre,
           currency: "sek",
           duration: "once",
           name: "manabutiken cart discount"
         });
 
-        console.log(`[DEBUG] Skapad Stripe-kupong: ${coupon.id} med amount_off: ${totalDiscountOre}`);
+        console.log(`[DEBUG] Skapad Stripe-kupong: ${coupon.id} med amount_off: ${adjustedTotalDiscountOre}`);
         discounts = [{ coupon: coupon.id }];
       } catch (couponError) {
         console.error(`[ERROR] Misslyckades att skapa Stripe-kupong: ${couponError.message}`);
@@ -273,11 +285,15 @@ Deno.serve(async (request) => {
       }
     }
 
+    console.log(`[DEBUG] Final line_items: ${JSON.stringify(lineItems)}`);
+    console.log(`[DEBUG] Final discounts: ${JSON.stringify(discounts)}`);
+
     const session = await stripe.checkout.sessions.create({
       mode: "payment",
       customer_email: user.email,
       line_items: lineItems,
       discounts,
+      allow_promotion_codes: true,
       success_url: `${siteUrl}checkout-success.html?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${siteUrl}checkout-cancel.html`,
       metadata: {
