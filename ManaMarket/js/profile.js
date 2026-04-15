@@ -3,10 +3,11 @@ import { supabase } from "./supabase-client.js";
 
 const gate = document.querySelector("[data-profile-gate]");
 const content = document.querySelector("[data-profile-content]");
-const logoutButton = document.querySelector("[data-profile-logout]");
-const statusNode = document.querySelector("[data-profile-status]");
 const orderList = document.querySelector("[data-order-list]");
 const orderEmpty = document.querySelector("[data-order-empty]");
+const referralUsersStatus = document.querySelector("[data-referral-users-status]");
+const referralUsersList = document.querySelector("[data-referral-users-list]");
+const referralUsersEmpty = document.querySelector("[data-referral-users-empty]");
 
 function setText(selector, value) {
   const node = document.querySelector(selector);
@@ -75,6 +76,43 @@ function renderOrders(orders) {
   }).join("");
 }
 
+function renderReferralUsers(users) {
+  if (!referralUsersList) {
+    return;
+  }
+
+  if (!users.length) {
+    referralUsersList.innerHTML = "";
+    referralUsersList.hidden = true;
+    referralUsersEmpty?.classList.remove("hidden");
+    return;
+  }
+
+  referralUsersEmpty?.classList.add("hidden");
+  referralUsersList.hidden = false;
+  referralUsersList.innerHTML = users.map((user) => {
+    const name = user.full_name || user.email || "Anvandare";
+    const email = user.email || "-";
+    const orderCount = Number(user.order_count) || 0;
+
+    return `
+      <article class="referral-user-card">
+        <div class="referral-user-top">
+          <div>
+            <h3>${name}</h3>
+            <div class="referral-user-meta">${email}</div>
+          </div>
+          <div class="order-badge">${orderCount} orders</div>
+        </div>
+        <div class="referral-user-stats">
+          <span>Registrerad ${formatDate(user.created_at)}</span>
+          <strong>${formatCurrency(user.total_spent_cents, "SEK")}</strong>
+        </div>
+      </article>
+    `;
+  }).join("");
+}
+
 function resolveProfileName(profile, user) {
   return profile?.full_name || user?.user_metadata?.full_name || user?.email || "Din profil";
 }
@@ -121,11 +159,12 @@ async function loadProfile() {
   gate.hidden = true;
   content.hidden = false;
 
-  const [{ data: profile }, { data: addresses }, { data: orders, error: ordersError }, { data: commissionBalance }] = await Promise.all([
+  const [{ data: profile }, { data: addresses }, { data: orders, error: ordersError }, { data: commissionBalance }, { data: referredUsers, error: referredUsersError }] = await Promise.all([
     supabase.from("profiles").select("full_name, email, referral_code").eq("id", user.id).maybeSingle(),
     supabase.from("addresses").select("street_1, postal_code, city, country, is_default, created_at").eq("user_id", user.id).order("is_default", { ascending: false }).order("created_at", { ascending: false }).limit(1),
     supabase.from("orders").select("id, status, total_cents, currency, created_at, order_items(product_name, quantity, unit_price_cents)").eq("user_id", user.id).order("created_at", { ascending: false }),
-    supabase.rpc("get_total_available_commission", { p_user_id: user.id })
+    supabase.rpc("get_total_available_commission", { p_user_id: user.id }),
+    supabase.rpc("get_referred_users", { p_user_id: user.id })
   ]);
 
   const primaryAddress = Array.isArray(addresses) && addresses.length ? addresses[0] : null;
@@ -160,20 +199,24 @@ async function loadProfile() {
   const balanceCents = typeof commissionBalance === "number" ? commissionBalance : 0;
   setText("[data-profile-commission-balance]", formatCurrency(balanceCents, "SEK"));
 
+  if (referredUsersError) {
+    referralUsersStatus.textContent = "Kunde inte ladda inbjudna anvandare.";
+    renderReferralUsers([]);
+  } else {
+    const invitedUsers = Array.isArray(referredUsers) ? referredUsers : [];
+    referralUsersStatus.textContent = invitedUsers.length
+      ? `${invitedUsers.length} anvandare registrerade via din referral.`
+      : "Inga registrerade anvandare via din referral an.";
+    renderReferralUsers(invitedUsers);
+  }
+
   if (ordersError) {
-    statusNode.textContent = "Profil laddad, men orders kunde inte hamtas.";
     renderOrders([]);
     return;
   }
 
-  statusNode.textContent = "Konto laddat. Har ser du din profil och orderhistorik.";
   renderOrders(Array.isArray(orders) ? orders : []);
 }
-
-logoutButton?.addEventListener("click", async () => {
-  await supabase.auth.signOut();
-  window.location.href = "auth.html";
-});
 
 window.addEventListener("mana-cart-updated", updateCartCount);
 

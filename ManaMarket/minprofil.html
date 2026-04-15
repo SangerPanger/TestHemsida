@@ -230,6 +230,15 @@
       grid-template-columns: 1.1fr 0.9fr;
       gap: 22px;
     }
+    .profile-overview {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 22px;
+    }
+    .profile-main {
+      display: grid;
+      gap: 22px;
+    }
     .hero-card,
     .panel {
       border-radius: var(--radius-xl);
@@ -254,6 +263,44 @@
       background: radial-gradient(circle, rgba(255, 93, 177, 0.45), transparent 68%);
     }
     .panel { padding: 24px; }
+    .profile-sidebar {
+      height: 100%;
+      display: grid;
+      align-content: start;
+    }
+    .referral-users {
+      display: grid;
+      gap: 12px;
+    }
+    .referral-user-card {
+      display: grid;
+      gap: 10px;
+      padding: 16px;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--line);
+      background: var(--panel);
+    }
+    .referral-user-top {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: start;
+    }
+    .referral-user-top h3 {
+      margin: 0;
+      font-size: 1rem;
+    }
+    .referral-user-meta {
+      color: var(--muted);
+      font-size: 0.92rem;
+    }
+    .referral-user-stats {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      color: var(--muted);
+      font-size: 0.92rem;
+    }
     .eyebrow {
       display: inline-flex;
       padding: 10px 14px;
@@ -373,6 +420,7 @@
     @media (max-width: 920px) {
       .hero,
       .profile-grid,
+      .profile-overview,
       .hero-stats {
         grid-template-columns: 1fr;
       }
@@ -473,74 +521,71 @@
     </section>
 
     <div data-profile-content hidden>
-      <section class="hero">
-        <article class="hero-card">
-          <div class="panel-head">
-            <div>
-              <div class="eyebrow">Profiluppgifter</div>
+      <section class="profile-overview">
+        <div class="profile-main">
+          <article class="hero-card">
+            <div class="panel-head">
+              <div>
+                <div class="eyebrow">Profiluppgifter</div>
+              </div>
             </div>
-          </div>
-          <div class="data-list">
-            <div class="data-row"><span>Namn</span><strong data-profile-full-name>-</strong></div>
-            <div class="data-row"><span>Email</span><strong data-profile-email-row>-</strong></div>
-            <div class="data-row"><span>Adress</span><strong data-profile-street>-</strong></div>
-            <div class="data-row"><span>Postnummer</span><strong data-profile-postal>-</strong></div>
-            <div class="data-row"><span>Ort</span><strong data-profile-city-row>-</strong></div>
-          </div>
-        </article>
+            <div class="data-list">
+              <div class="data-row"><span>Namn</span><strong data-profile-full-name>-</strong></div>
+              <div class="data-row"><span>Email</span><strong data-profile-email-row>-</strong></div>
+              <div class="data-row"><span>Adress</span><strong data-profile-street>-</strong></div>
+              <div class="data-row"><span>Postnummer</span><strong data-profile-postal>-</strong></div>
+              <div class="data-row"><span>Ort</span><strong data-profile-city-row>-</strong></div>
+            </div>
+          </article>
 
-        <aside class="panel">
-          <div class="panel-head">
-            <div>
-              <div class="eyebrow">Session</div>
-              <h2>Konto</h2>
+          <article class="panel">
+            <div class="panel-head">
+              <div>
+                <div class="eyebrow">Referral System</div>
+                <h2>Bjud in vanner</h2>
+              </div>
             </div>
-          </div>
-          <div class="status" data-profile-status>Laddar kontodata...</div>
-          <div style="display:flex; gap:12px; flex-wrap:wrap; margin-top:18px;">
-            <a class="cta" href="checkout.html">Till checkout</a>
-            <button class="ghost" type="button" data-profile-logout>Logga ut</button>
-          </div>
-        </aside>
-      </section>
+            <p class="muted" style="margin-bottom: 16px;">
+              Dela din lank och tjana 10% rabatt pa deras kop.
+            </p>
+            <div class="data-list">
+              <div class="data-row">
+                <span>Din kod</span>
+                <strong data-profile-referral-code>-</strong>
+              </div>
+              <div class="data-row" style="flex-direction: column; align-items: stretch; gap: 8px;">
+                <span>Din personliga lank</span>
+                <input type="text" data-profile-referral-link readonly
+                  style="background: var(--panel); border: 1px solid var(--line); color: var(--cyan); padding: 10px; border-radius: 8px; font-family: inherit; font-size: 0.9rem; width: 100%;">
+              </div>
+            </div>
+            <div class="hero-stats">
+              <div class="stat">
+                <strong data-profile-commission-balance>0 SEK</strong>
+                <span class="muted">rabatt-saldo</span>
+              </div>
+              <div class="stat">
+                <strong data-profile-order-count>0</strong>
+                <span class="muted">bestallningar</span>
+              </div>
+            </div>
+          </article>
+        </div>
 
-      <section class="profile-grid" style="margin-top:22px;">
-        <article class="panel">
+        <aside class="panel profile-sidebar">
           <div class="panel-head">
             <div>
-              <div class="eyebrow">Referral System</div>
-              <h2>Bjud in vanner</h2>
+              <div class="eyebrow">Referral</div>
+              <h2>Inbjudna anvandare</h2>
             </div>
           </div>
-          <p class="muted" style="margin-bottom: 16px;">
-            Dela din lank och tjana 10% rabatt pa deras kop.
+          <p class="muted" style="margin: 0 0 16px;">
+            Har visas personer som registrerat sig med din personliga referral-lank eller kod.
           </p>
-          <div class="data-list">
-            <div class="data-row">
-              <span>Din kod</span>
-              <strong data-profile-referral-code>-</strong>
-            </div>
-            <div class="data-row" style="flex-direction: column; align-items: stretch; gap: 8px;">
-              <span>Din personliga lank</span>
-              <input type="text" data-profile-referral-link readonly
-                style="background: var(--panel); border: 1px solid var(--line); color: var(--cyan); padding: 10px; border-radius: 8px; font-family: inherit; font-size: 0.9rem; width: 100%;">
-            </div>
-          </div>
-          <div class="hero-stats">
-            <div class="stat">
-              <strong data-profile-commission-balance>0 SEK</strong>
-              <span class="muted">rabatt-saldo</span>
-            </div>
-            <div class="stat">
-              <strong data-profile-order-count>0</strong>
-              <span class="muted">bestallningar</span>
-            </div>
-          </div>
-        </article>
-
-        <article class="panel">
-
-        </article>
+          <div class="status" data-referral-users-status>Laddar inbjudningar...</div>
+          <div class="referral-users" data-referral-users-list hidden></div>
+          <div class="empty-state hidden" data-referral-users-empty>Du har inte bjudit in nagon an.</div>
+        </aside>
       </section>
 
       <section class="panel" style="margin-top:22px;">

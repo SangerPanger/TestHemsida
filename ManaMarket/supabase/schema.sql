@@ -295,6 +295,34 @@ begin
 end;
 $$;
 
+create or replace function public.get_referred_users(p_user_id uuid)
+returns table (
+  id uuid,
+  full_name text,
+  email text,
+  created_at timestamptz,
+  order_count bigint,
+  total_spent_cents bigint
+)
+language sql
+security definer
+set search_path = public
+as $$
+  select
+    p.id,
+    p.full_name,
+    p.email,
+    p.created_at,
+    count(o.id) as order_count,
+    coalesce(sum(o.total_cents), 0)::bigint as total_spent_cents
+  from public.profiles p
+  left join public.orders o
+    on o.user_id = p.id
+  where p.referrer_id = p_user_id
+  group by p.id, p.full_name, p.email, p.created_at
+  order by p.created_at desc;
+$$;
+
 alter table public.profiles enable row level security;
 alter table public.addresses enable row level security;
 alter table public.invite_codes enable row level security;
