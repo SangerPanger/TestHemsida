@@ -1,5 +1,5 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-import Stripe from "https://esm.sh/stripe@14.25.0?target=deno";
+import Stripe from "https://esm.sh/stripe@16.1.0?target=deno";
 
 const stripeSecretKey = Deno.env.get("STRIPE_SECRET_KEY");
 const stripeWebhookSecret = Deno.env.get("STRIPE_WEBHOOK_SECRET");
@@ -46,6 +46,7 @@ Deno.serve(async (req) => {
       }
 
       const cartItems = JSON.parse(cartItemsStr);
+      const commissionDiscountOre = parseInt(metadata?.commission_discount_ore || "0");
 
       // 1. Skapa ordern i databasen
       const { data: order, error: orderError } = await supabase
@@ -57,7 +58,7 @@ Deno.serve(async (req) => {
           total_cents: session.amount_total,
           currency: session.currency,
           stripe_checkout_session_id: session.id,
-          discount_cents: session.total_details?.amount_discount || 0,
+          discount_cents: session.total_details?.amount_discount || (parseInt(metadata?.applied_discount_ore || "0")),
           shipping_cents: session.total_details?.amount_shipping || 0,
         })
         .select()
@@ -65,7 +66,61 @@ Deno.serve(async (req) => {
 
       if (orderError) throw orderError;
 
-      // 2. Skapa order_items och uppdatera lager
+      // 2. Förbruka kommissioner om rabatt användes
+      if (commissionDiscountOre > 0) {
+        console.log(`Förbrukar ${commissionDiscountOre} öre i kommission för användare ${userId}`);
+
+        // Hämta tillgängliga kommissioner sorterade efter äldsta först
+        const { data: availableComms, error: commsError } = await supabase
+          .from("commissions")
+          .select("id, amount_cents")
+          .eq("user_id", userId)
+          .eq("status", "available")
+          .order("created_at", { ascending: true });
+
+        if (commsError) {
+          console.error("Kunde inte hämta kommissioner för förbrukning:", commsError);
+        } else if (availableComms) {
+          let remainingToCover = commissionDiscountOre;
+          for (const comm of availableComms) {
+            if (remainingToCover <= 0) break;
+
+            if (comm.amount_cents <= remainingToCover) {
+              // Hela kommissionen används
+              await supabase
+                .from("commissions")
+                .update({ status: "used" })
+                .eq("id", comm.id);
+              remainingToCover -= comm.amount_cents;
+            } else {
+              // Delar av kommissionen används. Eftersom vi inte kan splitta rader enkelt här
+              // (utan att ändra schema), markerar vi den som 'used' och skapar en ny med resten.
+              // Alternativt markerar vi hela som 'used' om det är det enda valet,
+              // men bäst är att vara rättvis.
+
+              await supabase
+                .from("commissions")
+                .update({ status: "used" })
+                .eq("id", comm.id);
+
+              const remainder = comm.amount_cents - remainingToCover;
+              await supabase
+                .from("commissions")
+                .insert({
+                  user_id: userId,
+                  amount_cents: remainder,
+                  status: "available",
+                  level: 1, // Default level
+                  order_id: order.id // Koppla till denna order som orsak till splitten
+                });
+
+              remainingToCover = 0;
+            }
+          }
+        }
+      }
+
+      // 3. Skapa order_items och uppdatera lager
       for (const item of cartItems) {
         // Hämta produktens UUID från slug
         const { data: product, error: prodError } = await supabase

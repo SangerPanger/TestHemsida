@@ -290,7 +290,7 @@ Deno.serve(async (request) => {
         user_id: user.id,
         item_count: String(items.length),
         cart_items: JSON.stringify(cartItemsForMetadata),
-        commission_discount_ore: String(requestedCommissionDiscountOre),
+        commission_discount_ore: String(appliedCommissionDiscountOre),
         applied_discount_ore: String(adjustedTotalDiscountOre)
       },
       allow_promotion_codes: adjustedTotalDiscountOre === 0 // Tillåt endast koder om ingen automatisk rabatt finns
