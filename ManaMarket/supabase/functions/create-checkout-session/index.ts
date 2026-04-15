@@ -209,32 +209,55 @@ Deno.serve(async (request) => {
       console.log(`[DEBUG] Justerar rabatt från ${totalDiscountOre} till ${adjustedTotalDiscountOre} för att behålla minimumbelopp 5 SEK.`);
     }
 
-    let couponId: string | undefined;
+    let remainingDiscountToApply = adjustedTotalDiscountOre;
+    const finalLineItems = [];
 
-    if (adjustedTotalDiscountOre > 0) {
-      try {
-        const coupon = await stripe.coupons.create({
-          amount_off: adjustedTotalDiscountOre,
-          currency: "sek",
-          duration: "once",
-          name: "Kundrabatt Mana Market"
+    for (const item of lineItems) {
+      if (remainingDiscountToApply <= 0) {
+        finalLineItems.push(item);
+        continue;
+      }
+
+      const unitAmount = item.price_data.unit_amount;
+      const quantity = item.quantity;
+      const itemTotal = unitAmount * quantity;
+
+      // Vi lämnar minst 50 öre (minsta tillåtna belopp) för denna rad
+      const minLineTotal = 50;
+      const canTake = Math.max(0, itemTotal - minLineTotal);
+      const toTake = Math.min(remainingDiscountToApply, canTake);
+
+      if (toTake > 0) {
+        remainingDiscountToApply -= toTake;
+        const newTotal = itemTotal - toTake;
+
+        finalLineItems.push({
+          price_data: {
+            ...item.price_data,
+            product_data: {
+              ...item.price_data.product_data,
+              name: item.price_data.product_data.name + (quantity > 1 ? ` (${quantity} st)` : "") + " (Rabatterad)",
+              description: `Ordinarie pris: ${(itemTotal / 100).toFixed(2)} kr`
+            },
+            unit_amount: newTotal
+          },
+          quantity: 1 // Gör om till quantity 1 för att kunna sätta det exakta rabatterade totalbeloppet
         });
-
-        console.log(`[DEBUG] Skapad Stripe-kupong: ${coupon.id} med amount_off: ${adjustedTotalDiscountOre}`);
-        couponId = coupon.id;
-      } catch (couponError) {
-        console.error(`[ERROR] Misslyckades att skapa Stripe-kupong: ${couponError.message}`);
-        throw new Error(`Kunde inte skapa rabatt: ${couponError.message}`);
+      } else {
+        finalLineItems.push(item);
       }
     }
 
-    console.log(`[DEBUG] Final line_items: ${JSON.stringify(lineItems)}`);
-    console.log(`[DEBUG] Final couponId: ${couponId}`);
+    // Om det finns rabatt kvar (t.ex. som skulle täcka frakt), dra den från frakten
+    const finalShippingOre = Math.max(0, shippingOre - remainingDiscountToApply);
+
+    console.log(`[DEBUG] Final line_items: ${JSON.stringify(finalLineItems)}`);
+    console.log(`[DEBUG] finalShippingOre: ${finalShippingOre}`);
 
     const sessionData: Stripe.Checkout.SessionCreateParams = {
       mode: "payment",
       customer_email: user.email,
-      line_items: lineItems,
+      line_items: finalLineItems,
       success_url: `${siteUrl}checkout-success.html?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${siteUrl}checkout-cancel.html`,
       shipping_options: [
@@ -242,7 +265,7 @@ Deno.serve(async (request) => {
           shipping_rate_data: {
             type: "fixed_amount",
             fixed_amount: {
-              amount: shippingOre,
+              amount: finalShippingOre,
               currency: "sek",
             },
             display_name: "Standardfrakt",
@@ -255,14 +278,9 @@ Deno.serve(async (request) => {
         cart_items: JSON.stringify(cartItemsForMetadata),
         commission_discount_ore: String(requestedCommissionDiscountOre),
         applied_discount_ore: String(adjustedTotalDiscountOre)
-      }
+      },
+      allow_promotion_codes: adjustedTotalDiscountOre === 0 // Tillåt endast koder om ingen automatisk rabatt finns
     };
-
-    if (couponId) {
-      sessionData.discounts = [{ coupon: couponId }];
-    } else {
-      sessionData.allow_promotion_codes = true;
-    }
 
     const session = await stripe.checkout.sessions.create(sessionData);
 
