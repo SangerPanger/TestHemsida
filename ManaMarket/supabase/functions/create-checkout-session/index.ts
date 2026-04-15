@@ -296,7 +296,6 @@ Deno.serve(async (request) => {
       mode: "payment",
       customer_email: user.email,
       line_items: lineItems,
-      allow_promotion_codes: true,
       success_url: `${siteUrl}checkout-success.html?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${siteUrl}checkout-cancel.html`,
       metadata: {
@@ -309,6 +308,10 @@ Deno.serve(async (request) => {
 
     if (discounts && discounts.length > 0) {
       sessionOptions.discounts = discounts;
+    } else {
+      // Endast tillåt kampanjkoder om vi inte redan har applicerat en automatisk rabatt,
+      // eftersom Stripe Checkout bara stöder en rabatt/kod åt gången.
+      sessionOptions.allow_promotion_codes = true;
     }
 
     const session = await stripe.checkout.sessions.create(sessionOptions);
