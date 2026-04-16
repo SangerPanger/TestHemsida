@@ -5,6 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>manabutiken | Checkout</title>
   <meta name="description" content="manabutiken checkout med varukorg, orderoversikt och tydliga checkout-falt.">
+  <link rel="icon" href="favicon.ico" sizes="any">
+  <link rel="icon" href="icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="icon.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Bebas+Neue&display=swap" rel="stylesheet">
@@ -69,7 +72,7 @@
     .payment-badge {
       display: flex;
       align-items: center;
-      height: 28px;
+      height: 85px;
       opacity: 0.8;
       transition: opacity 200ms ease;
     }
@@ -79,7 +82,7 @@
     }
 
     .payment-badge img {
-      max-height: 300%;
+      max-height: 100%;
       width: auto;
       object-fit: contain;
     }
@@ -652,7 +655,11 @@
         <div class="summary">
           <div class="summary-line"><span>Subtotal</span><strong data-cart-subtotal>0 SEK</strong></div>
           <div class="summary-line"><span>Moms (6%)</span><strong data-cart-vat>0 SEK</strong></div>
-          <div class="summary-line"><span>Frakt</span><strong data-cart-shipping>0 SEK</strong></div>
+          <!--<div class="summary-line"><span>Frakt</span><strong data-cart-shipping>Väljs i nästa steg</strong></div>-->
+          <div class="summary-line" data-free-shipping-discount-row>
+            <span>Frakt</span>
+            <strong data-cart-free-shipping-discount>49 SEK</strong>
+          </div>
           <div class="summary-line">
             <span>Rabatt</span>
             <strong class="discount-value">
@@ -665,16 +672,21 @@
           </div>
           <div class="summary-line total"><span>Totalt</span><strong data-cart-total>0 SEK</strong></div>
         </div>
+        <p class="footnote" style="font-size: 0.8em; margin-top: 4px; opacity: 0.7;">* Exklusive frakt som beräknas i nästa steg.</p>
         <div class="checkout-status" data-checkout-status hidden></div>
 
         <div style="margin-top: 22px;">
-          <a class="cta" href="#" data-complete-order>Slutfor kop</a>
+          <a class="cta" href="#" data-complete-order>Gå till checkout</a>
           <button class="ghost" type="button" data-clear-cart style="margin-left:12px;">Tom varukorg</button>
           <button class="ghost" type="button" data-checkout-logout style="margin-left:12px;">Logga ut</button>
         </div>
-        <p class="footnote">Betalsätt väljs inne i Stripe Checkout efter att du klickat pa Slutför köp.<br><br><br></p>
+        <p class="footnote">Frakt och Betalsätt väljs inne i Stripe Checkout efter att du klickat pa Slutför köp.<br></p>
+        <p></p>
         <div class="payment-badge">
           <img src="bilder/logo/Payment/LogoPayment.png" alt="Betalsätt">
+        </div>
+        <div class="payment-badge">
+          <img src="bilder/logo/Postnord/postnord_banner.png" alt="Betalsätt" height="60">
         </div>
       </article>
     </section>

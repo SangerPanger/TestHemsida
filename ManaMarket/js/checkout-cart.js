@@ -9,6 +9,8 @@ const subtotalNodes = document.querySelectorAll("[data-cart-subtotal]");
 const vatNode = document.querySelector("[data-cart-vat]");
 const shippingNode = document.querySelector("[data-cart-shipping]");
 const discountNode = document.querySelector("[data-cart-discount]");
+const freeShippingRow = document.querySelector("[data-free-shipping-discount-row]");
+const freeShippingDiscountNode = document.querySelector("[data-cart-free-shipping-discount]");
 const totalNode = document.querySelector("[data-cart-total]");
 const discountIncreaseButton = document.querySelector("[data-discount-increase]");
 const discountDecreaseButton = document.querySelector("[data-discount-decrease]");
@@ -27,7 +29,7 @@ let availableCommissionSek = 0;
 let selectedCommissionDiscountSek = 0;
 
 function getMaxSelectableDiscountSek(totals) {
-  return Math.max(0, Math.min(availableCommissionSek, totals.subtotalSek + totals.shippingSek));
+  return Math.max(0, Math.min(availableCommissionSek, totals.subtotalSek));
 }
 
 function clampSelectedDiscount(totals) {
@@ -96,7 +98,7 @@ function renderCheckout() {
   const totals = getCartTotals();
   clampSelectedDiscount(totals);
   const effectiveDiscountSek = totals.discountSek + selectedCommissionDiscountSek;
-  const effectiveTotalSek = Math.max(0, totals.subtotalSek + totals.shippingSek - effectiveDiscountSek);
+  const effectiveTotalSek = Math.max(0, totals.subtotalSek - effectiveDiscountSek);
 
   itemCountNodes.forEach((node) => {
     node.textContent = String(totals.itemCount);
@@ -111,15 +113,29 @@ function renderCheckout() {
   }
 
   if (shippingNode) {
-    shippingNode.textContent = formatSek(totals.shippingSek);
+    shippingNode.textContent = "Väljs i nästa steg";
   }
 
   if (discountNode) {
-    discountNode.textContent = effectiveDiscountSek > 0 ? `- ${formatSek(effectiveDiscountSek)}` : `${formatSek(0)}`;
+    discountNode.textContent = selectedCommissionDiscountSek > 0 ? `- ${formatSek(selectedCommissionDiscountSek)}` : `${formatSek(0)}`;
+  }
+
+  if (freeShippingRow) {
+    if (totals.discountSek > 0) {
+      freeShippingRow.hidden = false;
+      if (freeShippingDiscountNode) {
+        freeShippingDiscountNode.textContent = "-49 SEK";
+      }
+    } else {
+      freeShippingRow.hidden = false; // Visa den alltid så användaren ser "49 SEK" innan gränsen nås?
+      if (freeShippingDiscountNode) {
+        freeShippingDiscountNode.textContent = "49 SEK";
+      }
+    }
   }
 
   if (totalNode) {
-    totalNode.textContent = formatSek(effectiveTotalSek);
+    totalNode.textContent = `${formatSek(effectiveTotalSek + (totals.shippingSek || 0))}*`;
   }
 
   updateDiscountStepperState(totals);

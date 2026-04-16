@@ -127,6 +127,8 @@ Deno.serve(async (request) => {
 
     const productMap = new Map(dbProducts?.map(p => [p.slug, p]));
 
+    const finalLineItems = [];
+
     for (const item of items) {
       const productId = typeof item?.id === "string" ? item.id : "";
       const quantity = Number.isFinite(item?.quantity) ? Math.max(1, Math.floor(item.quantity)) : 0;
@@ -146,7 +148,7 @@ Deno.serve(async (request) => {
       const unitAmount = dbProduct.price_cents;
       subtotalOre += unitAmount * quantity;
 
-      lineItems.push({
+      finalLineItems.push({
         price_data: {
           currency: "sek",
           product_data: {
@@ -166,12 +168,9 @@ Deno.serve(async (request) => {
       });
     }
 
-    const shippingOre = 4900;
     const cartDiscountThresholdOre = 49900;
     const cartDiscountValueOre = 5000;
-    const cartDiscountOre = subtotalOre >= cartDiscountThresholdOre ? cartDiscountValueOre : 0; // Synk med frontend: 50 kr rabatt vid kop over 499 kr
-
-    console.log(`[DEBUG] subtotalOre: ${subtotalOre}, cartDiscountOre: ${cartDiscountOre}`);
+    const cartDiscountOre = subtotalOre >= cartDiscountThresholdOre ? cartDiscountValueOre : 0;
 
     const { data: availableCommissionOre, error: commissionError } = await supabase.rpc(
       "get_total_available_commission",
@@ -184,89 +183,25 @@ Deno.serve(async (request) => {
     }
 
     const requestedCommissionDiscountOre = Math.floor(requestedCommissionDiscountSek * 100);
-    const maxPossibleCommissionDiscountOre = Math.max(0, subtotalOre + shippingOre - cartDiscountOre);
     const maxCommissionDiscountOre = Math.min(
       Math.floor(Number(availableCommissionOre) || 0),
-      maxPossibleCommissionDiscountOre
+      subtotalOre - cartDiscountOre // Endast rabatt på produkter, frakt hanteras av Stripe
     );
-
-    console.log(`[DEBUG] requestedCommissionDiscountOre: ${requestedCommissionDiscountOre}, availableCommissionOre: ${availableCommissionOre}, maxCommissionDiscountOre: ${maxCommissionDiscountOre}`);
 
     const appliedCommissionDiscountOre = Math.min(requestedCommissionDiscountOre, maxCommissionDiscountOre);
     const totalDiscountOre = Math.floor(cartDiscountOre + appliedCommissionDiscountOre);
 
-    console.log(`[DEBUG] appliedCommissionDiscountOre: ${appliedCommissionDiscountOre}, totalDiscountOre: ${totalDiscountOre}`);
-
-    // Ensure we don't discount below Stripe's minimum amount (approx 5 SEK)
-    // and definitely not below 0.
-    const minimumAmountOre = 500;
-    const currentTotalOre = subtotalOre + shippingOre;
-    const finalTotalAfterDiscountOre = currentTotalOre - totalDiscountOre;
-
-    let adjustedTotalDiscountOre = totalDiscountOre;
-    if (finalTotalAfterDiscountOre < minimumAmountOre) {
-      adjustedTotalDiscountOre = Math.max(0, currentTotalOre - minimumAmountOre);
-      console.log(`[DEBUG] Justerar rabatt från ${totalDiscountOre} till ${adjustedTotalDiscountOre} för att behålla minimumbelopp 5 SEK.`);
+    // Skapa en engångsrabatt i Stripe om det finns någon rabatt att ge
+    let discounts = [];
+    if (totalDiscountOre > 0) {
+      const coupon = await stripe.coupons.create({
+        amount_off: totalDiscountOre,
+        currency: "sek",
+        duration: "once",
+        name: "Orderrabatt"
+      });
+      discounts.push({ coupon: coupon.id });
     }
-
-    let remainingDiscountToApply = adjustedTotalDiscountOre;
-
-    // --- NY LOGIK: DRA AV RABATT FRÅN FRAKTEN FÖRST ---
-    // (Användaren vill att frakten dras först vid summa över 499 kr)
-    const canTakeFromShipping = Math.max(0, shippingOre); // Antar att vi kan dra hela frakten om rabatten räcker
-    const toTakeFromShipping = Math.min(remainingDiscountToApply, canTakeFromShipping);
-    const finalShippingOre = shippingOre - toTakeFromShipping;
-    remainingDiscountToApply -= toTakeFromShipping;
-
-    const finalLineItems = [];
-
-    // --- DRA AV RESTERANDE RABATT FRÅN PRODUKTERNA ---
-    for (let i = 0; i < lineItems.length; i++) {
-      const item = lineItems[i];
-      if (remainingDiscountToApply <= 0) {
-        finalLineItems.push(item);
-        continue;
-      }
-
-      const unitAmount = item.price_data.unit_amount;
-      const quantity = item.quantity;
-      const itemTotal = unitAmount * quantity;
-
-      // Vi lämnar minst 50 öre (minsta tillåtna belopp) för denna rad
-      const minLineTotal = 50;
-      const canTake = Math.max(0, itemTotal - minLineTotal);
-      const toTake = Math.min(remainingDiscountToApply, canTake);
-
-      if (toTake > 0) {
-        remainingDiscountToApply -= toTake;
-        const newTotal = itemTotal - toTake;
-
-        let description = `Ordinarie pris: ${(itemTotal / 100).toFixed(2)} kr`;
-        // Om det är första produkten och vi har en total rabatt, visa hur mycket kunden sparar totalt
-        if (i === 0 && adjustedTotalDiscountOre > 0) {
-          const originalTotal = (subtotalOre + shippingOre) / 100;
-          description += ` | Totalt ordinarie: ${originalTotal.toFixed(2)} kr | Du sparar: ${(adjustedTotalDiscountOre / 100).toFixed(2)} kr`;
-        }
-
-        finalLineItems.push({
-          price_data: {
-            ...item.price_data,
-            product_data: {
-              ...item.price_data.product_data,
-              name: item.price_data.product_data.name + (quantity > 1 ? ` (${quantity} st)` : "") + " (Rabatterad)",
-              description: description
-            },
-            unit_amount: newTotal
-          },
-          quantity: 1 // Gör om till quantity 1 för att kunna sätta det exakta rabatterade totalbeloppet
-        });
-      } else {
-        finalLineItems.push(item);
-      }
-    }
-
-    console.log(`[DEBUG] Final line_items: ${JSON.stringify(finalLineItems)}`);
-    console.log(`[DEBUG] finalShippingOre: ${finalShippingOre}`);
 
     const sessionData: Stripe.Checkout.SessionCreateParams = {
       mode: "payment",
@@ -274,29 +209,29 @@ Deno.serve(async (request) => {
       line_items: finalLineItems,
       success_url: `${siteUrl}checkout-success.html?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${siteUrl}checkout-cancel.html`,
+      shipping_address_collection: {
+        allowed_countries: ["SE"],
+      },
       shipping_options: [
-        {
-          shipping_rate_data: {
-            type: "fixed_amount",
-            fixed_amount: {
-              amount: finalShippingOre,
-              currency: "sek",
-            },
-            display_name: "Standardfrakt",
-          },
-        },
+        { shipping_rate: "shr_1TMsTS3hvK65dmDKNGNXtU55" }, // Fraktalternativ 1
+        { shipping_rate: "shr_1TMs1k3hvK65dmDKgEA7Lyf2" }, // Fraktalternativ 2
       ],
       metadata: {
         user_id: user.id,
         item_count: String(items.length),
         cart_items: JSON.stringify(cartItemsForMetadata),
         commission_discount_ore: String(appliedCommissionDiscountOre),
-        applied_discount_ore: String(adjustedTotalDiscountOre)
+        applied_discount_ore: String(totalDiscountOre)
       },
-      allow_promotion_codes: adjustedTotalDiscountOre === 0, // Tillåt endast koder om ingen automatisk rabatt finns
       automatic_tax: { enabled: true },
       billing_address_collection: "required"
     };
+
+    if (discounts.length > 0) {
+      sessionData.discounts = discounts;
+    } else {
+      sessionData.allow_promotion_codes = true;
+    }
 
     const session = await stripe.checkout.sessions.create(sessionData);
 
